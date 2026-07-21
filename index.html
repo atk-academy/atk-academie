@@ -34,13 +34,13 @@
   }
   body::before{
     content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
-    background:radial-gradient(45% 35% at 30% 30%, var(--blob-a) 0%, transparent 70%);
-    filter:blur(50px); opacity:.65; animation:drift1 13s ease-in-out infinite;
+    background:radial-gradient(40% 32% at 30% 30%, #ff3d2e 0%, transparent 70%);
+    filter:blur(40px); opacity:.55; mix-blend-mode:screen; animation:drift1 9s ease-in-out infinite;
   }
   body::after{
     content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
-    background:radial-gradient(40% 32% at 75% 70%, var(--blob-b) 0%, transparent 70%);
-    filter:blur(55px); opacity:.6; animation:drift2 17s ease-in-out infinite;
+    background:radial-gradient(36% 30% at 75% 70%, #ff8a3d 0%, transparent 70%);
+    filter:blur(45px); opacity:.5; mix-blend-mode:screen; animation:drift2 11s ease-in-out infinite;
   }
   @keyframes drift1{ 0%,100%{transform:translate(-18%,-14%) scale(1);} 20%{transform:translate(16%,10%) scale(1.15);} 40%{transform:translate(-12%,16%) scale(0.9);} 60%{transform:translate(20%,-12%) scale(1.1);} 80%{transform:translate(-16%,-6%) scale(0.95);} }
   @keyframes drift2{ 0%,100%{transform:translate(14%,16%) scale(1);} 25%{transform:translate(-20%,-8%) scale(1.1);} 50%{transform:translate(10%,-18%) scale(0.92);} 75%{transform:translate(-14%,12%) scale(1.12);} }
