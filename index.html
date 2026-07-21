@@ -24,27 +24,29 @@
   body{
     margin:0; min-height:100%; color:var(--text-hi);
     font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI Variable","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    background:
-      radial-gradient(60% 50% at 12% 8%, var(--blob-a) 0%, transparent 60%),
-      radial-gradient(50% 45% at 92% 18%, var(--blob-b) 0%, transparent 60%),
-      radial-gradient(55% 60% at 80% 92%, var(--blob-c) 0%, transparent 60%),
-      linear-gradient(180deg, var(--bg-1), var(--bg-2));
+    background:linear-gradient(180deg, var(--bg-1), var(--bg-2));
     background-attachment:fixed;
     overflow-x:hidden;
   }
   body::before{
-    content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
-    background:radial-gradient(40% 32% at 30% 30%, #ff3d2e 0%, transparent 70%);
-    filter:blur(40px); opacity:.55; mix-blend-mode:screen; animation:drift1 9s ease-in-out infinite;
+    content:""; position:fixed; top:-50%; left:-50%; width:200%; height:200%; pointer-events:none; z-index:0;
+    background:
+      radial-gradient(16% 20% at 20% 25%, #ff4136 0%, transparent 65%),
+      radial-gradient(14% 18% at 75% 15%, #ff8a3d 0%, transparent 65%),
+      radial-gradient(18% 22% at 60% 70%, #b8102a 0%, transparent 65%),
+      radial-gradient(15% 18% at 15% 80%, #ff5a4a 0%, transparent 65%),
+      radial-gradient(16% 20% at 90% 60%, #7a1010 0%, transparent 65%);
+    filter:blur(55px); opacity:.6; mix-blend-mode:screen;
+    animation:liquid 26s ease-in-out infinite;
   }
-  body::after{
-    content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
-    background:radial-gradient(36% 30% at 75% 70%, #ff8a3d 0%, transparent 70%);
-    filter:blur(45px); opacity:.5; mix-blend-mode:screen; animation:drift2 11s ease-in-out infinite;
+  @keyframes liquid{
+    0%{transform:translate(0,0) rotate(0deg) scale(1);}
+    25%{transform:translate(-7%,5%) rotate(10deg) scale(1.12);}
+    50%{transform:translate(5%,-7%) rotate(-8deg) scale(0.95);}
+    75%{transform:translate(-4%,-5%) rotate(6deg) scale(1.08);}
+    100%{transform:translate(0,0) rotate(0deg) scale(1);}
   }
-  @keyframes drift1{ 0%,100%{transform:translate(-18%,-14%) scale(1);} 20%{transform:translate(16%,10%) scale(1.15);} 40%{transform:translate(-12%,16%) scale(0.9);} 60%{transform:translate(20%,-12%) scale(1.1);} 80%{transform:translate(-16%,-6%) scale(0.95);} }
-  @keyframes drift2{ 0%,100%{transform:translate(14%,16%) scale(1);} 25%{transform:translate(-20%,-8%) scale(1.1);} 50%{transform:translate(10%,-18%) scale(0.92);} 75%{transform:translate(-14%,12%) scale(1.12);} }
-  @media (prefers-reduced-motion: reduce){ body::before, body::after{ animation:none; } * { animation-duration:.001ms !important; transition-duration:.001ms !important; } }
+  @media (prefers-reduced-motion: reduce){ body::before{ animation:none; } * { animation-duration:.001ms !important; transition-duration:.001ms !important; } }
 
   .app{ position:relative; z-index:1; margin:0 auto; padding:20px 18px 80px; }
   #view-form{ max-width:680px; margin:0 auto; }
