@@ -286,7 +286,13 @@
   .pipeline-col[data-grade="3"] .pipeline-col-head{ color:var(--gold-2); }
   .pipeline-col[data-grade="4"] .pipeline-col-head{ color:var(--diamond-2); }
   .pipeline-col[data-grade="5"] .pipeline-col-head{ color:var(--champion-2); }
-  .pipeline-card{ padding:10px 12px; border-radius:var(--radius-sm); background:var(--surface-strong); border:1px solid var(--border); cursor:grab; }
+  .pipeline-card{ position:relative; padding:10px 12px; border-radius:var(--radius-sm); background:var(--surface-strong); border:1px solid var(--border); cursor:grab; }
+  .card-delete{ position:absolute; top:6px; right:6px; width:20px; height:20px; display:flex; align-items:center; justify-content:center; border:none; border-radius:50%; background:transparent; color:var(--text-faint); cursor:pointer; }
+  .card-delete:hover{ color:var(--critical); background:var(--surface); }
+  .card-delete svg{ width:12px; height:12px; }
+  .detail-delete{ display:flex; align-items:center; gap:7px; font-family:inherit; font-size:12.5px; font-weight:700; color:var(--critical); background:none; border:1px solid var(--border); padding:9px 14px; border-radius:999px; cursor:pointer; margin-top:4px; }
+  .detail-delete svg{ width:14px; height:14px; }
+  .detail-delete:hover{ border-color:var(--critical); }
   .pipeline-card:active{ cursor:grabbing; }
   .pipeline-card.dragging{ opacity:.4; }
   .pipeline-card-name{ font-size:13px; font-weight:700; }
@@ -797,6 +803,18 @@
     return d.toLocaleDateString('fr-FR', {day:'2-digit', month:'short'});
   }
 
+  function deleteCandidate(id){
+    if (!window.confirm('Supprimer définitivement cette candidature ?')) return;
+    if (useFirestore) {
+      db.collection('candidates').doc(id).delete().catch(function(e){ console.error('Firestore delete failed', e); });
+    } else {
+      candidates = candidates.filter(function(c){ return c.id !== id; });
+      if (openRowId === id) openRowId = null;
+      saveData(candidates);
+      renderBoard();
+    }
+  }
+
   function renderBoard(){
     document.getElementById('stat-count').textContent = candidates.length;
     if (candidates.length){
@@ -883,6 +901,12 @@
             return '<div class="detail-item"><div class="k">Rôles '+RATING_LABEL[boatKey]+'</div><div class="v">'+(labels.length ? escapeHtml(labels.join(', ')) : '—')+'</div></div>';
           }).join('');
         td.appendChild(inner);
+        var delBtn = document.createElement('button');
+        delBtn.type = 'button';
+        delBtn.className = 'detail-delete';
+        delBtn.innerHTML = svg('trash') + ' Supprimer cette candidature';
+        delBtn.addEventListener('click', function(e){ e.stopPropagation(); deleteCandidate(c.id); });
+        td.appendChild(delBtn);
         detailTr.appendChild(td);
         body.appendChild(detailTr);
       }
@@ -942,9 +966,12 @@
         card.draggable = true;
         card.setAttribute('data-id', c.id);
         card.innerHTML =
+          '<button type="button" class="card-delete" title="Supprimer">'+svg('close')+'</button>' +
           '<div class="pipeline-card-name">'+escapeHtml(c.xbox)+(c.example?'<span class="example-chip">Exemple</span>':'')+'</div>' +
           '<div class="pipeline-card-sub">'+escapeHtml(c.discord)+'</div>' +
           '<div class="pipeline-card-foot"><span class="avg-badge">'+avg.toFixed(1)+'</span><span class="status-pill '+status.cls+'">'+status.label+'</span></div>';
+        card.querySelector('.card-delete').addEventListener('mousedown', function(e){ e.stopPropagation(); });
+        card.querySelector('.card-delete').addEventListener('click', function(e){ e.stopPropagation(); deleteCandidate(c.id); });
         card.addEventListener('dragstart', function(e){
           card.classList.add('dragging');
           e.dataTransfer.setData('text/plain', c.id);
