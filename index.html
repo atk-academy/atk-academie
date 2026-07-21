@@ -9,6 +9,11 @@
     --accent:#ff4136; --accent-2:#ff7a6e;
     --ships:#8a1c14; --ships-2:#b8362a;
     --success:#34d399; --critical:#f2994a;
+    --bronze:#7a4a26; --bronze-2:#c98a52;
+    --silver:#8a94a0; --silver-2:#d7dee4;
+    --gold:#b8860b; --gold-2:#f0c860;
+    --diamond:#1f6f94; --diamond-2:#5cc3ea;
+    --champion:#5b21a8; --champion-2:#a565f0;
     --on-accent:#fff5f4;
     --shadow:0 20px 60px -20px rgba(0,0,0,.7);
     --radius-lg:26px; --radius-md:18px; --radius-sm:12px;
@@ -235,22 +240,25 @@
   .empty-state{ padding:50px 20px; text-align:center; color:var(--text-faint); font-size:13.5px; }
 
   .grade-badge{ font-size:11px; font-weight:700; padding:3px 9px; border-radius:999px; display:inline-block; white-space:nowrap; color:var(--text-lo); background:var(--surface-strong); border:1px solid var(--border); }
-  .grade-badge[data-grade="1"]{ color:var(--text-hi); background:color-mix(in srgb, var(--accent) 14%, transparent); border-color:color-mix(in srgb, var(--accent) 30%, transparent); }
-  .grade-badge[data-grade="2"]{ color:var(--text-hi); background:color-mix(in srgb, var(--accent) 28%, transparent); border-color:color-mix(in srgb, var(--accent) 45%, transparent); }
-  .grade-badge[data-grade="3"]{ color:var(--on-accent); background:color-mix(in srgb, var(--accent) 48%, #7a1010); border-color:transparent; }
-  .grade-badge[data-grade="4"]{ color:var(--on-accent); background:color-mix(in srgb, var(--accent) 70%, #7a1010); border-color:transparent; }
-  .grade-badge[data-grade="5"]{ color:var(--on-accent); background:linear-gradient(155deg,var(--accent-2),var(--accent)); border-color:transparent; box-shadow:0 0 0 1px color-mix(in srgb, var(--accent) 50%, transparent); }
+  .grade-badge[data-grade="1"]{ color:#2a160a; background:linear-gradient(155deg,var(--bronze-2),var(--bronze)); border-color:transparent; }
+  .grade-badge[data-grade="2"]{ color:#1c2226; background:linear-gradient(155deg,var(--silver-2),var(--silver)); border-color:transparent; }
+  .grade-badge[data-grade="3"]{ color:#2b1d02; background:linear-gradient(155deg,var(--gold-2),var(--gold)); border-color:transparent; }
+  .grade-badge[data-grade="4"]{ color:#eafcff; background:linear-gradient(155deg,var(--diamond-2),var(--diamond)); border-color:transparent; }
+  .grade-badge[data-grade="5"]{ color:#f8f0ff; background:linear-gradient(155deg,var(--champion-2),var(--champion)); border-color:transparent; box-shadow:0 0 0 1px color-mix(in srgb, var(--champion) 55%, transparent); }
 
   .pipeline-hint{ margin:0 0 14px; font-size:12.8px; color:var(--text-lo); }
   .pipeline-scroll{ overflow-x:auto; padding-bottom:8px; }
-  .pipeline-board{ display:flex; gap:14px; }
-  .pipeline-col{ width:100%; max-width:220px; min-width:190px; flex:1 1 0; display:flex; flex-direction:column; border-radius:var(--radius-md); background:var(--surface); border:1px solid var(--border); backdrop-filter:blur(20px); max-height:560px; }
+  .pipeline-board{ display:flex; gap:8px; }
+  .pipeline-col{ width:100%; max-width:220px; min-width:0; flex:1 1 0; display:flex; flex-direction:column; border-radius:var(--radius-md); background:var(--surface); border:1px solid var(--border); backdrop-filter:blur(20px); max-height:560px; }
   .pipeline-col.drag-over{ border-color:var(--accent); box-shadow:0 0 0 2px color-mix(in srgb, var(--accent) 35%, transparent); }
-  .pipeline-col-head{ display:flex; align-items:center; justify-content:space-between; gap:8px; padding:14px 14px 10px; font-size:13px; font-weight:800; border-bottom:1px solid var(--border); }
+  .pipeline-col-head{ display:flex; align-items:center; justify-content:space-between; gap:6px; padding:12px 10px 8px; font-size:12.5px; font-weight:800; border-bottom:1px solid var(--border); }
   .pipeline-count{ font-size:11px; font-weight:700; color:var(--text-faint); background:var(--surface-strong); border-radius:999px; padding:2px 8px; font-variant-numeric:tabular-nums; }
-  .pipeline-col-body{ padding:10px; display:flex; flex-direction:column; gap:8px; overflow-y:auto; min-height:80px; }
-  .pipeline-col[data-grade="1"] .pipeline-col-head{ color:var(--text-hi); }
-  .pipeline-col[data-grade="5"] .pipeline-col-head{ color:var(--accent-2); }
+  .pipeline-col-body{ padding:8px; display:flex; flex-direction:column; gap:6px; overflow-y:auto; min-height:80px; }
+  .pipeline-col[data-grade="1"] .pipeline-col-head{ color:var(--bronze-2); }
+  .pipeline-col[data-grade="2"] .pipeline-col-head{ color:var(--silver-2); }
+  .pipeline-col[data-grade="3"] .pipeline-col-head{ color:var(--gold-2); }
+  .pipeline-col[data-grade="4"] .pipeline-col-head{ color:var(--diamond-2); }
+  .pipeline-col[data-grade="5"] .pipeline-col-head{ color:var(--champion-2); }
   .pipeline-card{ padding:10px 12px; border-radius:var(--radius-sm); background:var(--surface-strong); border:1px solid var(--border); cursor:grab; }
   .pipeline-card:active{ cursor:grabbing; }
   .pipeline-card.dragging{ opacity:.4; }
@@ -413,9 +421,9 @@
     compass: '<circle cx="12" cy="12" r="9"/><path d="M15.2 8.8l-2 5.2-5.2 2 2-5.2z"/>',
     move: '<line x1="4" y1="9" x2="11" y2="9"/><line x1="4" y1="13" x2="14" y2="13"/><line x1="4" y1="17" x2="9" y2="17"/><path d="M16 8l5 4-5 4"/>',
     helm: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/><line x1="12" y1="4" x2="12" y2="7"/><line x1="12" y1="17" x2="12" y2="20"/><line x1="4" y1="12" x2="7" y2="12"/><line x1="17" y1="12" x2="20" y2="12"/><line x1="6.3" y1="6.3" x2="8.4" y2="8.4"/><line x1="15.6" y1="15.6" x2="17.7" y2="17.7"/><line x1="6.3" y1="17.7" x2="8.4" y2="15.6"/><line x1="15.6" y1="8.4" x2="17.7" y2="6.3"/>',
-    canon: '<rect x="3" y="9" width="14" height="5" rx="2.5"/><circle cx="6" cy="18" r="2.2"/><line x1="6" y1="15.5" x2="6" y2="16.2"/><line x1="17" y1="11.5" x2="21" y2="11.5"/>',
+    canon: '<rect x="2" y="10" width="14" height="5" rx="1"/><line x1="16" y1="12.5" x2="21" y2="12.5"/><circle cx="6" cy="18" r="2.3"/><circle cx="12" cy="18" r="2.3"/><line x1="6" y1="15" x2="6" y2="16"/><line x1="12" y1="15" x2="12" y2="16"/>',
     bucket: '<path d="M6 9h12l-1.5 11a2 2 0 0 1-2 1.7h-5a2 2 0 0 1-2-1.7z"/><path d="M8 9a4 4 0 0 1 8 0"/>',
-    plank: '<rect x="3.5" y="9.5" width="17" height="5" rx="1.2"/><line x1="3.5" y1="12" x2="20.5" y2="12"/><circle cx="7.5" cy="10.7" r="0.5" fill="currentColor" stroke="none"/><circle cx="16" cy="13.3" r="0.5" fill="currentColor" stroke="none"/>',
+    plank: '<g transform="rotate(45 12 12)"><rect x="7" y="2.5" width="10" height="19" rx="1.2"/><line x1="7" y1="12" x2="17" y2="12"/><circle cx="9.5" cy="5.5" r="0.5" fill="currentColor" stroke="none"/><circle cx="14.5" cy="18.5" r="0.5" fill="currentColor" stroke="none"/></g>',
     clip: '<circle cx="12" cy="12" r="9"/><path d="M10 8.3l6 3.7-6 3.7z" fill="currentColor" stroke="none"/>',
     plus: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
     close: '<line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/>',
@@ -464,19 +472,19 @@
 
   var BOAT_ROLES = {
     sloop: [
-      {key:'helm', label:'Barre', icon:'helm'},
-      {key:'canon', label:'Canon', icon:'canon'}
+      {key:'helm', label:'Helm', icon:'helm'},
+      {key:'canon', label:'MC', icon:'canon'}
     ],
     brig: [
-      {key:'helm', label:'Barre', icon:'helm'},
-      {key:'canon', label:'Canon', icon:'canon'},
-      {key:'bucket', label:'Seau', icon:'bucket'}
+      {key:'helm', label:'Helm', icon:'helm'},
+      {key:'canon', label:'MC', icon:'canon'},
+      {key:'bucket', label:'Flex', icon:'bucket'}
     ],
     galion: [
-      {key:'helm', label:'Barre', icon:'helm'},
-      {key:'canon', label:'Canon', icon:'canon'},
-      {key:'cale', label:'Cale', icon:'plank'},
-      {key:'bucket', label:'Seau', icon:'bucket'}
+      {key:'helm', label:'Helm', icon:'helm'},
+      {key:'canon', label:'MC', icon:'canon'},
+      {key:'cale', label:'Bilge', icon:'plank'},
+      {key:'bucket', label:'Flex', icon:'bucket'}
     ]
   };
 
