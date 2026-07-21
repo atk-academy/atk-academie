@@ -113,14 +113,14 @@
   .rating-icon{ width:30px; height:30px; border-radius:9px; display:flex; align-items:center; justify-content:center; flex:none; }
   .rating-icon svg{ width:16px; height:16px; }
   .rating-label{ font-size:14px; font-weight:600; flex:1 1 auto; min-width:0; }
-  .rating-track{ position:relative; display:flex; gap:3px; border-radius:999px; background:var(--surface-strong); border:1px solid var(--border); padding:3px; flex:none; }
-  .rating-highlight{ position:absolute; top:3px; left:3px; width:30px; height:26px; border-radius:999px; transition:transform .25s cubic-bezier(.2,.8,.2,1); z-index:0; }
+  .rating-track{ position:relative; display:flex; gap:2px; border-radius:999px; background:var(--surface-strong); border:1px solid var(--border); padding:3px; flex:none; }
+  .rating-highlight{ position:absolute; top:3px; left:3px; width:24px; height:26px; border-radius:999px; transition:transform .25s cubic-bezier(.2,.8,.2,1); z-index:0; }
   .rating-track.combat .rating-highlight{ background:linear-gradient(155deg,var(--accent-2),var(--accent)); }
   .rating-track.ships .rating-highlight{ background:linear-gradient(155deg,var(--ships-2),var(--ships)); }
   .rating-btn{
-    position:relative; z-index:1; width:30px; height:26px; border:0; background:transparent; cursor:pointer;
+    position:relative; z-index:1; width:24px; height:26px; border:0; background:transparent; cursor:pointer;
     display:flex; align-items:center; justify-content:center; padding:0;
-    font-size:13px; font-weight:700; color:var(--text-lo); font-family:inherit; font-variant-numeric:tabular-nums;
+    font-size:12px; font-weight:700; color:var(--text-lo); font-family:inherit; font-variant-numeric:tabular-nums;
     border-radius:999px;
   }
   .rating-btn[aria-checked="true"]{ color:var(--on-accent); }
@@ -133,6 +133,13 @@
   }
   .role-btn svg{ width:15px; height:15px; }
   .role-btn.active{ color:var(--on-accent); background:linear-gradient(155deg,var(--ships-2),var(--ships)); border-color:transparent; }
+
+  .choice-group{ display:flex; gap:8px; flex-wrap:wrap; }
+  .choice-btn{
+    font-family:inherit; font-size:13px; font-weight:600; color:var(--text-lo);
+    background:var(--surface-strong); border:1px solid var(--border); border-radius:999px; padding:9px 16px; cursor:pointer;
+  }
+  .choice-btn.active{ color:var(--on-accent); background:linear-gradient(155deg,var(--accent-2),var(--accent)); border-color:transparent; }
 
   .clip-row{ display:flex; gap:8px; margin-bottom:10px; align-items:center; }
   .clip-row input{ flex:1; }
@@ -319,6 +326,27 @@
         </div>
 
         <div class="glass card">
+          <div class="card-head"><div class="dot id">__ICON_SMILE__</div><h2>Personnalité</h2></div>
+          <div class="field">
+            <label class="flabel">Tranche d'âge</label>
+            <div class="choice-group" data-key="age">
+              <button type="button" class="choice-btn" data-value="15+">15+</button>
+              <button type="button" class="choice-btn" data-value="17+">17+</button>
+              <button type="button" class="choice-btn" data-value="18+">18+</button>
+              <button type="button" class="choice-btn" data-value="20+">20+</button>
+            </div>
+          </div>
+          <div class="field">
+            <label class="flabel">Situation</label>
+            <div class="choice-group" data-key="situation">
+              <button type="button" class="choice-btn" data-value="emploi">En emploi</button>
+              <button type="button" class="choice-btn" data-value="chomage">Au chômage</button>
+              <button type="button" class="choice-btn" data-value="etudes">Étudiant(e)</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass card">
           <div class="card-head"><div class="dot clip">__ICON_CLIP__</div><h2>Preuves en jeu</h2></div>
           <p class="clip-required-note">Au moins un clip est obligatoire pour valider ta candidature.</p>
           <div id="clip-list"></div>
@@ -419,6 +447,7 @@
     brig: '<path d="M3 17h18l-2 3.5H5z"/><line x1="8.5" y1="4" x2="8.5" y2="17"/><line x1="15" y1="6" x2="15" y2="17"/><path d="M8.5 5.5l4 8h-4z"/><path d="M15 7.5l3 6.5h-3z"/>',
     galion: '<path d="M2 17h20l-2.4 3.5H4.4z"/><line x1="6.5" y1="4" x2="6.5" y2="17"/><line x1="12" y1="3" x2="12" y2="17"/><line x1="17" y1="5.5" x2="17" y2="17"/><path d="M6.5 5.5l3.5 7.5h-3.5z"/><path d="M12 4l4 8h-4z"/><path d="M17 7l3 6.5h-3z"/><path d="M12 3l2.2 1.3-2.2.9z"/>',
     compass: '<circle cx="12" cy="12" r="9"/><path d="M15.2 8.8l-2 5.2-5.2 2 2-5.2z"/>',
+    smile: '<circle cx="12" cy="12" r="9"/><circle cx="9" cy="10.2" r="1.1" fill="currentColor" stroke="none"/><circle cx="15" cy="10.2" r="1.1" fill="currentColor" stroke="none"/><path d="M8 14.2c1.2 1.4 2.6 2 4 2s2.8-.6 4-2"/>',
     move: '<line x1="4" y1="9" x2="11" y2="9"/><line x1="4" y1="13" x2="14" y2="13"/><line x1="4" y1="17" x2="9" y2="17"/><path d="M16 8l5 4-5 4"/>',
     helm: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/><line x1="12" y1="4" x2="12" y2="7"/><line x1="12" y1="17" x2="12" y2="20"/><line x1="4" y1="12" x2="7" y2="12"/><line x1="17" y1="12" x2="20" y2="12"/><line x1="6.3" y1="6.3" x2="8.4" y2="8.4"/><line x1="15.6" y1="15.6" x2="17.7" y2="17.7"/><line x1="6.3" y1="17.7" x2="8.4" y2="15.6"/><line x1="15.6" y1="8.4" x2="17.7" y2="6.3"/>',
     canon: '<rect x="2" y="10" width="14" height="5" rx="1"/><line x1="16" y1="12.5" x2="21" y2="12.5"/><circle cx="6" cy="18" r="2.3"/><circle cx="12" cy="18" r="2.3"/><line x1="6" y1="15" x2="6" y2="16"/><line x1="12" y1="15" x2="12" y2="16"/>',
@@ -448,6 +477,7 @@
     .replace('__ICON_CLASH__', svg('clash'))
     .replace('__ICON_GALION__', svg('galion'))
     .replace('__ICON_CLIP__', svg('clip'))
+    .replace('__ICON_SMILE__', svg('smile'))
     .replace('__ICON_PLUS__', svg('plus'))
     .replace('__ICON_SEARCH__', svg('search'))
     .replace('__ICON_TRASH__', svg('trash'))
@@ -469,6 +499,8 @@
   var ALL_RATING_KEYS = ['aim','iq','move','sloop','brig','galion'];
   var RATING_COLOR = {aim:'combat',iq:'combat',move:'combat',sloop:'ships',brig:'ships',galion:'ships'};
   var RATING_LABEL = {aim:'Aim',iq:'Intelligence de jeu',move:'Mouvement',sloop:'Sloop',brig:'Brigantin',galion:'Galion'};
+
+  var SITUATION_LABEL = {emploi:'En emploi', chomage:'Au chômage', etudes:'Étudiant(e)'};
 
   var BOAT_ROLES = {
     sloop: [
@@ -508,6 +540,10 @@
     return wrap;
   }
 
+  var RATING_MAX = 10;
+  var RATING_DEFAULT = 5;
+  var RATING_STEP = 26;
+
   function buildRatingRow(colorClass, item){
     var row = document.createElement('div');
     row.className = 'rating-row';
@@ -521,22 +557,22 @@
     track.className = 'rating-track ' + colorClass;
     track.setAttribute('role','radiogroup');
     track.setAttribute('data-key', item.key);
-    track.setAttribute('data-value','3');
+    track.setAttribute('data-value', String(RATING_DEFAULT));
     var highlight = document.createElement('span');
     highlight.className = 'rating-highlight';
-    highlight.style.transform = 'translateX(' + (2*33) + 'px)';
+    highlight.style.transform = 'translateX(' + ((RATING_DEFAULT-1)*RATING_STEP) + 'px)';
     track.appendChild(highlight);
-    for (var n=1;n<=5;n++){
+    for (var n=1;n<=RATING_MAX;n++){
       (function(n){
         var btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'rating-btn';
         btn.setAttribute('role','radio');
-        btn.setAttribute('aria-checked', n===3 ? 'true':'false');
+        btn.setAttribute('aria-checked', n===RATING_DEFAULT ? 'true':'false');
         btn.textContent = n;
         btn.addEventListener('click', function(){
           track.setAttribute('data-value', n);
-          highlight.style.transform = 'translateX(' + ((n-1)*33) + 'px)';
+          highlight.style.transform = 'translateX(' + ((n-1)*RATING_STEP) + 'px)';
           var kids = track.querySelectorAll('.rating-btn');
           kids.forEach(function(k,i){ k.setAttribute('aria-checked', (i+1===n) ? 'true':'false'); });
         });
@@ -552,6 +588,15 @@
     group.items.forEach(function(item){
       target.appendChild(buildRatingRow(group.color, item));
       if (group.key === 'ships') target.appendChild(buildBoatRoles(item.key));
+    });
+  });
+
+  document.querySelectorAll('.choice-group').forEach(function(group){
+    group.querySelectorAll('.choice-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        group.querySelectorAll('.choice-btn').forEach(function(b){ b.classList.remove('active'); });
+        btn.classList.add('active');
+      });
     });
   });
 
@@ -648,16 +693,16 @@
 
   function seedData(){
     return [
-      { id:'seed1', xbox:'CaptRavenX', discord:'raven.tide', example:true, grade:null, hours:2400,
-        ratings:{aim:4,iq:5,move:4,sloop:5,brig:4,galion:3},
+      { id:'seed1', xbox:'CaptRavenX', discord:'raven.tide', example:true, grade:null, hours:2400, age:'20+', situation:'emploi',
+        ratings:{aim:8,iq:9,move:8,sloop:9,brig:8,galion:6},
         roles:{sloop:['helm','canon'], brig:['helm','canon','bucket'], galion:['helm','canon']},
         clips:[], date: Date.now() - 86400000*2 },
-      { id:'seed2', xbox:'SirenOfTheDeep', discord:'siren_of_the_deep', example:true, grade:null, hours:1150,
-        ratings:{aim:3,iq:4,move:3,sloop:4,brig:5,galion:5},
+      { id:'seed2', xbox:'SirenOfTheDeep', discord:'siren_of_the_deep', example:true, grade:null, hours:1150, age:'18+', situation:'etudes',
+        ratings:{aim:6,iq:7,move:6,sloop:8,brig:9,galion:9},
         roles:{sloop:['canon'], brig:['canon','bucket'], galion:['canon','cale','bucket']},
         clips:[], date: Date.now() - 86400000*5 },
-      { id:'seed3', xbox:'PowderMonkey99', discord:'powder.monkey', example:true, grade:null, hours:420,
-        ratings:{aim:2,iq:3,move:3,sloop:3,brig:2,galion:2},
+      { id:'seed3', xbox:'PowderMonkey99', discord:'powder.monkey', example:true, grade:null, hours:420, age:'17+', situation:'etudes',
+        ratings:{aim:4,iq:5,move:5,sloop:5,brig:4,galion:4},
         roles:{sloop:['helm'], brig:['helm'], galion:['helm']},
         clips:[], date: Date.now() - 86400000*9 }
     ];
@@ -683,8 +728,8 @@
   }
 
   function statusFor(avg){
-    if (avg >= 4.5) return {cls:'elite', label:'Élite'};
-    if (avg >= 3.5) return {cls:'solid', label:'Solide'};
+    if (avg >= 9) return {cls:'elite', label:'Élite'};
+    if (avg >= 7) return {cls:'solid', label:'Solide'};
     return {cls:'watch', label:'À suivre'};
   }
 
@@ -697,7 +742,7 @@
     document.getElementById('stat-count').textContent = candidates.length;
     if (candidates.length){
       var overall = candidates.reduce(function(s,c){ return s+avgOf(c); },0) / candidates.length;
-      document.getElementById('stat-avg').textContent = overall.toFixed(1) + ' / 5';
+      document.getElementById('stat-avg').textContent = overall.toFixed(1) + ' / 10';
       var top = candidates.slice().sort(function(a,b){ return avgOf(b)-avgOf(a); })[0];
       document.getElementById('stat-top').textContent = top.xbox;
     } else {
@@ -731,7 +776,7 @@
 
       var barsHtml = ALL_RATING_KEYS.map(function(k){
         var v = c.ratings[k];
-        return '<i class="'+RATING_COLOR[k]+'" style="height:'+(4+v*3.6)+'px" title="'+RATING_LABEL[k]+': '+v+'/5"></i>';
+        return '<i class="'+RATING_COLOR[k]+'" style="height:'+(4+v*1.8)+'px" title="'+RATING_LABEL[k]+': '+v+'/10"></i>';
       }).join('');
 
       var clipsHtml = (c.clips||[]).map(function(url){
@@ -768,8 +813,10 @@
         inner.style.display = 'grid';
         inner.innerHTML =
           '<div class="detail-item"><div class="k">Heures de jeu</div><div class="v">'+(c.hours!=null ? c.hours : '—')+'</div></div>' +
+          '<div class="detail-item"><div class="k">Tranche d\'âge</div><div class="v">'+(c.age || '—')+'</div></div>' +
+          '<div class="detail-item"><div class="k">Situation</div><div class="v">'+(SITUATION_LABEL[c.situation] || '—')+'</div></div>' +
           ALL_RATING_KEYS.map(function(k){
-            return '<div class="detail-item"><div class="k">'+RATING_LABEL[k]+'</div><div class="v">'+c.ratings[k]+' / 5</div></div>';
+            return '<div class="detail-item"><div class="k">'+RATING_LABEL[k]+'</div><div class="v">'+c.ratings[k]+' / 10</div></div>';
           }).join('') +
           Object.keys(BOAT_ROLES).map(function(boatKey){
             var selected = (c.roles && c.roles[boatKey]) || [];
@@ -931,11 +978,16 @@
 
     var hoursInput = document.getElementById('f-hours');
 
+    var ageBtn = document.querySelector('.choice-group[data-key="age"] .choice-btn.active');
+    var situationBtn = document.querySelector('.choice-group[data-key="situation"] .choice-btn.active');
+
     var candidate = {
       id: 'c'+Date.now(),
       xbox: xboxInput.value.trim(),
       discord: discordInput.value.trim(),
       hours: hoursInput.value ? parseInt(hoursInput.value, 10) : null,
+      age: ageBtn ? ageBtn.getAttribute('data-value') : null,
+      situation: situationBtn ? situationBtn.getAttribute('data-value') : null,
       ratings: ratings,
       roles: roles,
       clips: clips,
@@ -946,10 +998,11 @@
     saveData(candidates);
 
     xboxInput.value = ''; discordInput.value = ''; hoursInput.value = '';
+    document.querySelectorAll('.choice-btn').forEach(function(btn){ btn.classList.remove('active'); });
     document.querySelectorAll('.rating-track').forEach(function(track){
-      track.setAttribute('data-value','3');
-      track.querySelector('.rating-highlight').style.transform = 'translateX(' + (2*33) + 'px)';
-      track.querySelectorAll('.rating-btn').forEach(function(k,i){ k.setAttribute('aria-checked', (i+1===3) ? 'true':'false'); });
+      track.setAttribute('data-value', String(RATING_DEFAULT));
+      track.querySelector('.rating-highlight').style.transform = 'translateX(' + ((RATING_DEFAULT-1)*RATING_STEP) + 'px)';
+      track.querySelectorAll('.rating-btn').forEach(function(k,i){ k.setAttribute('aria-checked', (i+1===RATING_DEFAULT) ? 'true':'false'); });
     });
     document.querySelectorAll('.role-btn').forEach(function(btn){
       btn.classList.remove('active');
