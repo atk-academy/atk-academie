@@ -431,9 +431,30 @@
   <div class="toast" id="toast"><div class="tick">__ICON_CHECK__</div><span>Candidature envoyée à l'équipage ATK !</span></div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
 (function(){
   "use strict";
+
+  var FIREBASE_CONFIG = {
+    projectId: "atk-academy-recrutement",
+    appId: "1:191414397331:web:8433444372f840bce3e066",
+    storageBucket: "atk-academy-recrutement.firebasestorage.app",
+    apiKey: "AIzaSyDq0UAw4QzlICfHYnq2w5ZI-xrDtYcp298",
+    authDomain: "atk-academy-recrutement.firebaseapp.com",
+    messagingSenderId: "191414397331"
+  };
+  var db = null;
+  var useFirestore = false;
+  try {
+    if (window.firebase) {
+      firebase.initializeApp(FIREBASE_CONFIG);
+      db = firebase.firestore();
+      useFirestore = true;
+    }
+  } catch(e) { useFirestore = false; }
 
   var ICONS = {
     pistol: '<rect x="3" y="10.5" width="13" height="3" rx="1"/><path d="M7 13.5h4v4.5l-4 1z"/><path d="M12 13.5v2.5a2 2 0 0 0 2 2h1"/>',
@@ -711,10 +732,33 @@
   }
   function saveData(list){ localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
 
-  var candidates = loadData();
+  function initFirestoreSync(){
+    firebase.auth().signInAnonymously().catch(function(e){ console.error('Firebase anonymous auth failed', e); });
+    firebase.auth().onAuthStateChanged(function(user){
+      if (!user) return;
+      db.collection('candidates').orderBy('date','desc').onSnapshot(function(snapshot){
+        candidates = snapshot.docs.map(function(doc){
+          var data = doc.data();
+          data.id = doc.id;
+          return data;
+        });
+        renderBoard();
+      }, function(err){ console.error('Firestore snapshot error', err); });
+    });
+  }
+
+  var candidates = [];
   var sortState = { key:'avg', dir:'desc' };
   var searchTerm = '';
   var openRowId = null;
+
+  if (useFirestore) {
+    initFirestoreSync();
+    var resetBtnLabel = document.getElementById('reset-data');
+    if (resetBtnLabel) resetBtnLabel.innerHTML = svg('trash') + ' Vider toutes les candidatures';
+  } else {
+    candidates = loadData();
+  }
 
   function avgOf(c){
     var sum = 0; ALL_RATING_KEYS.forEach(function(k){ sum += c.ratings[k]; });
@@ -901,9 +945,13 @@
         var id = e.dataTransfer.getData('text/plain');
         var cand = candidates.filter(function(c){ return c.id === id; })[0];
         if (cand && cand.grade !== col.grade){
-          cand.grade = col.grade;
-          saveData(candidates);
-          renderBoard();
+          if (useFirestore) {
+            db.collection('candidates').doc(cand.id).update({grade: col.grade}).catch(function(e){ console.error('Firestore update failed', e); });
+          } else {
+            cand.grade = col.grade;
+            saveData(candidates);
+            renderBoard();
+          }
         }
       });
     });
@@ -924,10 +972,19 @@
   });
 
   document.getElementById('reset-data').addEventListener('click', function(){
-    candidates = seedData();
-    saveData(candidates);
-    openRowId = null;
-    renderBoard();
+    if (useFirestore) {
+      if (!window.confirm('Supprimer définitivement TOUTES les candidatures pour tout le monde ? Cette action est irréversible.')) return;
+      db.collection('candidates').get().then(function(snapshot){
+        var batch = db.batch();
+        snapshot.forEach(function(doc){ batch.delete(doc.ref); });
+        return batch.commit();
+      }).catch(function(e){ console.error('Firestore clear failed', e); });
+    } else {
+      candidates = seedData();
+      saveData(candidates);
+      openRowId = null;
+      renderBoard();
+    }
   });
 
   var toast = document.getElementById('toast');
@@ -976,7 +1033,6 @@
     var situationBtn = document.querySelector('.choice-group[data-key="situation"] .choice-btn.active');
 
     var candidate = {
-      id: 'c'+Date.now(),
       xbox: xboxInput.value.trim(),
       discord: discordInput.value.trim(),
       hours: hoursInput.value ? parseInt(hoursInput.value, 10) : null,
@@ -988,8 +1044,13 @@
       grade: null,
       date: Date.now()
     };
-    candidates.unshift(candidate);
-    saveData(candidates);
+    if (useFirestore) {
+      db.collection('candidates').add(candidate).catch(function(e){ console.error('Firestore add failed', e); });
+    } else {
+      candidate.id = 'c'+Date.now();
+      candidates.unshift(candidate);
+      saveData(candidates);
+    }
 
     xboxInput.value = ''; discordInput.value = ''; hoursInput.value = '';
     document.querySelectorAll('.choice-btn').forEach(function(btn){ btn.classList.remove('active'); });
