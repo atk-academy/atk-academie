@@ -30,10 +30,10 @@
   }
   .liquid-bg{ position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; filter:blur(45px); }
   .liquid-bg span{ position:absolute; width:60vmax; height:60vmax; border-radius:50%; opacity:.7; }
-  .liquid-bg span:nth-child(1){ top:-15%; left:-15%; background:#ff4136; animation:blob1 14s ease-in-out infinite; }
-  .liquid-bg span:nth-child(2){ top:10%; right:-20%; background:#ff8a3d; animation:blob2 19s ease-in-out infinite; }
-  .liquid-bg span:nth-child(3){ bottom:-20%; left:20%; background:#d8102a; animation:blob3 23s ease-in-out infinite; }
-  .liquid-bg span:nth-child(4){ bottom:-10%; right:-10%; background:#ff5a4a; animation:blob4 17s ease-in-out infinite; }
+  .liquid-bg span:nth-child(1){ top:-15%; left:-15%; background:var(--blob-a); animation:blob1 14s ease-in-out infinite; }
+  .liquid-bg span:nth-child(2){ top:10%; right:-20%; background:var(--blob-b); animation:blob2 19s ease-in-out infinite; }
+  .liquid-bg span:nth-child(3){ bottom:-20%; left:20%; background:var(--blob-c); animation:blob3 23s ease-in-out infinite; }
+  .liquid-bg span:nth-child(4){ bottom:-10%; right:-10%; background:var(--blob-b); animation:blob4 17s ease-in-out infinite; }
   @keyframes blob1{
     0%,100%{transform:translate(0,0) scale(1);}
     30%{transform:translate(30%,20%) scale(1.3);}
