@@ -35,10 +35,16 @@
   body::before{
     content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
     background:radial-gradient(45% 35% at 30% 30%, var(--blob-a) 0%, transparent 70%);
-    filter:blur(60px); opacity:.55; animation:drift 26s ease-in-out infinite alternate;
+    filter:blur(60px); opacity:.55; animation:drift1 22s ease-in-out infinite;
   }
-  @keyframes drift{ from{ transform:translate(-3%,-2%) scale(1);} to{ transform:translate(4%,3%) scale(1.08);} }
-  @media (prefers-reduced-motion: reduce){ body::before{ animation:none; } * { animation-duration:.001ms !important; transition-duration:.001ms !important; } }
+  body::after{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background:radial-gradient(40% 32% at 75% 70%, var(--blob-b) 0%, transparent 70%);
+    filter:blur(65px); opacity:.5; animation:drift2 31s ease-in-out infinite;
+  }
+  @keyframes drift1{ 0%,100%{transform:translate(-4%,-3%) scale(1);} 33%{transform:translate(5%,4%) scale(1.1);} 66%{transform:translate(-2%,6%) scale(0.95);} }
+  @keyframes drift2{ 0%,100%{transform:translate(3%,4%) scale(1);} 40%{transform:translate(-6%,-3%) scale(1.08);} 70%{transform:translate(4%,-6%) scale(0.94);} }
+  @media (prefers-reduced-motion: reduce){ body::before, body::after{ animation:none; } * { animation-duration:.001ms !important; transition-duration:.001ms !important; } }
 
   .app{ position:relative; z-index:1; margin:0 auto; padding:20px 18px 80px; }
   #view-form{ max-width:680px; margin:0 auto; }
