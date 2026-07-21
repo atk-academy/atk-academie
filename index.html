@@ -8,7 +8,6 @@
     --text-hi:#f5eceb; --text-lo:#a58787; --text-faint:#6b4f4f;
     --accent:#ff4136; --accent-2:#ff7a6e;
     --ships:#8a1c14; --ships-2:#b8362a;
-    --mind:#3c2222; --mind-2:#6e4444;
     --success:#34d399; --critical:#f2994a;
     --on-accent:#fff5f4;
     --shadow:0 20px 60px -20px rgba(0,0,0,.7);
@@ -86,7 +85,6 @@
 
   .dot.combat{ background:color-mix(in srgb, var(--accent) 22%, transparent); color:var(--accent); }
   .dot.ships{ background:color-mix(in srgb, var(--ships) 26%, transparent); color:var(--ships-2); }
-  .dot.mind{ background:color-mix(in srgb, var(--mind-2) 26%, transparent); color:var(--mind-2); }
   .dot.id{ background:color-mix(in srgb, var(--text-hi) 12%, transparent); color:var(--text-hi); }
   .dot.clip{ background:color-mix(in srgb, var(--accent) 22%, transparent); color:var(--accent); }
 
@@ -110,7 +108,6 @@
   .rating-highlight{ position:absolute; top:3px; left:3px; width:30px; height:26px; border-radius:999px; transition:transform .25s cubic-bezier(.2,.8,.2,1); z-index:0; }
   .rating-track.combat .rating-highlight{ background:linear-gradient(155deg,var(--accent-2),var(--accent)); }
   .rating-track.ships .rating-highlight{ background:linear-gradient(155deg,var(--ships-2),var(--ships)); }
-  .rating-track.mind .rating-highlight{ background:linear-gradient(155deg,var(--mind-2),var(--mind)); }
   .rating-btn{
     position:relative; z-index:1; width:30px; height:26px; border:0; background:transparent; cursor:pointer;
     display:flex; align-items:center; justify-content:center; padding:0;
@@ -119,6 +116,14 @@
   }
   .rating-btn[aria-checked="true"]{ color:var(--on-accent); }
   .rating-btn:focus-visible{ outline:2px solid var(--text-hi); outline-offset:2px; }
+
+  .boat-roles{ display:flex; gap:8px; flex-wrap:wrap; padding:0 0 14px 42px; }
+  .role-btn{
+    display:flex; align-items:center; gap:6px; font-family:inherit; font-size:12px; font-weight:600; color:var(--text-lo);
+    background:var(--surface-strong); border:1px solid var(--border); border-radius:999px; padding:6px 12px 6px 8px; cursor:pointer;
+  }
+  .role-btn svg{ width:15px; height:15px; }
+  .role-btn.active{ color:var(--on-accent); background:linear-gradient(155deg,var(--ships-2),var(--ships)); border-color:transparent; }
 
   .clip-row{ display:flex; gap:8px; margin-bottom:10px; align-items:center; }
   .clip-row input{ flex:1; }
@@ -206,7 +211,6 @@
   .bars i{ display:block; width:4px; border-radius:2px; background:var(--text-faint); }
   .bars i.combat{ background:var(--accent); }
   .bars i.ships{ background:var(--ships-2); }
-  .bars i.mind{ background:var(--mind-2); }
 
   .avg-badge{ font-weight:800; font-variant-numeric:tabular-nums; font-size:14.5px; }
   .status-pill{ font-size:11px; font-weight:700; padding:4px 10px; border-radius:999px; display:inline-block; white-space:nowrap; }
@@ -277,7 +281,7 @@
 
       <form id="candidate-form" novalidate>
         <div class="glass card">
-          <div class="card-head"><div class="dot id">__ICON_ID__</div><h2>Identité de pirate</h2></div>
+          <div class="card-head"><div class="dot id">__ICON_ID__</div><h2>Identité</h2></div>
           <div class="field">
             <label class="flabel" for="f-xbox">Pseudo in game</label>
             <input type="text" id="f-xbox" name="xbox" placeholder="Ex. CaptJack77" autocomplete="off">
@@ -285,6 +289,10 @@
           <div class="field">
             <label class="flabel" for="f-discord">Pseudo Discord</label>
             <input type="text" id="f-discord" name="discord" placeholder="Ex. jack.sparrow ou @jack" autocomplete="off">
+          </div>
+          <div class="field">
+            <label class="flabel" for="f-hours">Nombre d'heures de jeu</label>
+            <input type="number" id="f-hours" name="hours" min="0" step="1" placeholder="Ex. 1200" autocomplete="off">
           </div>
         </div>
 
@@ -294,13 +302,8 @@
         </div>
 
         <div class="glass card">
-          <div class="card-head"><div class="dot ships">__ICON_GALION__</div><h2>Maîtrise des navires</h2></div>
+          <div class="card-head"><div class="dot ships">__ICON_GALION__</div><h2>Ship Fights</h2></div>
           <div id="group-ships"></div>
-        </div>
-
-        <div class="glass card">
-          <div class="card-head"><div class="dot mind">__ICON_COMPASS__</div><h2>Mentalité d'équipage</h2></div>
-          <div id="group-mind"></div>
         </div>
 
         <div class="glass card">
@@ -404,7 +407,11 @@
     brig: '<path d="M3 17h18l-2 3.5H5z"/><line x1="8.5" y1="4" x2="8.5" y2="17"/><line x1="15" y1="6" x2="15" y2="17"/><path d="M8.5 5.5l4 8h-4z"/><path d="M15 7.5l3 6.5h-3z"/>',
     galion: '<path d="M2 17h20l-2.4 3.5H4.4z"/><line x1="6.5" y1="4" x2="6.5" y2="17"/><line x1="12" y1="3" x2="12" y2="17"/><line x1="17" y1="5.5" x2="17" y2="17"/><path d="M6.5 5.5l3.5 7.5h-3.5z"/><path d="M12 4l4 8h-4z"/><path d="M17 7l3 6.5h-3z"/><path d="M12 3l2.2 1.3-2.2.9z"/>',
     compass: '<circle cx="12" cy="12" r="9"/><path d="M15.2 8.8l-2 5.2-5.2 2 2-5.2z"/>',
-    smile: '<circle cx="12" cy="12" r="9"/><circle cx="9" cy="10.2" r="1.1" fill="currentColor" stroke="none"/><circle cx="15" cy="10.2" r="1.1" fill="currentColor" stroke="none"/><path d="M8 14.2c1.2 1.4 2.6 2 4 2s2.8-.6 4-2"/>',
+    move: '<line x1="4" y1="9" x2="11" y2="9"/><line x1="4" y1="13" x2="14" y2="13"/><line x1="4" y1="17" x2="9" y2="17"/><path d="M16 8l5 4-5 4"/>',
+    helm: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/><line x1="12" y1="4" x2="12" y2="7"/><line x1="12" y1="17" x2="12" y2="20"/><line x1="4" y1="12" x2="7" y2="12"/><line x1="17" y1="12" x2="20" y2="12"/><line x1="6.3" y1="6.3" x2="8.4" y2="8.4"/><line x1="15.6" y1="15.6" x2="17.7" y2="17.7"/><line x1="6.3" y1="17.7" x2="8.4" y2="15.6"/><line x1="15.6" y1="8.4" x2="17.7" y2="6.3"/>',
+    canon: '<rect x="3" y="9" width="14" height="5" rx="2.5"/><circle cx="6" cy="18" r="2.2"/><line x1="6" y1="15.5" x2="6" y2="16.2"/><line x1="17" y1="11.5" x2="21" y2="11.5"/>',
+    bucket: '<path d="M6 9h12l-1.5 11a2 2 0 0 1-2 1.7h-5a2 2 0 0 1-2-1.7z"/><path d="M8 9a4 4 0 0 1 8 0"/>',
+    bilge: '<path d="M12 3c3 4 6 8.5 6 11.5a6 6 0 0 1-12 0C6 11.5 9 7 12 3z"/><path d="M9.5 14.5a2.5 2.5 0 0 0 2.5 2.5"/>',
     clip: '<circle cx="12" cy="12" r="9"/><path d="M10 8.3l6 3.7-6 3.7z" fill="currentColor" stroke="none"/>',
     plus: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
     close: '<line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/>',
@@ -428,7 +435,6 @@
     .replace('__ICON_ID__', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="9" cy="12" r="2"/><line x1="14" y1="10" x2="18" y2="10"/><line x1="14" y1="14" x2="18" y2="14"/></svg>')
     .replace('__ICON_CLASH__', svg('clash'))
     .replace('__ICON_GALION__', svg('galion'))
-    .replace('__ICON_COMPASS__', svg('compass'))
     .replace('__ICON_CLIP__', svg('clip'))
     .replace('__ICON_PLUS__', svg('plus'))
     .replace('__ICON_SEARCH__', svg('search'))
@@ -438,23 +444,57 @@
 
   var RATING_GROUPS = [
     { key:'combat', color:'combat', target:'group-combat', items:[
-      {key:'pistol', label:'Pistolet', icon:'pistol'},
-      {key:'snipe', label:'Snipe', icon:'scope'},
-      {key:'tdm', label:'TDM', icon:'clash'}
+      {key:'aim', label:'Aim', icon:'pistol'},
+      {key:'iq', label:'Intelligence de jeu', icon:'compass'},
+      {key:'move', label:'Mouvement', icon:'move'}
     ]},
     { key:'ships', color:'ships', target:'group-ships', items:[
       {key:'sloop', label:'Sloop', icon:'sloop'},
       {key:'brig', label:'Brigantin', icon:'brig'},
       {key:'galion', label:'Galion', icon:'galion'}
-    ]},
-    { key:'mind', color:'mind', target:'group-mind', items:[
-      {key:'sense', label:'GameSense', icon:'compass'},
-      {key:'perso', label:'Personnalité', icon:'smile'}
     ]}
   ];
-  var ALL_RATING_KEYS = ['pistol','snipe','tdm','sloop','brig','galion','sense','perso'];
-  var RATING_COLOR = {pistol:'combat',snipe:'combat',tdm:'combat',sloop:'ships',brig:'ships',galion:'ships',sense:'mind',perso:'mind'};
-  var RATING_LABEL = {pistol:'Pistolet',snipe:'Snipe',tdm:'TDM',sloop:'Sloop',brig:'Brigantin',galion:'Galion',sense:'GameSense',perso:'Personnalité'};
+  var ALL_RATING_KEYS = ['aim','iq','move','sloop','brig','galion'];
+  var RATING_COLOR = {aim:'combat',iq:'combat',move:'combat',sloop:'ships',brig:'ships',galion:'ships'};
+  var RATING_LABEL = {aim:'Aim',iq:'Intelligence de jeu',move:'Mouvement',sloop:'Sloop',brig:'Brigantin',galion:'Galion'};
+
+  var BOAT_ROLES = {
+    sloop: [
+      {key:'helm', label:'Barre', icon:'helm'},
+      {key:'canon', label:'Canon', icon:'canon'}
+    ],
+    brig: [
+      {key:'helm', label:'Barre', icon:'helm'},
+      {key:'canon', label:'Canon', icon:'canon'},
+      {key:'bucket', label:'Seau', icon:'bucket'}
+    ],
+    galion: [
+      {key:'helm', label:'Barre', icon:'helm'},
+      {key:'canon', label:'Canon', icon:'canon'},
+      {key:'cale', label:'Cale', icon:'bilge'},
+      {key:'bucket', label:'Seau', icon:'bucket'}
+    ]
+  };
+
+  function buildBoatRoles(boatKey){
+    var wrap = document.createElement('div');
+    wrap.className = 'boat-roles';
+    wrap.setAttribute('data-boat', boatKey);
+    BOAT_ROLES[boatKey].forEach(function(role){
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'role-btn';
+      btn.setAttribute('data-role', role.key);
+      btn.setAttribute('aria-pressed', 'false');
+      btn.innerHTML = svg(role.icon) + '<span>' + role.label + '</span>';
+      btn.addEventListener('click', function(){
+        var active = btn.classList.toggle('active');
+        btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+      wrap.appendChild(btn);
+    });
+    return wrap;
+  }
 
   function buildRatingRow(colorClass, item){
     var row = document.createElement('div');
@@ -497,7 +537,10 @@
 
   RATING_GROUPS.forEach(function(group){
     var target = document.getElementById(group.target);
-    group.items.forEach(function(item){ target.appendChild(buildRatingRow(group.color, item)); });
+    group.items.forEach(function(item){
+      target.appendChild(buildRatingRow(group.color, item));
+      if (group.key === 'ships') target.appendChild(buildBoatRoles(item.key));
+    });
   });
 
   function newClipRow(){
@@ -593,14 +636,17 @@
 
   function seedData(){
     return [
-      { id:'seed1', xbox:'CaptRavenX', discord:'raven.tide', example:true, grade:null,
-        ratings:{pistol:4,snipe:5,tdm:4,sloop:5,brig:4,galion:3,sense:5,perso:4},
+      { id:'seed1', xbox:'CaptRavenX', discord:'raven.tide', example:true, grade:null, hours:2400,
+        ratings:{aim:4,iq:5,move:4,sloop:5,brig:4,galion:3},
+        roles:{sloop:['helm','canon'], brig:['helm','canon','bucket'], galion:['helm','canon']},
         clips:[], date: Date.now() - 86400000*2 },
-      { id:'seed2', xbox:'SirenOfTheDeep', discord:'siren_of_the_deep', example:true, grade:null,
-        ratings:{pistol:3,snipe:2,tdm:3,sloop:4,brig:5,galion:5,sense:4,perso:5},
+      { id:'seed2', xbox:'SirenOfTheDeep', discord:'siren_of_the_deep', example:true, grade:null, hours:1150,
+        ratings:{aim:3,iq:4,move:3,sloop:4,brig:5,galion:5},
+        roles:{sloop:['canon'], brig:['canon','bucket'], galion:['canon','cale','bucket']},
         clips:[], date: Date.now() - 86400000*5 },
-      { id:'seed3', xbox:'PowderMonkey99', discord:'powder.monkey', example:true, grade:null,
-        ratings:{pistol:2,snipe:2,tdm:3,sloop:3,brig:2,galion:2,sense:3,perso:3},
+      { id:'seed3', xbox:'PowderMonkey99', discord:'powder.monkey', example:true, grade:null, hours:420,
+        ratings:{aim:2,iq:3,move:3,sloop:3,brig:2,galion:2},
+        roles:{sloop:['helm'], brig:['helm'], galion:['helm']},
         clips:[], date: Date.now() - 86400000*9 }
     ];
   }
@@ -708,9 +754,16 @@
         var inner = document.createElement('div');
         inner.className = 'detail-inner';
         inner.style.display = 'grid';
-        inner.innerHTML = ALL_RATING_KEYS.map(function(k){
-          return '<div class="detail-item"><div class="k">'+RATING_LABEL[k]+'</div><div class="v">'+c.ratings[k]+' / 5</div></div>';
-        }).join('');
+        inner.innerHTML =
+          '<div class="detail-item"><div class="k">Heures de jeu</div><div class="v">'+(c.hours!=null ? c.hours : '—')+'</div></div>' +
+          ALL_RATING_KEYS.map(function(k){
+            return '<div class="detail-item"><div class="k">'+RATING_LABEL[k]+'</div><div class="v">'+c.ratings[k]+' / 5</div></div>';
+          }).join('') +
+          Object.keys(BOAT_ROLES).map(function(boatKey){
+            var selected = (c.roles && c.roles[boatKey]) || [];
+            var labels = BOAT_ROLES[boatKey].filter(function(r){ return selected.indexOf(r.key) !== -1; }).map(function(r){ return r.label; });
+            return '<div class="detail-item"><div class="k">Rôles '+RATING_LABEL[boatKey]+'</div><div class="v">'+(labels.length ? escapeHtml(labels.join(', ')) : '—')+'</div></div>';
+          }).join('');
         td.appendChild(inner);
         detailTr.appendChild(td);
         body.appendChild(detailTr);
@@ -857,11 +910,22 @@
       ratings[track.getAttribute('data-key')] = parseInt(track.getAttribute('data-value'), 10);
     });
 
+    var roles = {};
+    document.querySelectorAll('.boat-roles').forEach(function(wrap){
+      roles[wrap.getAttribute('data-boat')] = Array.prototype.filter.call(wrap.querySelectorAll('.role-btn'), function(btn){
+        return btn.classList.contains('active');
+      }).map(function(btn){ return btn.getAttribute('data-role'); });
+    });
+
+    var hoursInput = document.getElementById('f-hours');
+
     var candidate = {
       id: 'c'+Date.now(),
       xbox: xboxInput.value.trim(),
       discord: discordInput.value.trim(),
+      hours: hoursInput.value ? parseInt(hoursInput.value, 10) : null,
       ratings: ratings,
+      roles: roles,
       clips: clips,
       grade: null,
       date: Date.now()
@@ -869,11 +933,15 @@
     candidates.unshift(candidate);
     saveData(candidates);
 
-    xboxInput.value = ''; discordInput.value = '';
+    xboxInput.value = ''; discordInput.value = ''; hoursInput.value = '';
     document.querySelectorAll('.rating-track').forEach(function(track){
       track.setAttribute('data-value','3');
       track.querySelector('.rating-highlight').style.transform = 'translateX(' + (2*33) + 'px)';
       track.querySelectorAll('.rating-btn').forEach(function(k,i){ k.setAttribute('aria-checked', (i+1===3) ? 'true':'false'); });
+    });
+    document.querySelectorAll('.role-btn').forEach(function(btn){
+      btn.classList.remove('active');
+      btn.setAttribute('aria-pressed','false');
     });
     clipList.innerHTML = ''; clipList.appendChild(newClipRow());
 
