@@ -35,9 +35,11 @@
   @keyframes drift{ from{ transform:translate(-3%,-2%) scale(1);} to{ transform:translate(4%,3%) scale(1.08);} }
   @media (prefers-reduced-motion: reduce){ body::before{ animation:none; } * { animation-duration:.001ms !important; transition-duration:.001ms !important; } }
 
-  .app{ position:relative; z-index:1; max-width:760px; margin:0 auto; padding:20px 18px 80px; }
+  .app{ position:relative; z-index:1; margin:0 auto; padding:20px 18px 80px; }
+  #view-form{ max-width:680px; margin:0 auto; }
+  #view-board{ max-width:1360px; margin:0 auto; }
 
-  .topbar{ display:flex; flex-direction:column; align-items:center; gap:18px; padding:26px 4px 26px; text-align:center; }
+  .topbar{ display:flex; flex-direction:column; align-items:center; gap:18px; padding:26px 4px 26px; text-align:center; max-width:680px; margin-left:auto; margin-right:auto; }
   .brand{ display:flex; flex-direction:column; align-items:center; gap:10px; }
   .brand-badge{
     width:72px; height:72px; border-radius:20px; display:flex; align-items:center; justify-content:center; flex:none;
@@ -91,11 +93,13 @@
   .field{ display:flex; flex-direction:column; gap:6px; margin-bottom:14px; }
   .field:last-child{ margin-bottom:0; }
   label.flabel{ font-size:12px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--text-lo); }
-  input[type="text"], input[type="url"], input[type="password"]{
+  input[type="text"], input[type="url"], input[type="password"], input[type="number"]{
     width:100%; font-family:inherit; font-size:15.5px; color:var(--text-hi); padding:12px 14px; border-radius:var(--radius-sm);
     border:1px solid var(--border); background:var(--surface-strong); outline:none; transition:border-color .15s, box-shadow .15s;
   }
-  input[type="text"]:focus-visible, input[type="url"]:focus-visible, input[type="password"]:focus-visible{ border-color:var(--accent); box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
+  input[type="text"]:focus-visible, input[type="url"]:focus-visible, input[type="password"]:focus-visible, input[type="number"]:focus-visible{ border-color:var(--accent); box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
+  input[type="number"]{ -moz-appearance:textfield; }
+  input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
   input.invalid{ border-color:var(--critical); animation:shake .3s; }
   @keyframes shake{ 0%,100%{transform:translateX(0);} 25%{transform:translateX(-4px);} 75%{transform:translateX(4px);} }
 
@@ -239,8 +243,8 @@
 
   .pipeline-hint{ margin:0 0 14px; font-size:12.8px; color:var(--text-lo); }
   .pipeline-scroll{ overflow-x:auto; padding-bottom:8px; }
-  .pipeline-board{ display:flex; gap:14px; min-width:max-content; }
-  .pipeline-col{ width:220px; flex:none; display:flex; flex-direction:column; border-radius:var(--radius-md); background:var(--surface); border:1px solid var(--border); backdrop-filter:blur(20px); max-height:560px; }
+  .pipeline-board{ display:flex; gap:14px; }
+  .pipeline-col{ width:100%; max-width:220px; min-width:190px; flex:1 1 0; display:flex; flex-direction:column; border-radius:var(--radius-md); background:var(--surface); border:1px solid var(--border); backdrop-filter:blur(20px); max-height:560px; }
   .pipeline-col.drag-over{ border-color:var(--accent); box-shadow:0 0 0 2px color-mix(in srgb, var(--accent) 35%, transparent); }
   .pipeline-col-head{ display:flex; align-items:center; justify-content:space-between; gap:8px; padding:14px 14px 10px; font-size:13px; font-weight:800; border-bottom:1px solid var(--border); }
   .pipeline-count{ font-size:11px; font-weight:700; color:var(--text-faint); background:var(--surface-strong); border-radius:999px; padding:2px 8px; font-variant-numeric:tabular-nums; }
@@ -297,7 +301,7 @@
         </div>
 
         <div class="glass card">
-          <div class="card-head"><div class="dot combat">__ICON_CLASH__</div><h2>Compétences de combat</h2></div>
+          <div class="card-head"><div class="dot combat">__ICON_CLASH__</div><h2>TDM</h2></div>
           <div id="group-combat"></div>
         </div>
 
@@ -411,7 +415,7 @@
     helm: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/><line x1="12" y1="4" x2="12" y2="7"/><line x1="12" y1="17" x2="12" y2="20"/><line x1="4" y1="12" x2="7" y2="12"/><line x1="17" y1="12" x2="20" y2="12"/><line x1="6.3" y1="6.3" x2="8.4" y2="8.4"/><line x1="15.6" y1="15.6" x2="17.7" y2="17.7"/><line x1="6.3" y1="17.7" x2="8.4" y2="15.6"/><line x1="15.6" y1="8.4" x2="17.7" y2="6.3"/>',
     canon: '<rect x="3" y="9" width="14" height="5" rx="2.5"/><circle cx="6" cy="18" r="2.2"/><line x1="6" y1="15.5" x2="6" y2="16.2"/><line x1="17" y1="11.5" x2="21" y2="11.5"/>',
     bucket: '<path d="M6 9h12l-1.5 11a2 2 0 0 1-2 1.7h-5a2 2 0 0 1-2-1.7z"/><path d="M8 9a4 4 0 0 1 8 0"/>',
-    bilge: '<path d="M12 3c3 4 6 8.5 6 11.5a6 6 0 0 1-12 0C6 11.5 9 7 12 3z"/><path d="M9.5 14.5a2.5 2.5 0 0 0 2.5 2.5"/>',
+    plank: '<rect x="3.5" y="9.5" width="17" height="5" rx="1.2"/><line x1="3.5" y1="12" x2="20.5" y2="12"/><circle cx="7.5" cy="10.7" r="0.5" fill="currentColor" stroke="none"/><circle cx="16" cy="13.3" r="0.5" fill="currentColor" stroke="none"/>',
     clip: '<circle cx="12" cy="12" r="9"/><path d="M10 8.3l6 3.7-6 3.7z" fill="currentColor" stroke="none"/>',
     plus: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
     close: '<line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/>',
@@ -471,7 +475,7 @@
     galion: [
       {key:'helm', label:'Barre', icon:'helm'},
       {key:'canon', label:'Canon', icon:'canon'},
-      {key:'cale', label:'Cale', icon:'bilge'},
+      {key:'cale', label:'Cale', icon:'plank'},
       {key:'bucket', label:'Seau', icon:'bucket'}
     ]
   };
