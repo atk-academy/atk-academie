@@ -52,7 +52,9 @@
   .g4 .badge{ background:radial-gradient(circle at 35% 30%, var(--diamond-2), var(--diamond)); }
   .g5 .badge{ background:radial-gradient(circle at 35% 30%, var(--champion-2), var(--champion)); }
 
-  .caption{ margin-top:48px; font-size:16px; font-weight:700; color:var(--text-lo); letter-spacing:.02em; opacity:0; text-align:center; }
+  .caption{ position:absolute; left:0; right:0; bottom:64px; text-align:center; font-size:26px; font-weight:800; letter-spacing:.01em; opacity:0; padding:0 40px; }
+  .caption .hi{ color:var(--accent); }
+  .caption-sub{ margin-top:10px; font-size:15px; font-weight:700; color:var(--text-lo); letter-spacing:.04em; text-transform:uppercase; }
 
   @keyframes reveal{
     0%,4%   { opacity:0; transform:scale(.4) translateY(24px); }
@@ -60,9 +62,15 @@
     86%     { opacity:1; transform:scale(1) translateY(0); }
     92%,100%{ opacity:0; transform:scale(.4) translateY(24px); }
   }
-  @keyframes revealCaption{
-    0%,32%  { opacity:0; transform:translateY(10px); }
-    38%     { opacity:1; transform:translateY(0); }
+  @keyframes revealCaption1{
+    0%,14%  { opacity:0; transform:translateY(10px); }
+    19%     { opacity:1; transform:translateY(0); }
+    34%     { opacity:1; transform:translateY(0); }
+    39%,100%{ opacity:0; transform:translateY(10px); }
+  }
+  @keyframes revealCaption2{
+    0%,39%  { opacity:0; transform:translateY(10px); }
+    44%     { opacity:1; transform:translateY(0); }
     86%     { opacity:1; transform:translateY(0); }
     92%,100%{ opacity:0; transform:translateY(10px); }
   }
@@ -117,7 +125,8 @@
   }
 
   .title, .subtitle{ animation:revealTitle 16s ease-in-out infinite; opacity:0; }
-  .caption{ animation:revealCaption 16s ease-in-out infinite; }
+  .caption-1{ animation:revealCaption1 16s ease-in-out infinite; }
+  .caption-2{ animation:revealCaption2 16s ease-in-out infinite; }
 </style>
 </head>
 <body>
@@ -132,39 +141,40 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="#2e1a08" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L14.5 9 L22 9.5 L16 14.5 L18 22 L12 17.5 L6 22 L8 14.5 L2 9.5 L9.5 9 Z"/></svg>
         </div>
         <div class="g-label">Bronze</div>
-        <div class="g-tag">Mois 1</div>
+        <div class="g-tag">Départ</div>
       </div>
       <div class="grade g2">
         <div class="badge">
           <svg viewBox="0 0 24 24" fill="none" stroke="#3a3f47" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L14.5 9 L22 9.5 L16 14.5 L18 22 L12 17.5 L6 22 L8 14.5 L2 9.5 L9.5 9 Z"/></svg>
         </div>
         <div class="g-label">Argent</div>
-        <div class="g-tag">Mois 2</div>
+        <div class="g-tag">Garanti à 1 mois</div>
       </div>
       <div class="grade g3">
         <div class="badge">
           <svg viewBox="0 0 24 24" fill="none" stroke="#4d3800" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L14.5 9 L22 9.5 L16 14.5 L18 22 L12 17.5 L6 22 L8 14.5 L2 9.5 L9.5 9 Z"/></svg>
         </div>
         <div class="g-label">Or</div>
-        <div class="g-tag">Progression</div>
+        <div class="g-tag">Selon ta progression</div>
       </div>
       <div class="grade g4">
         <div class="badge">
           <svg viewBox="0 0 24 24" fill="none" stroke="#0a2c3a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L14.5 9 L22 9.5 L16 14.5 L18 22 L12 17.5 L6 22 L8 14.5 L2 9.5 L9.5 9 Z"/></svg>
         </div>
         <div class="g-label">Diamant</div>
-        <div class="g-tag">Progression</div>
+        <div class="g-tag">Selon ta progression</div>
       </div>
       <div class="grade g5">
         <div class="badge">
           <svg viewBox="0 0 24 24" fill="none" stroke="#2a1240" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L14.5 9 L22 9.5 L16 14.5 L18 22 L12 17.5 L6 22 L8 14.5 L2 9.5 L9.5 9 Z"/></svg>
         </div>
         <div class="g-label">Champion</div>
-        <div class="g-tag">Progression</div>
+        <div class="g-tag">Selon ta progression</div>
       </div>
     </div>
 
-    <div class="caption">La suite dépend de votre progression — plus vous vous améliorez vite, plus vite vous montez</div>
+    <div class="caption caption-1">Au bout d'<span class="hi">1 mois</span>, tu seras <span class="hi">minimum Argent</span></div>
+    <div class="caption caption-2">La suite dépend entièrement de <span class="hi">ta motivation</span> et de <span class="hi">ta progression</span><div class="caption-sub">Or · Diamant · Champion</div></div>
   </div>
 </body>
 </html>
