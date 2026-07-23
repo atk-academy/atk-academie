@@ -300,6 +300,50 @@
   .pipeline-card-foot{ display:flex; align-items:center; gap:6px; margin-top:8px; }
   .pipeline-empty{ padding:16px 6px; text-align:center; font-size:11.5px; color:var(--text-faint); }
 
+  .graph-layout{ display:grid; grid-template-columns:240px 1fr; gap:16px; align-items:start; }
+  .graph-pool{ padding:14px; max-height:640px; overflow-y:auto; }
+  .graph-pool h4{ font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-lo); margin:0 0 10px; }
+  .graph-pool .pipeline-card{ margin-bottom:8px; }
+  .graph-pool .pipeline-card:last-child{ margin-bottom:0; }
+  .dropzone{ padding:20px; min-height:440px; display:flex; flex-direction:column; border-radius:var(--radius-md); background:var(--surface); border:1px solid var(--border); backdrop-filter:blur(20px); transition:box-shadow .5s ease; }
+  .dropzone.drag-over{ border-color:var(--accent); background:color-mix(in srgb, var(--accent) 8%, var(--surface)); }
+  .empty-hint{ margin:auto; text-align:center; color:var(--text-faint); font-size:13.5px; padding:40px; }
+  .chart-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+  .chart-head .name{ font-size:16px; font-weight:800; }
+  .chart-head .sub2{ font-size:11.5px; color:var(--text-lo); }
+  .tier-ladder{ display:flex; gap:8px; align-items:center; }
+  .tier-ladder img{ width:28px; height:28px; object-fit:contain; filter:grayscale(1) brightness(.55); opacity:.4; transition:filter .3s ease, opacity .3s ease, transform .3s ease; }
+  .tier-ladder img.reached{ filter:drop-shadow(0 2px 6px rgba(0,0,0,.6)); opacity:1; transform:scale(1.1); }
+  .controls{ display:flex; gap:10px; margin-bottom:18px; }
+  .ctrl-btn{ flex:1; padding:10px 0; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--surface-strong); color:var(--text-hi); font-weight:800; font-size:13.5px; cursor:pointer; font-family:inherit; }
+  .ctrl-btn.plus{ color:var(--success); }
+  .ctrl-btn.minus{ color:var(--critical); }
+  .ctrl-btn.equal{ color:var(--text-lo); }
+  .ctrl-btn:hover{ border-color:currentColor; }
+  svg.chart{ width:100%; height:220px; overflow:visible; }
+  .grid-line{ stroke:var(--border); stroke-width:1; }
+  .threshold-line{ stroke-width:1.4; stroke-dasharray:5 4; opacity:.75; }
+  .threshold-label{ font-size:10px; font-weight:800; letter-spacing:.03em; }
+  .score-line{ fill:none; stroke:var(--accent); stroke-width:3; stroke-linejoin:round; stroke-linecap:round; }
+  .score-dot{ fill:var(--accent-2); stroke:var(--bg-1); stroke-width:2; }
+  .score-dot-pulse{ fill:none; stroke:var(--accent); stroke-width:2; animation:dotPulse 2.6s ease-out infinite; }
+  .firefly{ fill:#fff8f0; filter:drop-shadow(0 0 4px var(--accent)) drop-shadow(0 0 9px var(--accent)); }
+  .axis-label{ fill:var(--text-faint); font-size:10px; font-weight:700; }
+  @keyframes dotPulse{ 0%{ r:5; opacity:.8; } 100%{ r:15; opacity:0; } }
+  .graph-log{ margin-top:16px; }
+  .graph-log h4{ font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-lo); margin:0 0 8px; }
+  .graph-log-row{ display:flex; justify-content:space-between; align-items:baseline; font-size:12.5px; padding:7px 0; border-bottom:1px solid var(--border); gap:10px; }
+  .graph-log-row:last-child{ border-bottom:none; }
+  .graph-log-row .main{ display:flex; flex-direction:column; }
+  .graph-log-row .ts{ font-size:10.5px; color:var(--text-faint); margin-top:2px; }
+  .graph-log-row .delta.plus{ color:var(--success); font-weight:800; }
+  .graph-log-row .delta.minus{ color:var(--critical); font-weight:800; }
+  .graph-log-row .delta.equal{ color:var(--text-lo); font-weight:800; }
+
+  @media (max-width:760px){
+    .graph-layout{ grid-template-columns:1fr; }
+  }
+
   @media (max-width:560px){
     .stats-row{ grid-template-columns:1fr; }
     .card{ padding:18px 16px 20px; }
@@ -407,6 +451,7 @@
             <button type="button" class="active" data-staff-view="stats" role="tab" aria-selected="true">Suivi</button>
             <button type="button" data-staff-view="pipeline" role="tab" aria-selected="false">Pipeline</button>
             <button type="button" data-staff-view="assignation" role="tab" aria-selected="false">Assignation</button>
+            <button type="button" data-staff-view="graph" role="tab" aria-selected="false">Graphe</button>
           </div>
           <div class="staff-header-actions">
             <button type="button" class="reset-btn" id="reset-data">__ICON_TRASH__ Réinitialiser les données de démo</button>
@@ -457,6 +502,44 @@
           <p class="pipeline-hint">Glisse une candidature sous le chef de rang qui va s'en occuper.</p>
           <div class="pipeline-scroll">
             <div class="pipeline-board" id="assignation-board"></div>
+          </div>
+        </div>
+
+        <div id="staff-view-graph" class="staff-view">
+          <p class="pipeline-hint">Glisse une candidature dans la zone pour suivre sa progression avec +5 / −5 / =.</p>
+          <div class="graph-layout">
+            <div class="glass graph-pool" id="graph-pool">
+              <h4>Candidatures</h4>
+              <div id="graph-pool-list"></div>
+            </div>
+            <div class="dropzone" id="graph-dropzone">
+              <div class="empty-hint" id="graph-empty-hint">Glisse une candidature ici pour suivre sa progression</div>
+              <div id="graph-chart-area" style="display:none;">
+                <div class="chart-head">
+                  <div>
+                    <div class="name" id="graph-c-name"></div>
+                    <div class="sub2">Suivi mensuel — score de progression</div>
+                  </div>
+                  <div class="tier-ladder" id="tier-ladder">
+                    <img src="assets/grade-bronze.png" data-rank="0" alt="Bronze">
+                    <img src="assets/grade-silver.png" data-rank="1" alt="Argent">
+                    <img src="assets/grade-gold.png" data-rank="2" alt="Or">
+                    <img src="assets/grade-diamond.png" data-rank="3" alt="Diamant">
+                    <img src="assets/grade-champion.png" data-rank="4" alt="Champion">
+                  </div>
+                </div>
+                <div class="controls">
+                  <button type="button" class="ctrl-btn plus" data-delta="5">+ 5</button>
+                  <button type="button" class="ctrl-btn minus" data-delta="-5">− 5</button>
+                  <button type="button" class="ctrl-btn equal" data-delta="0">=</button>
+                </div>
+                <svg class="chart" id="progression-chart" viewBox="0 0 600 240"></svg>
+                <div class="graph-log">
+                  <h4>Historique</h4>
+                  <div id="graph-log-list"></div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -693,6 +776,7 @@
       document.getElementById('staff-view-'+tab.getAttribute('data-staff-view')).classList.add('active');
       if (tab.getAttribute('data-staff-view') === 'pipeline') renderPipeline();
       if (tab.getAttribute('data-staff-view') === 'assignation') renderAssignation();
+      if (tab.getAttribute('data-staff-view') === 'graph'){ renderGraphPool(); renderGraph(); }
     });
   });
 
@@ -923,6 +1007,8 @@
 
     renderPipeline();
     renderAssignation();
+    renderGraphPool();
+    renderGraph();
   }
 
   function escapeHtml(s){
@@ -1096,6 +1182,184 @@
         }
       });
     });
+  }
+
+  var graphActiveId = null;
+
+  function tierForScore(score){
+    if (score >= 550) return { color:'var(--champion-2)', glow:'0 0 60px -10px var(--champion-2), 0 0 90px -20px #000' };
+    if (score >= 400) return { color:'var(--diamond-2)',  glow:'0 0 60px -10px var(--diamond-2)' };
+    if (score >= 250) return { color:'var(--gold-2)',     glow:'0 0 60px -10px var(--gold-2)' };
+    if (score >= 150) return { color:'var(--silver-2)',   glow:'0 0 60px -10px var(--silver-2)' };
+    return { color:'var(--accent)', glow:'none' };
+  }
+
+  function rankIndexForScore(score){
+    var levels = [0, 150, 250, 400, 550];
+    var idx = 0;
+    for (var i = 0; i < levels.length; i++){ if (score >= levels[i]) idx = i; }
+    return idx;
+  }
+
+  function fmtDateTime(ts){
+    if (!ts) return '—';
+    var d = new Date(ts);
+    return d.toLocaleDateString('fr-FR') + ' ' + d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+  }
+
+  function historyFor(cand){
+    return (cand.progressionHistory && cand.progressionHistory.length) ? cand.progressionHistory : [{ month:1, score:50, at:null }];
+  }
+
+  function renderGraphPool(){
+    var listEl = document.getElementById('graph-pool-list');
+    if (!listEl) return;
+    listEl.innerHTML = '';
+    candidates.forEach(function(c){
+      var card = document.createElement('div');
+      card.className = 'pipeline-card';
+      card.draggable = true;
+      card.setAttribute('data-id', c.id);
+      card.innerHTML =
+        '<div class="pipeline-card-name">'+escapeHtml(c.xbox)+(c.example?'<span class="example-chip">Exemple</span>':'')+'</div>' +
+        '<div class="pipeline-card-sub">'+escapeHtml(c.discord)+'</div>';
+      card.addEventListener('dragstart', function(e){
+        card.classList.add('dragging');
+        e.dataTransfer.setData('text/plain', c.id);
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      card.addEventListener('dragend', function(){ card.classList.remove('dragging'); });
+      listEl.appendChild(card);
+    });
+  }
+
+  var graphDropzone = document.getElementById('graph-dropzone');
+  var graphEmptyHint = document.getElementById('graph-empty-hint');
+  var graphChartArea = document.getElementById('graph-chart-area');
+  var graphCName = document.getElementById('graph-c-name');
+  var progressionChart = document.getElementById('progression-chart');
+  var graphLogList = document.getElementById('graph-log-list');
+  var tierLadderImgs = document.querySelectorAll('#tier-ladder img');
+
+  if (graphDropzone){
+    graphDropzone.addEventListener('dragover', function(e){
+      e.preventDefault(); e.dataTransfer.dropEffect = 'move';
+      graphDropzone.classList.add('drag-over');
+    });
+    graphDropzone.addEventListener('dragleave', function(){ graphDropzone.classList.remove('drag-over'); });
+    graphDropzone.addEventListener('drop', function(e){
+      e.preventDefault();
+      graphDropzone.classList.remove('drag-over');
+      var id = e.dataTransfer.getData('text/plain');
+      if (!candidates.filter(function(c){ return c.id === id; }).length) return;
+      graphActiveId = id;
+      graphEmptyHint.style.display = 'none';
+      graphChartArea.style.display = 'block';
+      renderGraph();
+    });
+
+    document.querySelectorAll('#graph-chart-area .ctrl-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        if (!graphActiveId) return;
+        var cand = candidates.filter(function(c){ return c.id === graphActiveId; })[0];
+        if (!cand) return;
+        var delta = parseInt(btn.getAttribute('data-delta'), 10);
+        var hist = historyFor(cand).slice();
+        var last = hist[hist.length - 1];
+        hist.push({ month: last.month + 1, score: Math.max(0, Math.min(610, last.score + delta)), at: Date.now() });
+        if (useFirestore){
+          db.collection('candidates').doc(cand.id).update({ progressionHistory: hist }).catch(function(e){ console.error('Firestore update failed', e); });
+        } else {
+          cand.progressionHistory = hist;
+          saveData(candidates);
+          renderBoard();
+        }
+      });
+    });
+  }
+
+  function renderGraph(){
+    if (!progressionChart) return;
+    if (!graphActiveId) return;
+    var cand = candidates.filter(function(c){ return c.id === graphActiveId; })[0];
+    if (!cand){
+      graphActiveId = null;
+      if (graphEmptyHint) graphEmptyHint.style.display = 'block';
+      if (graphChartArea) graphChartArea.style.display = 'none';
+      return;
+    }
+    graphCName.textContent = cand.xbox;
+
+    var hist = historyFor(cand);
+    var MAX_SCORE = 610;
+    var THRESHOLDS = [
+      { score:150, label:'Argent',   color:'var(--silver-2)' },
+      { score:250, label:'Or',       color:'var(--gold-2)' },
+      { score:400, label:'Diamant',  color:'var(--diamond-2)' },
+      { score:550, label:'Champion', color:'var(--champion-2)' }
+    ];
+
+    var w = progressionChart.clientWidth || 600, h = 240, padL = 34, padR = 74, padT = 10, padB = 26;
+    progressionChart.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+    var innerW = w - padL - padR, innerH = h - padT - padB;
+    var scoreToY = function(score){ return padT + innerH - (score / MAX_SCORE) * innerH; };
+
+    var svgParts = [];
+    [0, MAX_SCORE].forEach(function(s){
+      var y = scoreToY(s);
+      svgParts.push('<line class="grid-line" x1="'+padL+'" y1="'+y+'" x2="'+(w-padR)+'" y2="'+y+'"/>');
+    });
+    svgParts.push('<text class="axis-label" x="4" y="'+(scoreToY(0)+3)+'">0</text>');
+
+    THRESHOLDS.forEach(function(t){
+      var y = scoreToY(t.score);
+      svgParts.push('<line class="threshold-line" x1="'+padL+'" y1="'+y+'" x2="'+(w-padR)+'" y2="'+y+'" style="stroke:'+t.color+'"/>');
+      svgParts.push('<text class="threshold-label" x="'+(w-padR+8)+'" y="'+(y+4)+'" style="fill:'+t.color+'">'+t.label+' · '+t.score+'</text>');
+    });
+
+    var n = hist.length;
+    var pts = hist.map(function(pt, i){
+      var x = n === 1 ? padL : padL + (innerW / (n - 1)) * i;
+      var y = scoreToY(pt.score);
+      return { x: x, y: y, month: pt.month };
+    });
+
+    var tier = tierForScore(hist[hist.length - 1].score);
+    graphDropzone.style.boxShadow = tier.glow === 'none' ? '' : tier.glow;
+
+    var poly = pts.map(function(p){ return p.x.toFixed(1)+','+p.y.toFixed(1); }).join(' ');
+    var pathD = 'M' + pts.map(function(p){ return p.x.toFixed(1)+','+p.y.toFixed(1); }).join(' L');
+    svgParts.push('<path id="score-path" d="'+pathD+'" fill="none" stroke="none"/>');
+    svgParts.push('<polyline class="score-line" points="'+poly+'" style="stroke:'+tier.color+'"/>');
+    svgParts.push('<circle class="firefly" r="4" style="fill:'+tier.color+'; filter:drop-shadow(0 0 4px '+tier.color+') drop-shadow(0 0 9px '+tier.color+')"><animateMotion dur="1.8s" repeatCount="indefinite"><mpath href="#score-path"/></animateMotion></circle>');
+
+    var maxLabels = 12;
+    var labelStep = Math.max(1, Math.ceil(n / maxLabels));
+    pts.forEach(function(p, i){
+      var isMarked = i % labelStep === 0 || i === pts.length - 1;
+      if (i === pts.length - 1){
+        svgParts.push('<circle class="score-dot-pulse" cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" style="stroke:'+tier.color+'"/>');
+      }
+      if (isMarked){
+        svgParts.push('<circle class="score-dot" cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="5" style="fill:'+tier.color+'"/>');
+        svgParts.push('<text class="axis-label" x="'+p.x.toFixed(1)+'" y="'+(h-6)+'" text-anchor="middle">M'+p.month+'</text>');
+      }
+    });
+
+    progressionChart.innerHTML = svgParts.join('');
+
+    var idx = rankIndexForScore(hist[hist.length - 1].score);
+    tierLadderImgs.forEach(function(img){
+      img.classList.toggle('reached', parseInt(img.getAttribute('data-rank'), 10) <= idx);
+    });
+
+    graphLogList.innerHTML = hist.slice().reverse().map(function(pt, idx2){
+      var prevIdx = hist.length - 2 - idx2;
+      var delta = prevIdx >= 0 ? pt.score - hist[prevIdx].score : null;
+      var deltaCls = delta === null ? '' : (delta > 0 ? 'plus' : (delta < 0 ? 'minus' : 'equal'));
+      var deltaLabel = delta === null ? '—' : (delta > 0 ? '+'+delta : (delta < 0 ? delta : '='));
+      return '<div class="graph-log-row"><div class="main">Mois '+pt.month+' · score '+pt.score+'<span class="ts">'+fmtDateTime(pt.at)+'</span></div><span class="delta '+deltaCls+'">'+deltaLabel+'</span></div>';
+    }).join('');
   }
 
   document.querySelectorAll('thead th[data-sort]').forEach(function(th){
