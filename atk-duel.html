@@ -49,10 +49,11 @@
   .player input::placeholder{ color:var(--text-faint); font-weight:600; }
 
   .round-label{ font-size:10.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--text-faint); margin-bottom:10px; }
-  .score-pad{ display:grid; grid-template-columns:repeat(5,1fr); gap:6px; margin-bottom:16px; }
-  .score-pad button{ font-family:inherit; padding:9px 0; border-radius:10px; border:1px solid var(--border); background:var(--surface-strong); color:var(--text-hi); font-weight:800; font-size:13px; cursor:pointer; }
+  .round-score{ font-size:48px; font-weight:900; margin-bottom:14px; font-variant-numeric:tabular-nums; }
+  .score-pad{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:16px; }
+  .score-pad button{ font-family:inherit; padding:12px 0; border-radius:12px; border:1px solid var(--border); background:var(--surface-strong); color:var(--text-hi); font-weight:900; font-size:19px; cursor:pointer; }
   .score-pad button:hover{ border-color:var(--accent); color:var(--accent-2); }
-  .score-pad button.active{ background:linear-gradient(135deg, var(--accent), var(--accent-2)); border-color:transparent; color:#fff5f4; }
+  .score-pad button.minus:hover{ border-color:var(--critical); color:var(--critical); }
 
   .rounds-won{ display:flex; align-items:center; justify-content:center; gap:8px; }
   .rounds-won .lbl{ font-size:10.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--text-faint); }
@@ -113,14 +114,22 @@
         <div class="player">
           <input type="text" id="p1-name" placeholder="Pseudo joueur 1">
           <div class="round-label">Score du round</div>
-          <div class="score-pad" id="p1-pad"></div>
+          <div class="round-score" id="p1-score">0</div>
+          <div class="score-pad">
+            <button type="button" class="minus" id="p1-minus">−</button>
+            <button type="button" class="plus" id="p1-plus">+</button>
+          </div>
           <div class="rounds-won"><span class="lbl">Rounds</span><span class="badge" id="p1-rounds-badge">0</span></div>
         </div>
         <div class="vs">VS<br>BO3</div>
         <div class="player">
           <input type="text" id="p2-name" placeholder="Pseudo joueur 2">
           <div class="round-label">Score du round</div>
-          <div class="score-pad" id="p2-pad"></div>
+          <div class="round-score" id="p2-score">0</div>
+          <div class="score-pad">
+            <button type="button" class="minus" id="p2-minus">−</button>
+            <button type="button" class="plus" id="p2-plus">+</button>
+          </div>
           <div class="rounds-won"><span class="lbl">Rounds</span><span class="badge" id="p2-rounds-badge">0</span></div>
         </div>
       </div>
@@ -192,30 +201,22 @@
   var roundToast = document.getElementById('round-toast');
   var openHistoryName = null;
 
-  function buildPad(side){
-    var pad = document.getElementById('p'+side+'-pad');
-    for (var n = 1; n <= ROUND_TARGET; n++){
-      var btn = document.createElement('button');
-      btn.type = 'button';
-      btn.textContent = n;
-      btn.setAttribute('data-val', n);
-      btn.addEventListener('click', function(){ setScore(side, parseInt(this.getAttribute('data-val'), 10)); });
-      pad.appendChild(btn);
-    }
-  }
-  buildPad(1);
-  buildPad(2);
+  var p1ScoreEl = document.getElementById('p1-score');
+  var p2ScoreEl = document.getElementById('p2-score');
 
-  function paintPad(side, val){
-    document.querySelectorAll('#p'+side+'-pad button').forEach(function(btn){
-      btn.classList.toggle('active', parseInt(btn.getAttribute('data-val'), 10) === val);
-    });
+  function paintScore(side, val){
+    (side === 1 ? p1ScoreEl : p2ScoreEl).textContent = val;
   }
 
   function resetRoundPads(){
     p1Score = 0; p2Score = 0;
-    paintPad(1, 0); paintPad(2, 0);
+    paintScore(1, 0); paintScore(2, 0);
   }
+
+  document.getElementById('p1-plus').addEventListener('click', function(){ setScore(1, p1Score + 1); });
+  document.getElementById('p1-minus').addEventListener('click', function(){ setScore(1, Math.max(0, p1Score - 1)); });
+  document.getElementById('p2-plus').addEventListener('click', function(){ setScore(2, p2Score + 1); });
+  document.getElementById('p2-minus').addEventListener('click', function(){ setScore(2, Math.max(0, p2Score - 1)); });
 
   function resetDuel(){
     roundsWonP1 = 0; roundsWonP2 = 0; finished = false; matchRounds = [];
@@ -237,7 +238,7 @@
     var p1 = p1NameEl.value.trim() || 'Joueur 1';
     var p2 = p2NameEl.value.trim() || 'Joueur 2';
     if (side === 1) p1Score = val; else p2Score = val;
-    paintPad(side, val);
+    paintScore(side, val);
 
     if (val >= ROUND_TARGET){
       var winnerSide = side;
