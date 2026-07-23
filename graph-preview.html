@@ -50,6 +50,7 @@
   .chart-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
   .chart-head .name{ font-size:18px; font-weight:800; }
   .chart-head .sub2{ font-size:12px; color:var(--text-lo); }
+  .tier-badge{ width:46px; height:46px; object-fit:contain; filter:drop-shadow(0 4px 12px rgba(0,0,0,.6)); display:none; }
   .controls{ display:flex; gap:10px; margin-bottom:20px; }
   .ctrl-btn{ flex:1; padding:10px 0; border-radius:12px; border:1px solid var(--border); background:var(--surface-strong); color:var(--text-hi); font-weight:800; font-size:14px; cursor:pointer; font-family:inherit; }
   .ctrl-btn.plus{ color:var(--success); }
@@ -104,6 +105,7 @@
             <div class="name" id="c-name"></div>
             <div class="sub2">Suivi mensuel — score de progression</div>
           </div>
+          <img class="tier-badge" id="tier-badge" alt="Grade actuel">
         </div>
         <div class="controls">
           <button type="button" class="ctrl-btn plus" data-delta="5">+ 5</button>
@@ -144,6 +146,7 @@
   var cName = document.getElementById('c-name');
   var chart = document.getElementById('chart');
   var logList = document.getElementById('log-list');
+  var tierBadge = document.getElementById('tier-badge');
 
   document.querySelectorAll('.pool-card').forEach(function(card){
     card.addEventListener('dragstart', function(e){
@@ -188,11 +191,11 @@
   }
 
   function tierFor(score){
-    if (score >= 550) return { color:'var(--champion-2)', glow:'0 0 60px -10px var(--champion-2), 0 0 90px -20px #000' };
-    if (score >= 400) return { color:'var(--diamond-2)',  glow:'0 0 60px -10px var(--diamond-2)' };
-    if (score >= 250) return { color:'var(--gold-2)',     glow:'0 0 60px -10px var(--gold-2)' };
-    if (score >= 150) return { color:'var(--silver-2)',   glow:'0 0 60px -10px var(--silver-2)' };
-    return { color:'var(--accent)', glow:'none' };
+    if (score >= 550) return { color:'var(--champion-2)', glow:'0 0 60px -10px var(--champion-2), 0 0 90px -20px #000', icon:'assets/grade-champion.png' };
+    if (score >= 400) return { color:'var(--diamond-2)',  glow:'0 0 60px -10px var(--diamond-2)', icon:'assets/grade-diamond.png' };
+    if (score >= 250) return { color:'var(--gold-2)',     glow:'0 0 60px -10px var(--gold-2)', icon:'assets/grade-gold.png' };
+    if (score >= 150) return { color:'var(--silver-2)',   glow:'0 0 60px -10px var(--silver-2)', icon:'assets/grade-silver.png' };
+    return { color:'var(--accent)', glow:'none', icon:null };
   }
 
   function render(){
@@ -225,6 +228,8 @@
 
     var tier = tierFor(hist[hist.length - 1].score);
     dropzone.style.boxShadow = tier.glow === 'none' ? '' : tier.glow;
+    if (tier.icon){ tierBadge.src = tier.icon; tierBadge.style.display = 'block'; }
+    else { tierBadge.style.display = 'none'; }
 
     var poly = pts.map(function(p){ return p.x.toFixed(1)+','+p.y.toFixed(1); }).join(' ');
     var pathD = 'M' + pts.map(function(p){ return p.x.toFixed(1)+','+p.y.toFixed(1); }).join(' L');
