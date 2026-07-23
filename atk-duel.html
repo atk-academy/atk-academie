@@ -225,10 +225,25 @@
       var btn = e.target.closest('.admin-del');
       if (!btn) return;
       e.stopPropagation();
-      if (!window.confirm('Supprimer ce match ?')) return;
       var matchId = btn.getAttribute('data-match-id');
-      if (useFirestore && matchId){
-        db.collection('duels').doc(matchId).delete().catch(function(err){ console.error('Firestore delete failed', err); });
+      var playerName = btn.getAttribute('data-del-player');
+      if (matchId){
+        if (!window.confirm('Supprimer ce match ?')) return;
+        if (useFirestore){
+          db.collection('duels').doc(matchId).delete().catch(function(err){ console.error('Firestore delete failed', err); });
+        }
+      } else if (playerName){
+        if (!window.confirm('Supprimer ' + playerName + ' et tous ses matchs ? Cette action est irréversible.')) return;
+        if (useFirestore){
+          db.collection('duels').get().then(function(snap){
+            var batch = db.batch();
+            snap.forEach(function(doc){
+              var d = doc.data();
+              if (d.p1 === playerName || d.p2 === playerName) batch.delete(doc.ref);
+            });
+            return batch.commit();
+          }).catch(function(err){ console.error('Firestore delete player failed', err); });
+        }
       }
     });
   }
@@ -374,7 +389,7 @@
       tr.className = 'pl-row';
       tr.innerHTML =
         '<td class="rank'+(i===0?' top1':'')+'">'+(i+1)+'</td>' +
-        '<td class="pname">'+escapeHtml(s.name)+'</td>' +
+        '<td class="pname">'+escapeHtml(s.name)+(isAdmin ? ' <button type="button" class="admin-del" data-del-player="'+escapeHtml(s.name)+'" title="Supprimer ce joueur">✕</button>' : '')+'</td>' +
         '<td>'+s.wins+'</td>' +
         '<td>'+s.losses+'</td>' +
         '<td>'+s.matches+'</td>' +
