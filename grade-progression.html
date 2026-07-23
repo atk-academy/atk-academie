@@ -38,21 +38,23 @@
 
   .grades{ display:flex; gap:36px; }
   .grade{ display:flex; flex-direction:column; align-items:center; opacity:0; padding:26px 22px 22px; border-radius:30px; background:rgba(255,255,255,.07); backdrop-filter:blur(20px) saturate(160%); -webkit-backdrop-filter:blur(20px) saturate(160%); border:1px solid rgba(255,255,255,.16); box-shadow:0 10px 30px -10px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.1); }
-  .badge{ position:relative; overflow:hidden; width:112px; height:112px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-bottom:16px; animation:float 3.6s ease-in-out infinite; }
-  .badge-glow{ position:absolute; inset:-14px; border-radius:50%; z-index:0; filter:blur(16px); opacity:.85; }
-  .badge svg{ width:52px; height:52px; position:relative; z-index:1; filter:drop-shadow(0 1px 1px rgba(0,0,0,.25)); }
-  .badge::after{ content:""; position:absolute; inset:0; border-radius:50%; background:linear-gradient(135deg, rgba(255,255,255,.75) 0%, rgba(255,255,255,.25) 24%, transparent 48%, transparent 78%, rgba(255,255,255,.15) 100%); pointer-events:none; z-index:2; }
-  .badge::before{ content:""; position:absolute; top:-60%; left:-160%; width:70%; height:220%; background:linear-gradient(78deg, transparent, rgba(255,255,255,.75), transparent); transform:rotate(18deg); animation:shine 4.5s ease-in-out infinite; z-index:2; }
-  @keyframes shine{ 0%{ left:-160%; } 45%{ left:160%; } 100%{ left:160%; } }
-  @keyframes float{ 0%,100%{ transform:translateY(0) scale(1); } 50%{ transform:translateY(-9px) scale(1.02); } }
+  .badge-mark{ position:relative; width:150px; height:160px; display:flex; align-items:center; justify-content:center; margin-bottom:10px; animation:float 3.6s ease-in-out infinite; }
+  .badge-mark img{ position:relative; z-index:1; width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 10px 18px rgba(0,0,0,.55)); }
+  .badge-glow{ position:absolute; inset:14%; border-radius:50%; z-index:0; filter:blur(22px); opacity:.8; }
+  .badge-shine{
+    content:""; position:absolute; inset:0; z-index:2; pointer-events:none;
+    -webkit-mask-image:var(--mark); mask-image:var(--mark);
+    -webkit-mask-size:contain; mask-size:contain;
+    -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat;
+    -webkit-mask-position:center; mask-position:center;
+    background:linear-gradient(115deg, transparent 35%, rgba(255,255,255,.95) 50%, transparent 65%);
+    background-size:320% 320%; background-position:-140% -140%;
+    mix-blend-mode:overlay; animation:shineMove 4.5s ease-in-out infinite;
+  }
+  @keyframes shineMove{ 0%{ background-position:-140% -140%; } 55%{ background-position:140% 140%; } 100%{ background-position:140% 140%; } }
+  @keyframes float{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-9px); } }
   .g-label{ font-size:17px; font-weight:800; letter-spacing:.04em; }
   .g-tag{ font-size:12px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--text-lo); margin-top:5px; }
-
-  .g1 .badge{ background:radial-gradient(circle at 35% 30%, var(--bronze-2), var(--bronze)); box-shadow:0 14px 30px -8px rgba(0,0,0,.6), inset 0 1px 1px rgba(255,255,255,.5); }
-  .g2 .badge{ background:radial-gradient(circle at 35% 30%, var(--silver-2), var(--silver)); box-shadow:0 14px 30px -8px rgba(0,0,0,.6), inset 0 1px 1px rgba(255,255,255,.5); }
-  .g3 .badge{ background:radial-gradient(circle at 35% 30%, var(--gold-2), var(--gold)); box-shadow:0 14px 30px -8px rgba(0,0,0,.6), inset 0 1px 1px rgba(255,255,255,.5); }
-  .g4 .badge{ background:radial-gradient(circle at 35% 30%, var(--diamond-2), var(--diamond)); box-shadow:0 14px 30px -8px rgba(0,0,0,.6), inset 0 1px 1px rgba(255,255,255,.5); }
-  .g5 .badge{ background:radial-gradient(circle at 35% 30%, var(--champion-2), var(--champion)); box-shadow:0 14px 30px -8px rgba(0,0,0,.6), inset 0 1px 1px rgba(255,255,255,.5); }
 
   .g1 .badge-glow{ background:var(--bronze-2); }
   .g2 .badge-glow{ background:var(--silver-2); }
@@ -138,36 +140,36 @@
 
     <div class="grades">
       <div class="grade g1">
-        <div class="badge"><div class="badge-glow"></div>
-          <svg viewBox="0 0 24 24" fill="none" stroke="#2e1a08" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L14.5 9 L22 9.5 L16 14.5 L18 22 L12 17.5 L6 22 L8 14.5 L2 9.5 L9.5 9 Z"/></svg>
+        <div class="badge-mark" style="--mark:url('assets/grade-bronze.png')"><div class="badge-glow"></div>
+          <img src="assets/grade-bronze.png" alt="Bronze"><div class="badge-shine"></div>
         </div>
         <div class="g-label">Bronze</div>
         <div class="g-tag">Départ</div>
       </div>
       <div class="grade g2">
-        <div class="badge"><div class="badge-glow"></div>
-          <svg viewBox="0 0 24 24" fill="none" stroke="#3a3f47" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L14.5 9 L22 9.5 L16 14.5 L18 22 L12 17.5 L6 22 L8 14.5 L2 9.5 L9.5 9 Z"/></svg>
+        <div class="badge-mark" style="--mark:url('assets/grade-silver.png')"><div class="badge-glow"></div>
+          <img src="assets/grade-silver.png" alt="Argent"><div class="badge-shine"></div>
         </div>
         <div class="g-label">Argent</div>
         <div class="g-tag">Garanti à 1 mois</div>
       </div>
       <div class="grade g3">
-        <div class="badge"><div class="badge-glow"></div>
-          <svg viewBox="0 0 24 24" fill="none" stroke="#4d3800" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L14.5 9 L22 9.5 L16 14.5 L18 22 L12 17.5 L6 22 L8 14.5 L2 9.5 L9.5 9 Z"/></svg>
+        <div class="badge-mark" style="--mark:url('assets/grade-gold.png')"><div class="badge-glow"></div>
+          <img src="assets/grade-gold.png" alt="Or"><div class="badge-shine"></div>
         </div>
         <div class="g-label">Or</div>
         <div class="g-tag">Selon ta progression</div>
       </div>
       <div class="grade g4">
-        <div class="badge"><div class="badge-glow"></div>
-          <svg viewBox="0 0 24 24" fill="none" stroke="#0a2c3a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L14.5 9 L22 9.5 L16 14.5 L18 22 L12 17.5 L6 22 L8 14.5 L2 9.5 L9.5 9 Z"/></svg>
+        <div class="badge-mark" style="--mark:url('assets/grade-diamond.png')"><div class="badge-glow"></div>
+          <img src="assets/grade-diamond.png" alt="Diamant"><div class="badge-shine"></div>
         </div>
         <div class="g-label">Diamant</div>
         <div class="g-tag">Selon ta progression</div>
       </div>
       <div class="grade g5">
-        <div class="badge"><div class="badge-glow"></div>
-          <svg viewBox="0 0 24 24" fill="none" stroke="#2a1240" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L14.5 9 L22 9.5 L16 14.5 L18 22 L12 17.5 L6 22 L8 14.5 L2 9.5 L9.5 9 Z"/></svg>
+        <div class="badge-mark" style="--mark:url('assets/grade-champion.png')"><div class="badge-glow"></div>
+          <img src="assets/grade-champion.png" alt="Champion"><div class="badge-shine"></div>
         </div>
         <div class="g-label">Champion</div>
         <div class="g-tag">Selon ta progression</div>
