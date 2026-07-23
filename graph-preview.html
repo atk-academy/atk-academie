@@ -1,0 +1,204 @@
+<title>ATK Academy — Aperçu Graphe de progression</title>
+<style>
+  :root{
+    --bg-1:#050303; --bg-2:#170606;
+    --blob-a:#4a0d0d; --blob-b:#6b0f0f; --blob-c:#250505;
+    --surface:rgba(255,255,255,.05); --surface-strong:rgba(255,255,255,.09);
+    --border:rgba(255,90,70,.14); --border-strong:rgba(255,90,70,.24);
+    --text-hi:#f5eceb; --text-lo:#a58787; --text-faint:#6b4f4f;
+    --accent:#ff4136; --accent-2:#ff7a6e;
+    --success:#34d399; --critical:#f2994a;
+  }
+  *{box-sizing:border-box;}
+  html,body{ margin:0; min-height:100%; }
+  body{
+    color:var(--text-hi); font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI Variable","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:linear-gradient(180deg, var(--bg-1), var(--bg-2)); min-height:100vh; overflow-x:hidden;
+  }
+  .liquid-bg{ position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; filter:blur(45px); }
+  .liquid-bg span{ position:absolute; width:60vmax; height:60vmax; border-radius:50%; opacity:.6; }
+  .liquid-bg span:nth-child(1){ top:-15%; left:-15%; background:var(--blob-a); animation:blob1 14s ease-in-out infinite; }
+  .liquid-bg span:nth-child(2){ top:10%; right:-20%; background:var(--blob-b); animation:blob2 19s ease-in-out infinite; }
+  .liquid-bg span:nth-child(3){ bottom:-20%; left:20%; background:var(--blob-c); animation:blob3 23s ease-in-out infinite; }
+  @keyframes blob1{ 0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(20%,15%) scale(1.2);} }
+  @keyframes blob2{ 0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(-20%,10%) scale(1.15);} }
+  @keyframes blob3{ 0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(15%,-20%) scale(1.1);} }
+
+  .app{ position:relative; z-index:1; max-width:1100px; margin:0 auto; padding:28px 20px 60px; }
+  .banner{ background:color-mix(in srgb, var(--accent) 16%, transparent); border:1px solid var(--border-strong); border-radius:14px; padding:12px 16px; font-size:13px; font-weight:700; color:var(--accent-2); margin-bottom:22px; text-align:center; }
+  h1{ font-size:22px; margin:0 0 4px; }
+  .sub{ color:var(--text-lo); font-size:14px; margin:0 0 26px; }
+
+  .layout{ display:grid; grid-template-columns:230px 1fr; gap:20px; align-items:start; }
+  @media (max-width:760px){ .layout{ grid-template-columns:1fr; } }
+
+  .glass{ background:var(--surface); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:1px solid var(--border); border-radius:20px; box-shadow:0 20px 60px -20px rgba(0,0,0,.7); }
+
+  .pool{ padding:16px; }
+  .pool h3{ font-size:13px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-lo); margin:0 0 12px; }
+  .pool-card{ padding:10px 12px; border-radius:12px; background:var(--surface-strong); border:1px solid var(--border); cursor:grab; margin-bottom:10px; }
+  .pool-card:last-child{ margin-bottom:0; }
+  .pool-card .name{ font-weight:800; font-size:13.5px; }
+  .pool-card .sub2{ font-size:11.5px; color:var(--text-lo); }
+  .pool-card.dragging{ opacity:.4; }
+
+  .dropzone{ padding:22px; min-height:420px; display:flex; flex-direction:column; }
+  .dropzone.drag-over{ border-color:var(--accent); background:color-mix(in srgb, var(--accent) 8%, var(--surface)); }
+  .empty-hint{ margin:auto; text-align:center; color:var(--text-faint); font-size:14px; padding:40px; }
+
+  .chart-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+  .chart-head .name{ font-size:18px; font-weight:800; }
+  .chart-head .sub2{ font-size:12px; color:var(--text-lo); }
+  .controls{ display:flex; gap:10px; margin-bottom:20px; }
+  .ctrl-btn{ flex:1; padding:10px 0; border-radius:12px; border:1px solid var(--border); background:var(--surface-strong); color:var(--text-hi); font-weight:800; font-size:14px; cursor:pointer; font-family:inherit; }
+  .ctrl-btn.plus{ color:var(--success); }
+  .ctrl-btn.minus{ color:var(--critical); }
+  .ctrl-btn.equal{ color:var(--text-lo); }
+  .ctrl-btn:hover{ border-color:currentColor; }
+
+  svg.chart{ width:100%; height:220px; overflow:visible; }
+  .grid-line{ stroke:var(--border); stroke-width:1; }
+  .score-line{ fill:none; stroke:var(--accent); stroke-width:3; stroke-linejoin:round; stroke-linecap:round; }
+  .score-dot{ fill:var(--accent-2); stroke:var(--bg-1); stroke-width:2; }
+  .axis-label{ fill:var(--text-faint); font-size:10.5px; font-weight:700; }
+
+  .log{ margin-top:18px; }
+  .log h4{ font-size:12px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-lo); margin:0 0 8px; }
+  .log-row{ display:flex; justify-content:space-between; font-size:13px; padding:7px 0; border-bottom:1px solid var(--border); }
+  .log-row:last-child{ border-bottom:none; }
+  .log-row .delta.plus{ color:var(--success); font-weight:800; }
+  .log-row .delta.minus{ color:var(--critical); font-weight:800; }
+  .log-row .delta.equal{ color:var(--text-lo); font-weight:800; }
+</style>
+
+<div class="liquid-bg" aria-hidden="true"><span></span><span></span><span></span></div>
+<div class="app">
+  <div class="banner">Aperçu uniquement — pas encore intégré au site, à valider ensemble avant de l'ajouter</div>
+  <h1>Graphe de progression</h1>
+  <p class="sub">Glisse une candidature dans la zone à droite, puis évalue son évolution avec +5 / −5 / =. Le graphe se construit au fil des évaluations.</p>
+
+  <div class="layout">
+    <div class="glass pool">
+      <h3>Candidatures</h3>
+      <div class="pool-card" draggable="true" data-id="raven"><div class="name">CaptRavenX</div><div class="sub2">raven.tide</div></div>
+      <div class="pool-card" draggable="true" data-id="siren"><div class="name">SirenOfTheDeep</div><div class="sub2">siren_of_the_deep</div></div>
+      <div class="pool-card" draggable="true" data-id="powder"><div class="name">PowderMonkey99</div><div class="sub2">powder.monkey</div></div>
+    </div>
+
+    <div class="glass dropzone" id="dropzone">
+      <div class="empty-hint" id="empty-hint">Glisse une candidature ici pour suivre sa progression</div>
+      <div id="chart-area" style="display:none;">
+        <div class="chart-head">
+          <div>
+            <div class="name" id="c-name"></div>
+            <div class="sub2">Suivi mensuel — score de progression</div>
+          </div>
+        </div>
+        <div class="controls">
+          <button type="button" class="ctrl-btn plus" data-delta="5">+ 5</button>
+          <button type="button" class="ctrl-btn minus" data-delta="-5">− 5</button>
+          <button type="button" class="ctrl-btn equal" data-delta="0">=</button>
+        </div>
+        <svg class="chart" id="chart" viewBox="0 0 600 220" preserveAspectRatio="none"></svg>
+        <div class="log">
+          <h4>Historique</h4>
+          <div id="log-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var CANDIDATES = {
+    raven:  { name:"CaptRavenX",      history:[{month:1, score:50}] },
+    siren:  { name:"SirenOfTheDeep",  history:[{month:1, score:50}] },
+    powder: { name:"PowderMonkey99",  history:[{month:1, score:50}] }
+  };
+  var active = null;
+
+  var dropzone = document.getElementById('dropzone');
+  var emptyHint = document.getElementById('empty-hint');
+  var chartArea = document.getElementById('chart-area');
+  var cName = document.getElementById('c-name');
+  var chart = document.getElementById('chart');
+  var logList = document.getElementById('log-list');
+
+  document.querySelectorAll('.pool-card').forEach(function(card){
+    card.addEventListener('dragstart', function(e){
+      card.classList.add('dragging');
+      e.dataTransfer.setData('text/plain', card.getAttribute('data-id'));
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    card.addEventListener('dragend', function(){ card.classList.remove('dragging'); });
+  });
+
+  dropzone.addEventListener('dragover', function(e){
+    e.preventDefault(); e.dataTransfer.dropEffect = 'move';
+    dropzone.classList.add('drag-over');
+  });
+  dropzone.addEventListener('dragleave', function(){ dropzone.classList.remove('drag-over'); });
+  dropzone.addEventListener('drop', function(e){
+    e.preventDefault();
+    dropzone.classList.remove('drag-over');
+    var id = e.dataTransfer.getData('text/plain');
+    if (!CANDIDATES[id]) return;
+    active = id;
+    emptyHint.style.display = 'none';
+    chartArea.style.display = 'block';
+    cName.textContent = CANDIDATES[id].name;
+    render();
+  });
+
+  document.querySelectorAll('.ctrl-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      if (!active) return;
+      var delta = parseInt(btn.getAttribute('data-delta'), 10);
+      var hist = CANDIDATES[active].history;
+      var last = hist[hist.length - 1];
+      hist.push({ month: last.month + 1, score: Math.max(0, Math.min(100, last.score + delta)) });
+      render();
+    });
+  });
+
+  function render(){
+    if (!active) return;
+    var hist = CANDIDATES[active].history;
+    var w = 600, h = 220, padL = 30, padR = 10, padT = 10, padB = 26;
+    var innerW = w - padL - padR, innerH = h - padT - padB;
+
+    var svgParts = [];
+    for (var g = 0; g <= 4; g++){
+      var y = padT + (innerH / 4) * g;
+      svgParts.push('<line class="grid-line" x1="'+padL+'" y1="'+y+'" x2="'+(w-padR)+'" y2="'+y+'"/>');
+      svgParts.push('<text class="axis-label" x="4" y="'+(y+3)+'">'+(100 - g*25)+'</text>');
+    }
+
+    var n = hist.length;
+    var pts = hist.map(function(pt, i){
+      var x = n === 1 ? padL : padL + (innerW / (n - 1)) * i;
+      var y = padT + innerH - (pt.score / 100) * innerH;
+      return { x: x, y: y, month: pt.month };
+    });
+
+    var poly = pts.map(function(p){ return p.x.toFixed(1)+','+p.y.toFixed(1); }).join(' ');
+    svgParts.push('<polyline class="score-line" points="'+poly+'"/>');
+    pts.forEach(function(p){
+      svgParts.push('<circle class="score-dot" cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="5"/>');
+      svgParts.push('<text class="axis-label" x="'+p.x.toFixed(1)+'" y="'+(h-6)+'" text-anchor="middle">M'+p.month+'</text>');
+    });
+
+    chart.innerHTML = svgParts.join('');
+
+    logList.innerHTML = hist.slice().reverse().map(function(pt, idx){
+      var prevIdx = hist.length - 2 - idx;
+      var delta = prevIdx >= 0 ? pt.score - hist[prevIdx].score : null;
+      var deltaCls = delta === null ? '' : (delta > 0 ? 'plus' : (delta < 0 ? 'minus' : 'equal'));
+      var deltaLabel = delta === null ? '—' : (delta > 0 ? '+'+delta : (delta < 0 ? delta : '='));
+      return '<div class="log-row"><span>Mois '+pt.month+' · score '+pt.score+'</span><span class="delta '+deltaCls+'">'+deltaLabel+'</span></div>';
+    }).join('');
+  }
+})();
+</script>
