@@ -1266,11 +1266,14 @@
         var delta = parseInt(btn.getAttribute('data-delta'), 10);
         var hist = historyFor(cand).slice();
         var last = hist[hist.length - 1];
-        hist.push({ month: last.month + 1, score: Math.max(0, Math.min(610, last.score + delta)), at: Date.now() });
+        var newScore = Math.max(0, Math.min(610, last.score + delta));
+        hist.push({ month: last.month + 1, score: newScore, at: Date.now() });
+        var newGrade = rankIndexForScore(newScore) + 1;
         if (useFirestore){
-          db.collection('candidates').doc(cand.id).update({ progressionHistory: hist }).catch(function(e){ console.error('Firestore update failed', e); });
+          db.collection('candidates').doc(cand.id).update({ progressionHistory: hist, grade: newGrade }).catch(function(e){ console.error('Firestore update failed', e); });
         } else {
           cand.progressionHistory = hist;
+          cand.grade = newGrade;
           saveData(candidates);
           renderBoard();
         }
