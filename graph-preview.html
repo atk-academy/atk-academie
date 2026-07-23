@@ -50,7 +50,9 @@
   .chart-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
   .chart-head .name{ font-size:18px; font-weight:800; }
   .chart-head .sub2{ font-size:12px; color:var(--text-lo); }
-  .tier-badge{ width:46px; height:46px; object-fit:contain; filter:drop-shadow(0 4px 12px rgba(0,0,0,.6)); display:none; }
+  .tier-ladder{ display:flex; gap:8px; align-items:center; }
+  .tier-ladder img{ width:30px; height:30px; object-fit:contain; filter:grayscale(1) brightness(.55); opacity:.4; transition:filter .3s ease, opacity .3s ease, transform .3s ease; }
+  .tier-ladder img.reached{ filter:drop-shadow(0 2px 6px rgba(0,0,0,.6)); opacity:1; transform:scale(1.1); }
   .controls{ display:flex; gap:10px; margin-bottom:20px; }
   .ctrl-btn{ flex:1; padding:10px 0; border-radius:12px; border:1px solid var(--border); background:var(--surface-strong); color:var(--text-hi); font-weight:800; font-size:14px; cursor:pointer; font-family:inherit; }
   .ctrl-btn.plus{ color:var(--success); }
@@ -105,7 +107,13 @@
             <div class="name" id="c-name"></div>
             <div class="sub2">Suivi mensuel — score de progression</div>
           </div>
-          <img class="tier-badge" id="tier-badge" alt="Grade actuel">
+          <div class="tier-ladder" id="tier-ladder">
+            <img src="assets/grade-bronze.png" data-rank="0" alt="Bronze">
+            <img src="assets/grade-silver.png" data-rank="1" alt="Argent">
+            <img src="assets/grade-gold.png" data-rank="2" alt="Or">
+            <img src="assets/grade-diamond.png" data-rank="3" alt="Diamant">
+            <img src="assets/grade-champion.png" data-rank="4" alt="Champion">
+          </div>
         </div>
         <div class="controls">
           <button type="button" class="ctrl-btn plus" data-delta="5">+ 5</button>
@@ -146,7 +154,14 @@
   var cName = document.getElementById('c-name');
   var chart = document.getElementById('chart');
   var logList = document.getElementById('log-list');
-  var tierBadge = document.getElementById('tier-badge');
+  var tierLadderImgs = document.querySelectorAll('#tier-ladder img');
+
+  function rankIndex(score){
+    var levels = [0, 150, 250, 400, 550];
+    var idx = 0;
+    for (var i = 0; i < levels.length; i++){ if (score >= levels[i]) idx = i; }
+    return idx;
+  }
 
   document.querySelectorAll('.pool-card').forEach(function(card){
     card.addEventListener('dragstart', function(e){
@@ -228,8 +243,10 @@
 
     var tier = tierFor(hist[hist.length - 1].score);
     dropzone.style.boxShadow = tier.glow === 'none' ? '' : tier.glow;
-    if (tier.icon){ tierBadge.src = tier.icon; tierBadge.style.display = 'block'; }
-    else { tierBadge.style.display = 'none'; }
+    var idx = rankIndex(hist[hist.length - 1].score);
+    tierLadderImgs.forEach(function(img){
+      img.classList.toggle('reached', parseInt(img.getAttribute('data-rank'), 10) <= idx);
+    });
 
     var poly = pts.map(function(p){ return p.x.toFixed(1)+','+p.y.toFixed(1); }).join(' ');
     var pathD = 'M' + pts.map(function(p){ return p.x.toFixed(1)+','+p.y.toFixed(1); }).join(' L');
