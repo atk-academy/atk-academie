@@ -94,6 +94,8 @@
   .history-match .res{ font-weight:800; }
   .history-match .res.win{ color:var(--success); }
   .history-match .res.loss{ color:var(--critical); }
+  .admin-del{ font-family:inherit; border:none; background:none; color:var(--text-faint); cursor:pointer; font-size:15px; padding:2px 8px; margin-left:8px; }
+  .admin-del:hover{ color:var(--critical); }
 </style>
 
 <div class="liquid-bg" aria-hidden="true"><span></span><span></span><span></span></div>
@@ -181,6 +183,55 @@
       useFirestore = true;
     }
   } catch(e) { useFirestore = false; }
+
+  function hashStr(s){
+    var h = 5381;
+    for (var i=0;i<s.length;i++){ h = ((h*33) ^ s.charCodeAt(i)) >>> 0; }
+    return h.toString(16);
+  }
+  var ADMIN_HASH = '4fea5cb6';
+  var ADMIN_KEY = 'atk-duel-admin';
+  var isAdmin = false;
+  (function checkAdminAccess(){
+    var params = new URLSearchParams(location.search);
+    if (params.get('admin') !== '1') return;
+    if (localStorage.getItem(ADMIN_KEY) === '1'){ isAdmin = true; return; }
+    var pass = window.prompt('Mot de passe admin :');
+    if (pass !== null && hashStr('ATK:' + pass) === ADMIN_HASH){
+      localStorage.setItem(ADMIN_KEY, '1');
+      isAdmin = true;
+    }
+  })();
+  if (isAdmin){
+    var adminToolbar = document.createElement('div');
+    adminToolbar.style.cssText = 'display:flex;justify-content:flex-end;margin-bottom:12px;';
+    var wipeBtn = document.createElement('button');
+    wipeBtn.type = 'button';
+    wipeBtn.className = 'reset-btn';
+    wipeBtn.textContent = 'Vider tous les matchs';
+    wipeBtn.addEventListener('click', function(){
+      if (!useFirestore) return;
+      if (!window.confirm('Supprimer définitivement TOUS les matchs ? Cette action est irréversible.')) return;
+      db.collection('duels').get().then(function(snap){
+        var batch = db.batch();
+        snap.forEach(function(doc){ batch.delete(doc.ref); });
+        return batch.commit();
+      }).catch(function(e){ console.error('Firestore wipe failed', e); });
+    });
+    adminToolbar.appendChild(wipeBtn);
+    document.querySelector('#view-ranking .table-card').parentNode.insertBefore(adminToolbar, document.querySelector('#view-ranking .table-card'));
+
+    document.getElementById('ranking-body').addEventListener('click', function(e){
+      var btn = e.target.closest('.admin-del');
+      if (!btn) return;
+      e.stopPropagation();
+      if (!window.confirm('Supprimer ce match ?')) return;
+      var matchId = btn.getAttribute('data-match-id');
+      if (useFirestore && matchId){
+        db.collection('duels').doc(matchId).delete().catch(function(err){ console.error('Firestore delete failed', err); });
+      }
+    });
+  }
 
   document.querySelectorAll('[data-view]').forEach(function(tab){
     tab.addEventListener('click', function(){
@@ -288,6 +339,7 @@
       return '<div class="history-match">' +
         '<span class="opp">vs ' + escapeHtml(opp) + '<div class="rounds-detail">' + escapeHtml(roundsDetail) + ' — ' + fmtDate(d.at) + '</div></span>' +
         '<span class="res ' + (won ? 'win' : 'loss') + '">' + myRounds + '-' + oppRounds + '</span>' +
+        (isAdmin ? '<button type="button" class="admin-del" data-match-id="'+d.id+'" title="Supprimer ce match">✕</button>' : '') +
         '</div>';
     }).join('') + '</div>';
   }
@@ -355,7 +407,7 @@
     firebase.auth().onAuthStateChanged(function(user){
       if (!user) return;
       db.collection('duels').orderBy('at','desc').onSnapshot(function(snapshot){
-        var duels = snapshot.docs.map(function(doc){ return doc.data(); });
+        var duels = snapshot.docs.map(function(doc){ var d = doc.data(); d.id = doc.id; return d; });
         renderRanking(duels);
       }, function(err){ console.error('Firestore snapshot error', err); });
     });
