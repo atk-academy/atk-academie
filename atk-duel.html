@@ -43,20 +43,30 @@
   .view.active{ display:block; }
 
   .duel-card{ padding:28px; }
-  .duel-row{ display:grid; grid-template-columns:1fr auto 1fr; gap:18px; align-items:center; }
+  .duel-row{ display:grid; grid-template-columns:1fr auto 1fr; gap:18px; align-items:start; }
   .player{ text-align:center; }
   .player input{ width:100%; text-align:center; font-family:inherit; font-size:15px; font-weight:700; padding:11px 12px; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--surface-strong); color:var(--text-hi); margin-bottom:16px; }
   .player input::placeholder{ color:var(--text-faint); font-weight:600; }
-  .rounds{ font-size:52px; font-weight:900; margin:6px 0 18px; font-variant-numeric:tabular-nums; }
-  .round-btn{ width:100%; padding:12px 0; border-radius:999px; border:1px solid var(--border-strong); background:var(--surface-strong); color:var(--text-hi); font-weight:800; font-size:14px; cursor:pointer; font-family:inherit; }
-  .round-btn:hover{ border-color:var(--accent); color:var(--accent-2); }
-  .vs{ font-size:14px; font-weight:900; color:var(--text-faint); letter-spacing:.08em; }
+
+  .round-label{ font-size:10.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--text-faint); margin-bottom:10px; }
+  .score-pad{ display:grid; grid-template-columns:repeat(5,1fr); gap:6px; margin-bottom:16px; }
+  .score-pad button{ font-family:inherit; padding:9px 0; border-radius:10px; border:1px solid var(--border); background:var(--surface-strong); color:var(--text-hi); font-weight:800; font-size:13px; cursor:pointer; }
+  .score-pad button:hover{ border-color:var(--accent); color:var(--accent-2); }
+  .score-pad button.active{ background:linear-gradient(135deg, var(--accent), var(--accent-2)); border-color:transparent; color:#fff5f4; }
+
+  .rounds-won{ display:flex; align-items:center; justify-content:center; gap:8px; }
+  .rounds-won .lbl{ font-size:10.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--text-faint); }
+  .rounds-won .badge{ min-width:26px; height:26px; padding:0 8px; border-radius:999px; background:var(--surface-strong); border:1px solid var(--border-strong); display:inline-flex; align-items:center; justify-content:center; font-weight:900; font-size:14px; }
+
+  .vs{ text-align:center; font-size:14px; font-weight:900; color:var(--text-faint); letter-spacing:.08em; line-height:1.5; padding-top:38px; }
 
   .duel-foot{ display:flex; justify-content:center; gap:12px; margin-top:24px; }
   .reset-btn{ font-family:inherit; font-size:13px; font-weight:700; color:var(--text-lo); background:var(--surface-strong); border:1px solid var(--border); padding:10px 18px; border-radius:999px; cursor:pointer; }
   .reset-btn:hover{ border-color:var(--critical); color:var(--critical); }
 
-  .winner-banner{ margin-top:22px; text-align:center; font-size:15px; font-weight:800; color:var(--success); opacity:0; transition:opacity .3s ease; }
+  .round-toast{ margin-top:18px; text-align:center; font-size:13.5px; font-weight:800; color:var(--accent-2); opacity:0; transition:opacity .25s ease; }
+  .round-toast.show{ opacity:1; }
+  .winner-banner{ margin-top:10px; text-align:center; font-size:15px; font-weight:800; color:var(--success); opacity:0; transition:opacity .3s ease; }
   .winner-banner.show{ opacity:1; }
 
   .table-card{ padding:0; overflow:hidden; }
@@ -64,11 +74,23 @@
   thead th{ position:sticky; top:0; text-align:left; font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--text-faint); padding:14px 16px; border-bottom:1px solid var(--border); background:var(--surface-strong); }
   tbody td{ padding:13px 16px; font-size:13.5px; border-bottom:1px solid var(--border); }
   tbody tr:last-child td{ border-bottom:none; }
+  tbody tr.pl-row{ cursor:pointer; }
+  tbody tr.pl-row:hover{ background:var(--surface-strong); }
   .rank{ font-weight:900; color:var(--text-faint); width:28px; }
   .rank.top1{ color:var(--gold-2); }
   .pname{ font-weight:800; }
   .winrate{ font-variant-numeric:tabular-nums; }
   .empty-state{ padding:40px; text-align:center; color:var(--text-faint); font-size:13.5px; }
+
+  .history-row td{ padding:0; }
+  .history-inner{ padding:6px 16px 16px; }
+  .history-match{ display:flex; align-items:center; justify-content:space-between; font-size:12.5px; padding:8px 10px; border-radius:10px; background:var(--surface-strong); margin-bottom:6px; }
+  .history-match:last-child{ margin-bottom:0; }
+  .history-match .opp{ font-weight:700; }
+  .history-match .rounds-detail{ color:var(--text-faint); font-size:11px; }
+  .history-match .res{ font-weight:800; }
+  .history-match .res.win{ color:var(--success); }
+  .history-match .res.loss{ color:var(--critical); }
 </style>
 
 <div class="liquid-bg" aria-hidden="true"><span></span><span></span><span></span></div>
@@ -90,19 +112,22 @@
       <div class="duel-row">
         <div class="player">
           <input type="text" id="p1-name" placeholder="Pseudo joueur 1">
-          <div class="rounds" id="p1-rounds">0</div>
-          <button type="button" class="round-btn" id="p1-plus">+1 round</button>
+          <div class="round-label">Score du round</div>
+          <div class="score-pad" id="p1-pad"></div>
+          <div class="rounds-won"><span class="lbl">Rounds</span><span class="badge" id="p1-rounds-badge">0</span></div>
         </div>
         <div class="vs">VS<br>BO3</div>
         <div class="player">
           <input type="text" id="p2-name" placeholder="Pseudo joueur 2">
-          <div class="rounds" id="p2-rounds">0</div>
-          <button type="button" class="round-btn" id="p2-plus">+1 round</button>
+          <div class="round-label">Score du round</div>
+          <div class="score-pad" id="p2-pad"></div>
+          <div class="rounds-won"><span class="lbl">Rounds</span><span class="badge" id="p2-rounds-badge">0</span></div>
         </div>
       </div>
       <div class="duel-foot">
         <button type="button" class="reset-btn" id="duel-reset">Réinitialiser</button>
       </div>
+      <div class="round-toast" id="round-toast"></div>
       <div class="winner-banner" id="winner-banner"></div>
     </div>
   </div>
@@ -154,50 +179,119 @@
     });
   });
 
-  var roundsP1 = 0, roundsP2 = 0, finished = false;
-  var p1RoundsEl = document.getElementById('p1-rounds');
-  var p2RoundsEl = document.getElementById('p2-rounds');
+  var ROUND_TARGET = 10;
+  var p1Score = 0, p2Score = 0;
+  var roundsWonP1 = 0, roundsWonP2 = 0;
+  var matchRounds = [];
+  var finished = false;
   var p1NameEl = document.getElementById('p1-name');
   var p2NameEl = document.getElementById('p2-name');
+  var p1Badge = document.getElementById('p1-rounds-badge');
+  var p2Badge = document.getElementById('p2-rounds-badge');
   var winnerBanner = document.getElementById('winner-banner');
+  var roundToast = document.getElementById('round-toast');
+  var openHistoryName = null;
 
-  function resetDuel(){
-    roundsP1 = 0; roundsP2 = 0; finished = false;
-    p1RoundsEl.textContent = '0';
-    p2RoundsEl.textContent = '0';
-    winnerBanner.classList.remove('show');
-    winnerBanner.textContent = '';
+  function buildPad(side){
+    var pad = document.getElementById('p'+side+'-pad');
+    for (var n = 1; n <= ROUND_TARGET; n++){
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = n;
+      btn.setAttribute('data-val', n);
+      btn.addEventListener('click', function(){ setScore(side, parseInt(this.getAttribute('data-val'), 10)); });
+      pad.appendChild(btn);
+    }
+  }
+  buildPad(1);
+  buildPad(2);
+
+  function paintPad(side, val){
+    document.querySelectorAll('#p'+side+'-pad button').forEach(function(btn){
+      btn.classList.toggle('active', parseInt(btn.getAttribute('data-val'), 10) === val);
+    });
   }
 
-  function saveMatch(p1, p2, r1, r2, winner){
-    var doc = { p1:p1, p2:p2, roundsP1:r1, roundsP2:r2, winner:winner, at:Date.now() };
+  function resetRoundPads(){
+    p1Score = 0; p2Score = 0;
+    paintPad(1, 0); paintPad(2, 0);
+  }
+
+  function resetDuel(){
+    roundsWonP1 = 0; roundsWonP2 = 0; finished = false; matchRounds = [];
+    p1Badge.textContent = '0'; p2Badge.textContent = '0';
+    resetRoundPads();
+    winnerBanner.classList.remove('show'); winnerBanner.textContent = '';
+    roundToast.classList.remove('show'); roundToast.textContent = '';
+  }
+
+  function saveMatch(p1, p2, winner){
+    var doc = { p1:p1, p2:p2, roundsWonP1:roundsWonP1, roundsWonP2:roundsWonP2, winner:winner, rounds:matchRounds.slice(), at:Date.now() };
     if (useFirestore){
       db.collection('duels').add(doc).catch(function(e){ console.error('Firestore add failed', e); });
     }
   }
 
-  function addRound(side){
+  function setScore(side, val){
     if (finished) return;
     var p1 = p1NameEl.value.trim() || 'Joueur 1';
     var p2 = p2NameEl.value.trim() || 'Joueur 2';
-    if (side === 1) roundsP1++; else roundsP2++;
-    p1RoundsEl.textContent = roundsP1;
-    p2RoundsEl.textContent = roundsP2;
-    if (roundsP1 >= 2 || roundsP2 >= 2){
-      finished = true;
-      var winner = roundsP1 > roundsP2 ? p1 : p2;
-      winnerBanner.textContent = winner + ' remporte le match ' + roundsP1 + ' - ' + roundsP2;
-      winnerBanner.classList.add('show');
-      saveMatch(p1, p2, roundsP1, roundsP2, winner);
-      setTimeout(resetDuel, 2600);
+    if (side === 1) p1Score = val; else p2Score = val;
+    paintPad(side, val);
+
+    if (val >= ROUND_TARGET){
+      var winnerSide = side;
+      var winnerName = winnerSide === 1 ? p1 : p2;
+      matchRounds.push({ p1:p1Score, p2:p2Score, winner:winnerName });
+      if (winnerSide === 1) roundsWonP1++; else roundsWonP2++;
+      p1Badge.textContent = roundsWonP1;
+      p2Badge.textContent = roundsWonP2;
+      roundToast.textContent = winnerName + ' remporte le round (' + p1Score + '-' + p2Score + ')';
+      roundToast.classList.add('show');
+      resetRoundPads();
+
+      if (roundsWonP1 >= 2 || roundsWonP2 >= 2){
+        finished = true;
+        var matchWinner = roundsWonP1 > roundsWonP2 ? p1 : p2;
+        winnerBanner.textContent = matchWinner + ' remporte le match ' + roundsWonP1 + ' - ' + roundsWonP2;
+        winnerBanner.classList.add('show');
+        saveMatch(p1, p2, matchWinner);
+        setTimeout(resetDuel, 3200);
+      } else {
+        setTimeout(function(){ roundToast.classList.remove('show'); }, 2200);
+      }
     }
   }
 
-  document.getElementById('p1-plus').addEventListener('click', function(){ addRound(1); });
-  document.getElementById('p2-plus').addEventListener('click', function(){ addRound(2); });
   document.getElementById('duel-reset').addEventListener('click', resetDuel);
 
+  function fmtDate(ts){
+    var d = new Date(ts);
+    return d.toLocaleDateString('fr-FR') + ' ' + d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+  }
+
+  function renderHistoryFor(name, duels){
+    var matches = duels.filter(function(d){ return d.p1 === name || d.p2 === name; })
+      .sort(function(a,b){ return (b.at||0) - (a.at||0); });
+    if (!matches.length) return '<div class="history-inner"><div class="history-match"><span>Aucun match trouvé.</span></div></div>';
+    return '<div class="history-inner">' + matches.map(function(d){
+      var isP1 = d.p1 === name;
+      var opp = isP1 ? d.p2 : d.p1;
+      var myRounds = isP1 ? d.roundsWonP1 : d.roundsWonP2;
+      var oppRounds = isP1 ? d.roundsWonP2 : d.roundsWonP1;
+      var won = d.winner === name;
+      var roundsDetail = (d.rounds || []).map(function(r){ return (isP1 ? r.p1+'-'+r.p2 : r.p2+'-'+r.p1); }).join(' · ');
+      return '<div class="history-match">' +
+        '<span class="opp">vs ' + escapeHtml(opp) + '<div class="rounds-detail">' + escapeHtml(roundsDetail) + ' — ' + fmtDate(d.at) + '</div></span>' +
+        '<span class="res ' + (won ? 'win' : 'loss') + '">' + myRounds + '-' + oppRounds + '</span>' +
+        '</div>';
+    }).join('') + '</div>';
+  }
+
+  var latestDuels = [];
+
   function renderRanking(duels){
+    latestDuels = duels;
     var stats = {};
     duels.forEach(function(d){
       if (!d.p1 || !d.p2 || !d.winner) return;
@@ -221,6 +315,7 @@
     empty.style.display = list.length ? 'none' : 'block';
     list.forEach(function(s, i){
       var tr = document.createElement('tr');
+      tr.className = 'pl-row';
       tr.innerHTML =
         '<td class="rank'+(i===0?' top1':'')+'">'+(i+1)+'</td>' +
         '<td class="pname">'+escapeHtml(s.name)+'</td>' +
@@ -228,7 +323,20 @@
         '<td>'+s.losses+'</td>' +
         '<td>'+s.matches+'</td>' +
         '<td class="winrate">'+s.winrate.toFixed(0)+'%</td>';
+      tr.addEventListener('click', function(){
+        openHistoryName = (openHistoryName === s.name) ? null : s.name;
+        renderRanking(latestDuels);
+      });
       body.appendChild(tr);
+      if (openHistoryName === s.name){
+        var hRow = document.createElement('tr');
+        hRow.className = 'history-row';
+        var td = document.createElement('td');
+        td.colSpan = 6;
+        td.innerHTML = renderHistoryFor(s.name, duels);
+        hRow.appendChild(td);
+        body.appendChild(hRow);
+      }
     });
   }
 
