@@ -187,6 +187,14 @@
     return d.toLocaleDateString('fr-FR') + ' ' + d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
   }
 
+  function tierFor(score){
+    if (score >= 550) return { color:'var(--champion-2)', glow:'0 0 60px -10px var(--champion-2), 0 0 90px -20px #000' };
+    if (score >= 400) return { color:'var(--diamond-2)',  glow:'0 0 60px -10px var(--diamond-2)' };
+    if (score >= 250) return { color:'var(--gold-2)',     glow:'0 0 60px -10px var(--gold-2)' };
+    if (score >= 150) return { color:'var(--silver-2)',   glow:'0 0 60px -10px var(--silver-2)' };
+    return { color:'var(--accent)', glow:'none' };
+  }
+
   function render(){
     if (!active) return;
     var hist = CANDIDATES[active].history;
@@ -215,20 +223,24 @@
       return { x: x, y: y, month: pt.month };
     });
 
+    var tier = tierFor(hist[hist.length - 1].score);
+    dropzone.style.boxShadow = tier.glow === 'none' ? '' : tier.glow;
+
     var poly = pts.map(function(p){ return p.x.toFixed(1)+','+p.y.toFixed(1); }).join(' ');
     var pathD = 'M' + pts.map(function(p){ return p.x.toFixed(1)+','+p.y.toFixed(1); }).join(' L');
     svgParts.push('<path id="score-path" d="'+pathD+'" fill="none" stroke="none"/>');
-    svgParts.push('<polyline class="score-line" points="'+poly+'"/>');
-    svgParts.push('<circle class="firefly" r="4"><animateMotion dur="1.8s" repeatCount="indefinite"><mpath href="#score-path"/></animateMotion></circle>');
+    svgParts.push('<polyline class="score-line" points="'+poly+'" style="stroke:'+tier.color+'"/>');
+    svgParts.push('<circle class="firefly" r="4" style="fill:'+tier.color+'; filter:drop-shadow(0 0 4px '+tier.color+') drop-shadow(0 0 9px '+tier.color+')"><animateMotion dur="1.8s" repeatCount="indefinite"><mpath href="#score-path"/></animateMotion></circle>');
 
     var maxLabels = 12;
     var labelStep = Math.max(1, Math.ceil(n / maxLabels));
     pts.forEach(function(p, i){
+      var isMarked = i % labelStep === 0 || i === pts.length - 1;
       if (i === pts.length - 1){
-        svgParts.push('<circle class="score-dot-pulse" cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'"/>');
+        svgParts.push('<circle class="score-dot-pulse" cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" style="stroke:'+tier.color+'"/>');
       }
-      svgParts.push('<circle class="score-dot" cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="5"/>');
-      if (i % labelStep === 0 || i === pts.length - 1){
+      if (isMarked){
+        svgParts.push('<circle class="score-dot" cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="5" style="fill:'+tier.color+'"/>');
         svgParts.push('<text class="axis-label" x="'+p.x.toFixed(1)+'" y="'+(h-6)+'" text-anchor="middle">M'+p.month+'</text>');
       }
     });
