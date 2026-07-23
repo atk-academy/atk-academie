@@ -218,12 +218,17 @@
     var poly = pts.map(function(p){ return p.x.toFixed(1)+','+p.y.toFixed(1); }).join(' ');
     svgParts.push('<polyline class="score-line-glow" points="'+poly+'"/>');
     svgParts.push('<polyline class="score-line" points="'+poly+'"/>');
+
+    var maxLabels = 12;
+    var labelStep = Math.max(1, Math.ceil(n / maxLabels));
     pts.forEach(function(p, i){
       if (i === pts.length - 1){
         svgParts.push('<circle class="score-dot-pulse" cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'"/>');
       }
       svgParts.push('<circle class="score-dot" cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="5"/>');
-      svgParts.push('<text class="axis-label" x="'+p.x.toFixed(1)+'" y="'+(h-6)+'" text-anchor="middle">M'+p.month+'</text>');
+      if (i % labelStep === 0 || i === pts.length - 1){
+        svgParts.push('<text class="axis-label" x="'+p.x.toFixed(1)+'" y="'+(h-6)+'" text-anchor="middle">M'+p.month+'</text>');
+      }
     });
 
     chart.innerHTML = svgParts.join('');
