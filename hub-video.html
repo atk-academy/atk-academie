@@ -75,7 +75,8 @@
   .nav-dot .sub{ font-size:11px; color:var(--text-faint); font-weight:600; }
 </style>
 
-<div class="video-bg" aria-hidden="true"><div id="bgplayer"></div></div>
+<div class="video-bg" aria-hidden="true"><iframe id="bgplayer" allow="autoplay; encrypted-media" frameborder="0" title="fond"
+  src="https://www.youtube.com/embed/26sY_58ofcc?enablejsapi=1&autoplay=1&mute=1&controls=0&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&start=0&loop=1&playlist=26sY_58ofcc"></iframe></div>
 <div class="video-tint" aria-hidden="true"></div>
 <div class="liquid-bg" aria-hidden="true"><span></span><span></span><span></span></div>
 <div class="hub">
@@ -106,12 +107,8 @@
     tag.src = "https://www.youtube.com/iframe_api";
     document.head.appendChild(tag);
     window.onYouTubeIframeAPIReady = function(){
+      // On s'attache à l'iframe déjà présente (qui a bien allow="autoplay")
       player = new YT.Player('bgplayer', {
-        videoId: '26sY_58ofcc',
-        playerVars: {
-          autoplay:1, mute:1, controls:0, playsinline:1, rel:0,
-          modestbranding:1, iv_load_policy:3, disablekb:1, fs:0, start:LOOP_START
-        },
         events: {
           onReady: function(e){ e.target.mute(); e.target.playVideo(); },
           onStateChange: function(e){
