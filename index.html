@@ -1,4 +1,7 @@
 <title>ATK</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg-1:#050303; --bg-2:#170606;
@@ -49,11 +52,13 @@
   @keyframes logoIn{ to{ opacity:1; transform:scale(1) translateY(0); } }
 
   h1{
-    font-size:44px; font-weight:900; letter-spacing:.16em; margin:22px 0 0;
+    font-family:"MedievalSharp", serif;
+    font-size:52px; font-weight:700; letter-spacing:.14em; margin:22px 0 0;
     opacity:0; animation:fadeUp .8s ease .5s forwards;
   }
   .tagline{
-    font-size:14px; color:var(--text-lo); font-weight:700; letter-spacing:.04em; margin:8px 0 44px;
+    font-family:"MedievalSharp", serif;
+    font-size:18px; color:var(--text-lo); font-weight:400; letter-spacing:.06em; margin:8px 0 44px;
     opacity:0; animation:fadeUp .8s ease .7s forwards;
   }
   @keyframes fadeUp{ from{ opacity:0; transform:translateY(10px); } to{ opacity:1; transform:translateY(0); } }
