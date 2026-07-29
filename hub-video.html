@@ -22,7 +22,7 @@
   .video-bg iframe{
     position:absolute; top:50%; left:50%;
     width:100vw; height:56.25vw; min-height:100vh; min-width:177.78vh;
-    transform:translate(-50%,-50%) scale(1.15);
+    transform:translate(-50%,-50%) scale(1.32);
     filter:blur(16px) brightness(.5) saturate(1.15);
   }
   /* teinte rouge sombre par-dessus la vidéo pour garder le texte lisible */
@@ -75,10 +75,7 @@
   .nav-dot .sub{ font-size:11px; color:var(--text-faint); font-weight:600; }
 </style>
 
-<div class="video-bg" aria-hidden="true">
-  <iframe src="https://www.youtube-nocookie.com/embed/26sY_58ofcc?autoplay=1&mute=1&controls=0&loop=1&playlist=26sY_58ofcc&modestbranding=1&playsinline=1&rel=0&iv_load_policy=3&disablekb=1&fs=0&start=0"
-    frameborder="0" allow="autoplay; encrypted-media" allowfullscreen title="fond"></iframe>
-</div>
+<div class="video-bg" aria-hidden="true"><div id="bgplayer"></div></div>
 <div class="video-tint" aria-hidden="true"></div>
 <div class="liquid-bg" aria-hidden="true"><span></span><span></span><span></span></div>
 <div class="hub">
@@ -99,3 +96,36 @@
     </a>
   </div>
 </div>
+
+<script>
+  (function(){
+    var LOOP_START = 0;     // début de la boucle (secondes)
+    var LOOP_END = 30;      // fin de la boucle (secondes)
+    var player, timer;
+    var tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(tag);
+    window.onYouTubeIframeAPIReady = function(){
+      player = new YT.Player('bgplayer', {
+        videoId: '26sY_58ofcc',
+        playerVars: {
+          autoplay:1, mute:1, controls:0, playsinline:1, rel:0,
+          modestbranding:1, iv_load_policy:3, disablekb:1, fs:0, start:LOOP_START
+        },
+        events: {
+          onReady: function(e){ e.target.mute(); e.target.playVideo(); },
+          onStateChange: function(e){
+            if (e.data === YT.PlayerState.PLAYING){
+              clearInterval(timer);
+              timer = setInterval(function(){
+                try{
+                  if (player.getCurrentTime() >= LOOP_END){ player.seekTo(LOOP_START, true); }
+                }catch(err){}
+              }, 200);
+            }
+          }
+        }
+      });
+    };
+  })();
+</script>
