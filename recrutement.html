@@ -883,9 +883,19 @@
     candidates = loadData();
   }
 
-  function avgOf(c){
+  function baseAvgOf(c){
     var sum = 0; ALL_RATING_KEYS.forEach(function(k){ sum += c.ratings[k]; });
     return sum / ALL_RATING_KEYS.length;
+  }
+  function avgOf(c){
+    var base = baseAvgOf(c);
+    // La moyenne monte progressivement avec la progression du graphe :
+    // score 50 (départ) = note de base ; score 550 (Champion) = 10/10.
+    var hist = c.progressionHistory;
+    var score = (hist && hist.length) ? hist[hist.length - 1].score : 50;
+    var START = 50, CHAMP = 550;
+    var frac = Math.max(0, Math.min(1, (score - START) / (CHAMP - START)));
+    return base + frac * (10 - base);
   }
 
   function statusFor(avg){
