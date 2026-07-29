@@ -23,13 +23,13 @@
     position:absolute; top:50%; left:50%;
     width:100vw; height:56.25vw; min-height:100vh; min-width:177.78vh;
     transform:translate(-50%,-50%) scale(1.32);
-    filter:blur(16px) brightness(.5) saturate(1.15);
+    filter:blur(8px) brightness(.9) saturate(1.2);
   }
-  /* teinte rouge sombre par-dessus la vidéo pour garder le texte lisible */
+  /* teinte rouge par-dessus la vidéo pour garder le texte lisible (allégée) */
   .video-tint{ position:fixed; inset:0; z-index:-2; pointer-events:none;
     background:
-      radial-gradient(60% 55% at 50% 42%, rgba(120,12,12,.30), transparent 70%),
-      linear-gradient(180deg, rgba(5,3,3,.55), rgba(5,3,3,.82));
+      radial-gradient(60% 55% at 50% 42%, rgba(120,12,12,.20), transparent 70%),
+      linear-gradient(180deg, rgba(5,3,3,.28), rgba(5,3,3,.48));
   }
 
   /* --- Effet rouge qui bouge par-dessus la vidéo --- */
