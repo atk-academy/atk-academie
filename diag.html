@@ -1,0 +1,41 @@
+<title>diag</title>
+<style>
+  html,body{margin:0;height:100%;background:#111;font-family:sans-serif;color:#fff;}
+  #status{position:fixed;top:0;left:0;z-index:10;background:#000;color:#0f0;padding:8px 12px;font-size:14px;font-family:monospace;}
+  #wrap{position:fixed;inset:0;}
+  #bgplayer{width:100%;height:100%;}
+  #playbtn{position:fixed;bottom:20px;left:20px;z-index:10;padding:14px 22px;font-size:16px;}
+</style>
+<div id="status">init…</div>
+<div id="wrap">
+  <iframe id="bgplayer" allow="autoplay; encrypted-media" frameborder="0"
+    src="https://www.youtube.com/embed/26sY_58ofcc?enablejsapi=1&autoplay=1&mute=1&controls=1&playsinline=1&rel=0"></iframe>
+</div>
+<button id="playbtn">▶ Forcer la lecture</button>
+<script>
+  var s = document.getElementById('status');
+  function log(m){ s.textContent = m; }
+  var player;
+  var tag = document.createElement('script');
+  tag.src = "https://www.youtube.com/iframe_api";
+  document.head.appendChild(tag);
+  window.onYouTubeIframeAPIReady = function(){
+    log('API prête, création player…');
+    player = new YT.Player('bgplayer', {
+      events: {
+        onReady: function(e){ log('onReady — tentative play'); e.target.mute(); e.target.playVideo(); },
+        onStateChange: function(e){
+          var names={'-1':'unstarted',0:'ended',1:'PLAYING',2:'paused',3:'buffering',5:'cued'};
+          log('état: ' + (names[e.data]||e.data));
+        },
+        onError: function(e){
+          var errs={2:'ID invalide',5:'erreur HTML5',100:'vidéo introuvable/privée',101:'INTEGRATION INTERDITE par le propriétaire',150:'INTEGRATION INTERDITE par le propriétaire'};
+          log('ERREUR ' + e.data + ' — ' + (errs[e.data]||'inconnue'));
+        }
+      }
+    });
+  };
+  document.getElementById('playbtn').addEventListener('click', function(){
+    if(player){ player.mute(); player.playVideo(); log('clic → play forcé'); }
+  });
+</script>
