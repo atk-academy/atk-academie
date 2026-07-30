@@ -83,13 +83,13 @@
   .sound-toggle{ position:fixed; bottom:20px; right:20px; z-index:5; width:48px; height:48px; border-radius:50%; border:1px solid rgba(255,255,255,.18); background:rgba(20,6,6,.55); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); color:#fff; font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:transform .2s ease, border-color .2s ease; }
   .sound-toggle:hover{ transform:scale(1.08); border-color:var(--accent); }
 
-  /* Roues de gouvernail — équipage ATK (éventail au survol) */
-  .crew{ position:fixed; top:50%; transform:translateY(-50%); z-index:4; width:130px; height:130px; }
-  .crew.left{ left:26px; }
-  .crew.right{ right:26px; }
-  .crew-wheel{ position:absolute; inset:0; width:100%; height:100%; color:var(--accent-2); filter:drop-shadow(0 6px 22px rgba(0,0,0,.6)); animation:wheelspin 26s linear infinite; z-index:2; transition:transform .4s ease; }
-  .crew:hover .crew-wheel{ color:var(--accent); }
-  @keyframes wheelspin{ to{ transform:rotate(360deg); } }
+  /* Demi-roue de gouvernail — équipage ATK (éventail au survol) */
+  .crew{ position:fixed; top:50%; transform:translateY(-50%); z-index:4; width:380px; height:380px; }
+  .crew.left{ left:-190px; }
+  .crew.right{ right:-190px; }
+  .crew-wheel{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:220px; height:220px; color:#c98b6a; filter:drop-shadow(0 4px 22px rgba(0,0,0,.65)); animation:wheelspin 60s linear infinite; z-index:2; }
+  .crew:hover .crew-wheel{ color:var(--accent-2); }
+  @keyframes wheelspin{ to{ transform:translate(-50%,-50%) rotate(360deg); } }
   .crew-member{ position:absolute; top:50%; left:50%; z-index:1; display:flex; flex-direction:column; align-items:center; gap:5px; width:74px;
     transform:translate(-50%,-50%) scale(.2); opacity:0; pointer-events:none;
     transition:transform .5s cubic-bezier(.2,.9,.25,1), opacity .3s ease; }
@@ -106,10 +106,20 @@
 <button id="sound-toggle" class="sound-toggle" aria-label="Activer l'ambiance">🔇</button>
 
 <div class="crew left" aria-hidden="true">
-  <svg class="crew-wheel" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3">
-    <circle cx="50" cy="50" r="20"/><circle cx="50" cy="50" r="6" fill="currentColor" stroke="none"/>
-    <g stroke-linecap="round"><line x1="50" y1="30" x2="50" y2="9"/><line x1="50" y1="70" x2="50" y2="91"/><line x1="30" y1="50" x2="9" y2="50"/><line x1="70" y1="50" x2="91" y2="50"/><line x1="36" y1="36" x2="21" y2="21"/><line x1="64" y1="64" x2="79" y2="79"/><line x1="64" y1="36" x2="79" y2="21"/><line x1="36" y1="64" x2="21" y2="79"/></g>
-    <g fill="currentColor" stroke="none"><circle cx="50" cy="8" r="4"/><circle cx="50" cy="92" r="4"/><circle cx="8" cy="50" r="4"/><circle cx="92" cy="50" r="4"/><circle cx="20" cy="20" r="4"/><circle cx="80" cy="80" r="4"/><circle cx="80" cy="20" r="4"/><circle cx="20" cy="80" r="4"/></g>
+  <svg class="crew-wheel" viewBox="0 0 100 100" fill="none" stroke="currentColor">
+    <g stroke-linecap="round" stroke-width="3.5">
+      <line x1="90" y1="50" x2="97" y2="50"/><line x1="78.3" y1="78.3" x2="83.2" y2="83.2"/><line x1="50" y1="90" x2="50" y2="97"/><line x1="21.7" y1="78.3" x2="16.8" y2="83.2"/><line x1="10" y1="50" x2="3" y2="50"/><line x1="21.7" y1="21.7" x2="16.8" y2="16.8"/><line x1="50" y1="10" x2="50" y2="3"/><line x1="78.3" y1="21.7" x2="83.2" y2="16.8"/>
+    </g>
+    <circle cx="50" cy="50" r="40" stroke-width="5"/>
+    <circle cx="50" cy="50" r="29" stroke-width="2.5"/>
+    <g stroke-width="4" stroke-linecap="round">
+      <line x1="61" y1="50" x2="79" y2="50"/><line x1="57.8" y1="57.8" x2="70.5" y2="70.5"/><line x1="50" y1="61" x2="50" y2="79"/><line x1="42.2" y1="57.8" x2="29.5" y2="70.5"/><line x1="39" y1="50" x2="21" y2="50"/><line x1="42.2" y1="42.2" x2="29.5" y2="29.5"/><line x1="50" y1="39" x2="50" y2="21"/><line x1="57.8" y1="42.2" x2="70.5" y2="29.5"/>
+    </g>
+    <circle cx="50" cy="50" r="11" fill="currentColor" stroke="none"/>
+    <circle cx="50" cy="50" r="4.5" fill="#1a0808" stroke="none"/>
+    <g fill="currentColor" stroke="none">
+      <circle cx="97" cy="50" r="3.2"/><circle cx="83.2" cy="83.2" r="3.2"/><circle cx="50" cy="97" r="3.2"/><circle cx="16.8" cy="83.2" r="3.2"/><circle cx="3" cy="50" r="3.2"/><circle cx="16.8" cy="16.8" r="3.2"/><circle cx="50" cy="3" r="3.2"/><circle cx="83.2" cy="16.8" r="3.2"/>
+    </g>
   </svg>
   <div class="crew-member"><div class="crew-ava" data-p="zzek">Z</div><div class="crew-name">ZzeK</div></div>
   <div class="crew-member"><div class="crew-ava" data-p="youzeo">Y</div><div class="crew-name">YOUZEO</div></div>
@@ -118,10 +128,20 @@
 </div>
 
 <div class="crew right" aria-hidden="true">
-  <svg class="crew-wheel" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3">
-    <circle cx="50" cy="50" r="20"/><circle cx="50" cy="50" r="6" fill="currentColor" stroke="none"/>
-    <g stroke-linecap="round"><line x1="50" y1="30" x2="50" y2="9"/><line x1="50" y1="70" x2="50" y2="91"/><line x1="30" y1="50" x2="9" y2="50"/><line x1="70" y1="50" x2="91" y2="50"/><line x1="36" y1="36" x2="21" y2="21"/><line x1="64" y1="64" x2="79" y2="79"/><line x1="64" y1="36" x2="79" y2="21"/><line x1="36" y1="64" x2="21" y2="79"/></g>
-    <g fill="currentColor" stroke="none"><circle cx="50" cy="8" r="4"/><circle cx="50" cy="92" r="4"/><circle cx="8" cy="50" r="4"/><circle cx="92" cy="50" r="4"/><circle cx="20" cy="20" r="4"/><circle cx="80" cy="80" r="4"/><circle cx="80" cy="20" r="4"/><circle cx="20" cy="80" r="4"/></g>
+  <svg class="crew-wheel" viewBox="0 0 100 100" fill="none" stroke="currentColor">
+    <g stroke-linecap="round" stroke-width="3.5">
+      <line x1="90" y1="50" x2="97" y2="50"/><line x1="78.3" y1="78.3" x2="83.2" y2="83.2"/><line x1="50" y1="90" x2="50" y2="97"/><line x1="21.7" y1="78.3" x2="16.8" y2="83.2"/><line x1="10" y1="50" x2="3" y2="50"/><line x1="21.7" y1="21.7" x2="16.8" y2="16.8"/><line x1="50" y1="10" x2="50" y2="3"/><line x1="78.3" y1="21.7" x2="83.2" y2="16.8"/>
+    </g>
+    <circle cx="50" cy="50" r="40" stroke-width="5"/>
+    <circle cx="50" cy="50" r="29" stroke-width="2.5"/>
+    <g stroke-width="4" stroke-linecap="round">
+      <line x1="61" y1="50" x2="79" y2="50"/><line x1="57.8" y1="57.8" x2="70.5" y2="70.5"/><line x1="50" y1="61" x2="50" y2="79"/><line x1="42.2" y1="57.8" x2="29.5" y2="70.5"/><line x1="39" y1="50" x2="21" y2="50"/><line x1="42.2" y1="42.2" x2="29.5" y2="29.5"/><line x1="50" y1="39" x2="50" y2="21"/><line x1="57.8" y1="42.2" x2="70.5" y2="29.5"/>
+    </g>
+    <circle cx="50" cy="50" r="11" fill="currentColor" stroke="none"/>
+    <circle cx="50" cy="50" r="4.5" fill="#1a0808" stroke="none"/>
+    <g fill="currentColor" stroke="none">
+      <circle cx="97" cy="50" r="3.2"/><circle cx="83.2" cy="83.2" r="3.2"/><circle cx="50" cy="97" r="3.2"/><circle cx="16.8" cy="83.2" r="3.2"/><circle cx="3" cy="50" r="3.2"/><circle cx="16.8" cy="16.8" r="3.2"/><circle cx="50" cy="3" r="3.2"/><circle cx="83.2" cy="16.8" r="3.2"/>
+    </g>
   </svg>
   <div class="crew-member"><div class="crew-ava" data-p="zzek">Z</div><div class="crew-name">ZzeK</div></div>
   <div class="crew-member"><div class="crew-ava" data-p="youzeo">Y</div><div class="crew-name">YOUZEO</div></div>
@@ -211,5 +231,21 @@
         else { player.mute(); soundBtn.textContent='🔇'; }
       });
     }
+
+    // Place les membres d'équipage en demi-cercle (éventail) autour de chaque demi-roue
+    document.querySelectorAll('.crew').forEach(function(crew){
+      var members = crew.querySelectorAll('.crew-member');
+      var n = members.length, R = 152, spread = 122;
+      var dir = crew.classList.contains('right') ? -1 : 1;
+      members.forEach(function(m, i){
+        var t = n > 1 ? i/(n-1) : .5;
+        var ang = (-spread/2 + t*spread) * Math.PI/180;
+        var x = dir * R * Math.cos(ang);
+        var y = R * Math.sin(ang);
+        m.style.setProperty('--x', x.toFixed(0)+'px');
+        m.style.setProperty('--y', y.toFixed(0)+'px');
+        m.style.transitionDelay = (0.04*i)+'s';
+      });
+    });
   })();
 </script>
