@@ -269,6 +269,9 @@
   .clips-gallery{ display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:14px; max-width:920px; margin:0 auto; }
   .clip-card{ text-decoration:none; color:var(--text-hi); border-radius:14px; overflow:hidden; border:1px solid var(--border); background:var(--surface); display:block; transition:transform .2s ease, border-color .2s ease; }
   .clip-card:hover{ transform:translateY(-4px); border-color:var(--accent); }
+  .clip-card.noopen{ cursor:default; }
+  .clip-card.noopen:hover{ transform:none; border-color:var(--border); }
+  .clip-card.noopen .clip-thumb{ pointer-events:none; }
   .clip-thumb{ position:relative; aspect-ratio:16/9; background-size:cover; background-position:center; display:flex; align-items:center; justify-content:center; }
   .clip-thumb.noimg{ background:linear-gradient(135deg,var(--ships),var(--bg-2)); }
   .clip-play{ font-size:26px; color:#fff; text-shadow:0 2px 8px rgba(0,0,0,.7); opacity:.9; }
@@ -833,10 +836,9 @@
     empty.style.display = items.length ? 'none' : 'block';
     items.forEach(function(it, idx){
       var th = ytThumb(it.url);
-      var a = document.createElement('a');
-      a.href = encodeURI(it.url); a.target = '_blank'; a.rel = 'noopener noreferrer';
-      a.className = 'clip-card';
-      a.innerHTML = (th ? '<div class="clip-thumb" style="background-image:url('+th+')"><span class="clip-play">▶</span></div>' : '<div class="clip-thumb noimg"><span class="clip-play">▶</span></div>') +
+      var a = document.createElement('div');
+      a.className = 'clip-card noopen';
+      a.innerHTML = (th ? '<div class="clip-thumb" style="background-image:url('+th+')"></div>' : '<div class="clip-thumb noimg"></div>') +
         '<div class="clip-name">Clip '+(idx+1)+'</div>';
       g.appendChild(a);
     });
