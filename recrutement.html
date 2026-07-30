@@ -827,17 +827,17 @@
     if (!g) return;
     var items = [];
     candidates.slice().sort(function(a,b){ return (b.date||0)-(a.date||0); }).forEach(function(c){
-      (c.clips||[]).forEach(function(u){ if(u) items.push({name:c.xbox, url:u}); });
+      (c.clips||[]).forEach(function(u){ if(u) items.push({url:u}); });
     });
     g.innerHTML = '';
     empty.style.display = items.length ? 'none' : 'block';
-    items.forEach(function(it){
+    items.forEach(function(it, idx){
       var th = ytThumb(it.url);
       var a = document.createElement('a');
       a.href = encodeURI(it.url); a.target = '_blank'; a.rel = 'noopener noreferrer';
       a.className = 'clip-card';
       a.innerHTML = (th ? '<div class="clip-thumb" style="background-image:url('+th+')"><span class="clip-play">▶</span></div>' : '<div class="clip-thumb noimg"><span class="clip-play">▶</span></div>') +
-        '<div class="clip-name">'+escapeHtml(it.name)+'</div>';
+        '<div class="clip-name">Clip '+(idx+1)+'</div>';
       g.appendChild(a);
     });
   }
