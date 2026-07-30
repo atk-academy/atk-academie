@@ -121,16 +121,23 @@
   .bracket-top{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
   .bracket-champ{ font-size:16px; font-weight:900; color:var(--gold-2); }
   .bracket-scroll{ overflow-x:auto; padding-bottom:10px; }
-  .bracket{ display:flex; gap:36px; min-width:min-content; align-items:stretch; }
+  .bracket{ display:flex; gap:24px; min-width:min-content; align-items:stretch; }
   .bracket-round{ display:flex; flex-direction:column; min-width:180px; }
   .bracket-round-title{ flex:0 0 auto; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--text-faint); text-align:center; margin-bottom:10px; height:16px; }
   .bracket-matches{ flex:1 1 auto; display:flex; flex-direction:column; }
-  .bracket-match{ flex:1 1 0; display:flex; flex-direction:column; justify-content:center; gap:4px; }
-  .bracket-slot{ display:flex; justify-content:space-between; align-items:center; gap:8px; font-size:13px; font-weight:700; padding:9px 12px; border-radius:10px; background:var(--surface-strong); border:1px solid var(--border); cursor:pointer; }
-  .bracket-slot:hover{ border-color:var(--accent); }
-  .bracket-slot.win{ border-color:var(--gold-2); color:var(--gold-2); }
+  .bracket-match{ flex:1 1 0; display:flex; flex-direction:column; justify-content:center; position:relative; }
+  .bracket-match-card{ border:1px solid var(--border); border-radius:12px; overflow:hidden; background:var(--surface-strong); }
+  .bracket-slot{ display:flex; justify-content:space-between; align-items:center; gap:8px; font-size:13px; font-weight:700; padding:10px 12px; cursor:pointer; }
+  .bracket-slot + .bracket-slot{ border-top:1px solid var(--border); }
+  .bracket-slot:hover{ background:rgba(255,255,255,.05); }
+  .bracket-slot.win{ color:var(--gold-2); }
+  .bracket-slot.win span:last-child::after{ content:'✓'; margin-left:6px; }
   .bracket-slot.empty{ color:var(--text-faint); cursor:default; }
-  .bracket-slot.bye{ opacity:.5; cursor:default; }
+  /* Lignes de connexion entre les tours */
+  .bracket-round:not(:last-child) .bracket-match::after{ content:''; position:absolute; left:100%; width:24px; box-sizing:border-box; }
+  .bracket-round:not(:last-child) .bracket-match:nth-child(odd)::after{ top:50%; height:50%; border-top:2px solid var(--border-strong); border-right:2px solid var(--border-strong); border-top-right-radius:6px; }
+  .bracket-round:not(:last-child) .bracket-match:nth-child(even)::after{ bottom:50%; height:50%; border-bottom:2px solid var(--border-strong); border-right:2px solid var(--border-strong); border-bottom-right-radius:6px; }
+  .bracket-round:not(:first-child) .bracket-match::before{ content:''; position:absolute; right:100%; width:24px; top:50%; height:2px; background:var(--border-strong); }
 </style>
 
 <div class="liquid-bg" aria-hidden="true"><span></span><span></span><span></span></div>
@@ -579,6 +586,8 @@
       round.forEach(function(match, mi){
         var mEl = document.createElement('div');
         mEl.className = 'bracket-match';
+        var card = document.createElement('div');
+        card.className = 'bracket-match-card';
         ['a','b'].forEach(function(side){
           var name = match[side];
           var slot = document.createElement('div');
@@ -590,8 +599,9 @@
           if (name && match.a && match.b){
             slot.addEventListener('click', function(){ match.winner = name; renderBracket(); });
           }
-          mEl.appendChild(slot);
+          card.appendChild(slot);
         });
+        mEl.appendChild(card);
         matchesWrap.appendChild(mEl);
       });
       col.appendChild(matchesWrap);
