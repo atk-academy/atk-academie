@@ -266,6 +266,13 @@
   .detail-item{ display:flex; flex-direction:column; gap:2px; }
   .detail-item .k{ font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-faint); font-weight:700; }
   .detail-item .v{ font-size:14px; font-weight:700; font-variant-numeric:tabular-nums; }
+  .clips-gallery{ display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:14px; max-width:920px; margin:0 auto; }
+  .clip-card{ text-decoration:none; color:var(--text-hi); border-radius:14px; overflow:hidden; border:1px solid var(--border); background:var(--surface); display:block; transition:transform .2s ease, border-color .2s ease; }
+  .clip-card:hover{ transform:translateY(-4px); border-color:var(--accent); }
+  .clip-thumb{ position:relative; aspect-ratio:16/9; background-size:cover; background-position:center; display:flex; align-items:center; justify-content:center; }
+  .clip-thumb.noimg{ background:linear-gradient(135deg,var(--ships),var(--bg-2)); }
+  .clip-play{ font-size:26px; color:#fff; text-shadow:0 2px 8px rgba(0,0,0,.7); opacity:.9; }
+  .clip-name{ padding:10px 12px; font-size:13px; font-weight:700; }
   .empty-state{ padding:50px 20px; text-align:center; color:var(--text-faint); font-size:13.5px; }
 
   .grade-badge{ font-size:11px; font-weight:700; padding:3px 9px; border-radius:999px; display:inline-block; white-space:nowrap; color:var(--text-lo); background:var(--surface-strong); border:1px solid var(--border); }
@@ -365,6 +372,8 @@
     </div>
     <div class="segmented" role="tablist">
       <button type="button" class="active" data-view="form" role="tab" aria-selected="true">Candidature</button>
+      <button type="button" data-view="status" role="tab" aria-selected="false">Ma candidature</button>
+      <button type="button" data-view="clips" role="tab" aria-selected="false">Clips</button>
       <button type="button" data-view="board" role="tab" aria-selected="false">Suivi</button>
     </div>
   </header>
@@ -546,6 +555,22 @@
           </div>
         </div>
       </div>
+    </section>
+
+    <section id="view-status" class="view">
+      <div class="glass card" style="max-width:520px;margin:0 auto;">
+        <div class="card-head"><div class="dot id"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="16" y1="16" x2="21" y2="21"/></svg></div><h2>Suivre ma candidature</h2></div>
+        <p style="color:var(--text-lo);font-size:13.5px;margin:0 0 14px;">Entre ton pseudo Xbox pour voir où en est ta candidature.</p>
+        <input type="text" id="status-input" placeholder="Ton pseudo Xbox" style="width:100%;">
+        <button type="button" class="submit-btn" id="status-btn" style="margin-top:12px;">Vérifier</button>
+        <div id="status-result" style="margin-top:18px;"></div>
+      </div>
+    </section>
+
+    <section id="view-clips" class="view">
+      <p class="pipeline-hint" style="text-align:center;">Les clips soumis par les candidats.</p>
+      <div id="clips-gallery" class="clips-gallery"></div>
+      <div class="empty-state" id="clips-empty" style="display:none;">Aucun clip pour l'instant.</div>
     </section>
   </main>
 
@@ -766,9 +791,56 @@
       tab.classList.add('active'); tab.setAttribute('aria-selected','true');
       document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
       document.getElementById('view-'+tab.getAttribute('data-view')).classList.add('active');
-      if (tab.getAttribute('data-view') === 'board') showBoardView();
+      var v = tab.getAttribute('data-view');
+      if (v === 'board') showBoardView();
+      if (v === 'clips') renderClips();
     });
   });
+
+  // ----- Suivi de candidature (côté joueur) -----
+  var GRADE_NAME = {1:'Bronze',2:'Argent',3:'Or',4:'Diamant',5:'Champion'};
+  function doStatusLookup(){
+    var q = (document.getElementById('status-input').value || '').trim().toLowerCase();
+    var res = document.getElementById('status-result');
+    if (!q){ res.innerHTML = ''; return; }
+    var c = candidates.filter(function(x){ return (x.xbox||'').toLowerCase() === q; })[0];
+    if (!c){ res.innerHTML = '<div style="color:var(--text-lo);font-size:13.5px;">Aucune candidature trouvée pour ce pseudo. Vérifie l\'orthographe ou postule via l\'onglet Candidature.</div>'; return; }
+    var dec = c.decision || 'en cours';
+    var decCol = dec==='accepté'?'var(--success)':(dec==='refusé'?'var(--critical)':'var(--accent-2)');
+    var gradeTxt = c.grade ? (GRADE_NAME[c.grade]||('Grade '+c.grade)) : 'Pas encore de grade';
+    res.innerHTML =
+      '<div style="font-weight:800;font-size:16px;margin-bottom:8px;">'+escapeHtml(c.xbox)+'</div>' +
+      '<div class="detail-item" style="margin-bottom:8px;"><div class="k">Statut</div><div class="v" style="color:'+decCol+';text-transform:capitalize;">'+dec+'</div></div>' +
+      '<div class="detail-item"><div class="k">Grade actuel</div><div class="v">'+gradeTxt+'</div></div>';
+  }
+  var sBtn = document.getElementById('status-btn');
+  if (sBtn){ sBtn.addEventListener('click', doStatusLookup); document.getElementById('status-input').addEventListener('keydown', function(e){ if(e.key==='Enter') doStatusLookup(); }); }
+
+  // ----- Galerie de clips -----
+  function ytThumb(url){
+    var m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/);
+    return m ? 'https://i.ytimg.com/vi/'+m[1]+'/mqdefault.jpg' : null;
+  }
+  function renderClips(){
+    var g = document.getElementById('clips-gallery');
+    var empty = document.getElementById('clips-empty');
+    if (!g) return;
+    var items = [];
+    candidates.slice().sort(function(a,b){ return (b.date||0)-(a.date||0); }).forEach(function(c){
+      (c.clips||[]).forEach(function(u){ if(u) items.push({name:c.xbox, url:u}); });
+    });
+    g.innerHTML = '';
+    empty.style.display = items.length ? 'none' : 'block';
+    items.forEach(function(it){
+      var th = ytThumb(it.url);
+      var a = document.createElement('a');
+      a.href = encodeURI(it.url); a.target = '_blank'; a.rel = 'noopener noreferrer';
+      a.className = 'clip-card';
+      a.innerHTML = (th ? '<div class="clip-thumb" style="background-image:url('+th+')"><span class="clip-play">▶</span></div>' : '<div class="clip-thumb noimg"><span class="clip-play">▶</span></div>') +
+        '<div class="clip-name">'+escapeHtml(it.name)+'</div>';
+      g.appendChild(a);
+    });
+  }
 
   var staffTabs = document.querySelectorAll('[data-staff-view]');
   staffTabs.forEach(function(tab){
@@ -909,6 +981,11 @@
     return d.toLocaleDateString('fr-FR', {day:'2-digit', month:'short'});
   }
 
+  function saveCand(id, obj){
+    if (useFirestore){ db.collection('candidates').doc(id).update(obj).catch(function(e){ console.error('Firestore update failed', e); }); }
+    else { var c = candidates.filter(function(x){ return x.id===id; })[0]; if(c){ for(var k in obj) c[k]=obj[k]; saveData(candidates); renderBoard(); } }
+  }
+
   function deleteCandidate(id){
     if (!window.confirm('Supprimer définitivement cette candidature ?')) return;
     if (useFirestore) {
@@ -1007,6 +1084,25 @@
             return '<div class="detail-item"><div class="k">Rôles '+RATING_LABEL[boatKey]+'</div><div class="v">'+(labels.length ? escapeHtml(labels.join(', ')) : '—')+'</div></div>';
           }).join('');
         td.appendChild(inner);
+        var staff = document.createElement('div');
+        staff.style.cssText = 'margin-top:14px;';
+        var dec = c.decision || 'en cours';
+        staff.innerHTML =
+          '<div class="detail-item" style="margin-bottom:10px;"><div class="k">Décision</div>' +
+          '<div style="display:flex;gap:8px;margin-top:5px;flex-wrap:wrap;">' +
+            ['en cours','accepté','refusé'].map(function(x){
+              var on = dec===x;
+              var col = x==='accepté'?'var(--success)':(x==='refusé'?'var(--critical)':'var(--accent)');
+              return '<button type="button" class="dec-btn" data-dec="'+x+'" style="font-family:inherit;font-size:12px;font-weight:800;padding:7px 15px;border-radius:999px;border:1px solid '+(on?col:'var(--border)')+';background:'+(on?col:'var(--surface-strong)')+';color:'+(on?'#fff':'var(--text-hi)')+';cursor:pointer;text-transform:capitalize;">'+x+'</button>';
+            }).join('') +
+          '</div></div>' +
+          '<div class="detail-item"><div class="k">Notes privées (staff)</div>' +
+          '<textarea class="note-box" placeholder="Points forts, points faibles, remarques…" style="width:100%;min-height:70px;margin-top:5px;font-family:inherit;font-size:13px;padding:10px;border-radius:12px;border:1px solid var(--border);background:var(--surface-strong);color:var(--text-hi);resize:vertical;">'+escapeHtml(c.notes||'')+'</textarea></div>';
+        td.appendChild(staff);
+        staff.querySelectorAll('.dec-btn').forEach(function(b){ b.addEventListener('click', function(e){ e.stopPropagation(); saveCand(c.id, {decision:b.getAttribute('data-dec')}); }); });
+        var nb = staff.querySelector('.note-box');
+        nb.addEventListener('click', function(e){ e.stopPropagation(); });
+        nb.addEventListener('blur', function(){ if ((c.notes||'') !== nb.value) saveCand(c.id, {notes:nb.value}); });
         var delBtn = document.createElement('button');
         delBtn.type = 'button';
         delBtn.className = 'detail-delete';
