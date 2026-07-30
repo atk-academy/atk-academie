@@ -96,6 +96,37 @@
   .history-match .res.loss{ color:var(--critical); }
   .admin-del{ font-family:inherit; border:none; background:none; color:var(--text-faint); cursor:pointer; font-size:15px; padding:2px 8px; margin-left:8px; }
   .admin-del:hover{ color:var(--critical); }
+
+  /* --- Saison / classement --- */
+  .season-bar{ display:flex; align-items:center; gap:10px; margin-bottom:14px; flex-wrap:wrap; }
+  .season-bar label{ font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--text-lo); }
+  .season-bar select{ font-family:inherit; font-size:13px; font-weight:700; color:var(--text-hi); background:var(--surface-strong); border:1px solid var(--border); border-radius:999px; padding:7px 12px; cursor:pointer; }
+  .season-champ{ font-size:12.5px; font-weight:700; color:var(--gold-2); }
+  .elo{ font-weight:900; font-variant-numeric:tabular-nums; }
+  .streak{ font-weight:800; font-variant-numeric:tabular-nums; }
+  .streak.fire{ color:var(--accent-2); }
+  .new-season-btn{ font-family:inherit; font-size:13px; font-weight:700; color:var(--gold-2); background:var(--surface-strong); border:1px solid var(--border); padding:10px 18px; border-radius:999px; cursor:pointer; }
+  .new-season-btn:hover{ border-color:var(--gold-2); }
+
+  /* --- Tournoi --- */
+  .bracket-setup{ padding:24px; max-width:520px; margin:0 auto; }
+  .bracket-setup h3{ margin:0 0 6px; font-size:17px; }
+  .bracket-hint{ margin:0 0 14px; font-size:12.5px; color:var(--text-lo); }
+  .bracket-setup textarea{ width:100%; min-height:150px; font-family:inherit; font-size:14px; padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--surface-strong); color:var(--text-hi); resize:vertical; }
+  .bracket-actions{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:14px; flex-wrap:wrap; }
+  .shuffle-lbl{ font-size:12.5px; color:var(--text-lo); font-weight:700; display:flex; align-items:center; gap:6px; }
+  .bracket-top{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
+  .bracket-champ{ font-size:16px; font-weight:900; color:var(--gold-2); }
+  .bracket-scroll{ overflow-x:auto; padding-bottom:10px; }
+  .bracket{ display:flex; gap:36px; min-width:min-content; }
+  .bracket-round{ display:flex; flex-direction:column; justify-content:space-around; gap:14px; min-width:170px; }
+  .bracket-round-title{ font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--text-faint); text-align:center; margin-bottom:2px; }
+  .bracket-match{ display:flex; flex-direction:column; gap:4px; }
+  .bracket-slot{ display:flex; justify-content:space-between; align-items:center; gap:8px; font-size:13px; font-weight:700; padding:9px 12px; border-radius:10px; background:var(--surface-strong); border:1px solid var(--border); cursor:pointer; }
+  .bracket-slot:hover{ border-color:var(--accent); }
+  .bracket-slot.win{ border-color:var(--gold-2); color:var(--gold-2); }
+  .bracket-slot.empty{ color:var(--text-faint); cursor:default; }
+  .bracket-slot.bye{ opacity:.5; cursor:default; }
 </style>
 
 <div class="liquid-bg" aria-hidden="true"><span></span><span></span><span></span></div>
@@ -110,6 +141,7 @@
     <div class="segmented" role="tablist">
       <button type="button" class="active" data-view="duel" role="tab" aria-selected="true">Nouveau match</button>
       <button type="button" data-view="ranking" role="tab" aria-selected="false">Classement</button>
+      <button type="button" data-view="bracket" role="tab" aria-selected="false">Tournoi</button>
     </div>
   </div>
 
@@ -147,14 +179,38 @@
   </div>
 
   <div id="view-ranking" class="view">
+    <div class="season-bar">
+      <label>Saison</label>
+      <select id="season-select"></select>
+      <span id="season-champ" class="season-champ"></span>
+    </div>
     <div class="glass table-card">
       <table>
         <thead>
-          <tr><th>#</th><th>Joueur</th><th>Victoires</th><th>Défaites</th><th>Matchs</th><th>% victoires</th></tr>
+          <tr><th>#</th><th>Joueur</th><th>Points</th><th>V</th><th>D</th><th>Série</th><th>%</th></tr>
         </thead>
         <tbody id="ranking-body"></tbody>
       </table>
-      <div class="empty-state" id="ranking-empty" style="display:none;">Aucun match enregistré pour l'instant.</div>
+      <div class="empty-state" id="ranking-empty" style="display:none;">Aucun match enregistré pour cette saison.</div>
+    </div>
+  </div>
+
+  <div id="view-bracket" class="view">
+    <div class="glass bracket-setup" id="bracket-setup">
+      <h3>Générer un tournoi</h3>
+      <p class="bracket-hint">Un pseudo par ligne (2 à 16 joueurs). L'arbre à élimination directe est généré automatiquement.</p>
+      <textarea id="bracket-players" placeholder="Joueur 1&#10;Joueur 2&#10;Joueur 3&#10;Joueur 4"></textarea>
+      <div class="bracket-actions">
+        <label class="shuffle-lbl"><input type="checkbox" id="bracket-shuffle" checked> Mélanger les joueurs</label>
+        <button type="button" class="ctrl-btn plus" id="bracket-generate">Générer l'arbre</button>
+      </div>
+    </div>
+    <div id="bracket-view" style="display:none;">
+      <div class="bracket-top">
+        <div id="bracket-champ" class="bracket-champ"></div>
+        <button type="button" class="reset-btn" id="bracket-reset">Nouveau tournoi</button>
+      </div>
+      <div class="bracket-scroll"><div class="bracket" id="bracket"></div></div>
     </div>
   </div>
 </div>
@@ -218,6 +274,20 @@
         return batch.commit();
       }).catch(function(e){ console.error('Firestore wipe failed', e); });
     });
+    var newSeasonBtn = document.createElement('button');
+    newSeasonBtn.type = 'button';
+    newSeasonBtn.className = 'new-season-btn';
+    newSeasonBtn.textContent = '🏁 Nouvelle saison';
+    newSeasonBtn.style.marginRight = 'auto';
+    newSeasonBtn.addEventListener('click', function(){
+      if (!useFirestore) return;
+      if (!window.confirm('Démarrer la saison ' + (currentSeason+1) + ' ? Le classement repart à zéro (l\'ancienne saison reste consultable).')) return;
+      currentSeason++;
+      db.collection('meta').doc('config').set({ season: currentSeason }, {merge:true}).catch(function(e){ console.error(e); });
+      viewSeason = currentSeason;
+      renderRanking(latestDuels);
+    });
+    adminToolbar.appendChild(newSeasonBtn);
     adminToolbar.appendChild(wipeBtn);
     document.querySelector('#view-ranking .table-card').parentNode.insertBefore(adminToolbar, document.querySelector('#view-ranking .table-card'));
 
@@ -296,7 +366,7 @@
   }
 
   function saveMatch(p1, p2, winner){
-    var doc = { p1:p1, p2:p2, roundsWonP1:roundsWonP1, roundsWonP2:roundsWonP2, winner:winner, rounds:matchRounds.slice(), at:Date.now() };
+    var doc = { p1:p1, p2:p2, roundsWonP1:roundsWonP1, roundsWonP2:roundsWonP2, winner:winner, rounds:matchRounds.slice(), at:Date.now(), season: currentSeason };
     if (useFirestore){
       db.collection('duels').add(doc).catch(function(e){ console.error('Firestore add failed', e); });
     }
@@ -344,7 +414,21 @@
     var matches = duels.filter(function(d){ return d.p1 === name || d.p2 === name; })
       .sort(function(a,b){ return (b.at||0) - (a.at||0); });
     if (!matches.length) return '<div class="history-inner"><div class="history-match"><span>Aucun match trouvé.</span></div></div>';
-    return '<div class="history-inner">' + matches.map(function(d){
+    // Résumé face-à-face par adversaire
+    var h2h = {};
+    matches.forEach(function(d){
+      var opp = d.p1 === name ? d.p2 : d.p1;
+      if (!h2h[opp]) h2h[opp] = { w:0, l:0 };
+      if (d.winner === name) h2h[opp].w++; else h2h[opp].l++;
+    });
+    var h2hHtml = '<div class="history-match" style="font-size:11.5px;color:var(--text-lo);font-weight:800;">FACE-À-FACE</div>' +
+      Object.keys(h2h).map(function(opp){
+        var r = h2h[opp];
+        return '<div class="history-match"><span class="opp">vs '+escapeHtml(opp)+'</span><span class="res '+(r.w>=r.l?'win':'loss')+'">'+r.w+'-'+r.l+'</span></div>';
+      }).join('');
+    return '<div class="history-inner">' + h2hHtml +
+      '<div class="history-match" style="font-size:11.5px;color:var(--text-lo);font-weight:800;margin-top:6px;">MATCHS</div>' +
+      matches.map(function(d){
       var isP1 = d.p1 === name;
       var opp = isP1 ? d.p2 : d.p1;
       var myRounds = isP1 ? d.roundsWonP1 : d.roundsWonP2;
@@ -360,25 +444,49 @@
   }
 
   var latestDuels = [];
+  var currentSeason = 1;   // saison active (nouveaux matchs)
+  var viewSeason = null;   // saison affichée (null = active)
+
+  function seasonOf(d){ return d.season || 1; }
+
+  function populateSeasonSelect(duels){
+    var sel = document.getElementById('season-select');
+    if (!sel) return;
+    var maxS = currentSeason;
+    duels.forEach(function(d){ if (seasonOf(d) > maxS) maxS = seasonOf(d); });
+    var shown = viewSeason || currentSeason;
+    var opts = '';
+    for (var s = maxS; s >= 1; s--){
+      opts += '<option value="'+s+'"'+(s===shown?' selected':'')+'>Saison '+s+(s===currentSeason?' (active)':'')+'</option>';
+    }
+    sel.innerHTML = opts;
+    sel.onchange = function(){ viewSeason = parseInt(sel.value,10); openHistoryName=null; renderRanking(latestDuels); };
+  }
 
   function renderRanking(duels){
     latestDuels = duels;
+    populateSeasonSelect(duels);
+    var season = viewSeason || currentSeason;
+    var seasonDuels = duels.filter(function(d){ return seasonOf(d) === season && d.p1 && d.p2 && d.winner; });
+    // chronologique pour ELO + séries
+    var chrono = seasonDuels.slice().sort(function(a,b){ return (a.at||0) - (b.at||0); });
     var stats = {};
-    duels.forEach(function(d){
-      if (!d.p1 || !d.p2 || !d.winner) return;
-      [d.p1, d.p2].forEach(function(name){
-        if (!stats[name]) stats[name] = { name:name, wins:0, losses:0 };
-      });
-      if (d.winner === d.p1){ stats[d.p1].wins++; stats[d.p2].losses++; }
-      else { stats[d.p2].wins++; stats[d.p1].losses++; }
+    function ensure(n){ if(!stats[n]) stats[n]={name:n,wins:0,losses:0,elo:1000,streak:0}; return stats[n]; }
+    chrono.forEach(function(d){
+      var A=ensure(d.p1), B=ensure(d.p2);
+      var eA=1/(1+Math.pow(10,(B.elo-A.elo)/400)), eB=1-eA, K=24;
+      var aWon = d.winner===d.p1;
+      A.elo += K*((aWon?1:0)-eA); B.elo += K*((aWon?0:1)-eB);
+      if (aWon){ A.wins++; B.losses++; A.streak=A.streak>0?A.streak+1:1; B.streak=B.streak<0?B.streak-1:-1; }
+      else { B.wins++; A.losses++; B.streak=B.streak>0?B.streak+1:1; A.streak=A.streak<0?A.streak-1:-1; }
     });
     var list = Object.keys(stats).map(function(k){
-      var s = stats[k];
-      s.matches = s.wins + s.losses;
-      s.winrate = s.matches ? (s.wins / s.matches * 100) : 0;
-      return s;
+      var s=stats[k]; s.matches=s.wins+s.losses; s.winrate=s.matches?(s.wins/s.matches*100):0; s.elo=Math.round(s.elo); return s;
     });
-    list.sort(function(a,b){ return b.wins - a.wins || b.winrate - a.winrate; });
+    list.sort(function(a,b){ return b.elo - a.elo || b.wins - a.wins; });
+
+    var champEl = document.getElementById('season-champ');
+    if (champEl) champEl.textContent = list.length ? ('👑 ' + list[0].name) : '';
 
     var body = document.getElementById('ranking-body');
     var empty = document.getElementById('ranking-empty');
@@ -387,12 +495,14 @@
     list.forEach(function(s, i){
       var tr = document.createElement('tr');
       tr.className = 'pl-row';
+      var streakTxt = s.streak>0 ? (s.streak+'V'+(s.streak>=3?' 🔥':'')) : (s.streak<0 ? (Math.abs(s.streak)+'D') : '—');
       tr.innerHTML =
         '<td class="rank'+(i===0?' top1':'')+'">'+(i+1)+'</td>' +
         '<td class="pname">'+escapeHtml(s.name)+(isAdmin ? ' <button type="button" class="admin-del" data-del-player="'+escapeHtml(s.name)+'" title="Supprimer ce joueur">✕</button>' : '')+'</td>' +
+        '<td class="elo">'+s.elo+'</td>' +
         '<td>'+s.wins+'</td>' +
         '<td>'+s.losses+'</td>' +
-        '<td>'+s.matches+'</td>' +
+        '<td class="streak'+(s.streak>=3?' fire':'')+'">'+streakTxt+'</td>' +
         '<td class="winrate">'+s.winrate.toFixed(0)+'%</td>';
       tr.addEventListener('click', function(){
         openHistoryName = (openHistoryName === s.name) ? null : s.name;
@@ -403,8 +513,8 @@
         var hRow = document.createElement('tr');
         hRow.className = 'history-row';
         var td = document.createElement('td');
-        td.colSpan = 6;
-        td.innerHTML = renderHistoryFor(s.name, duels);
+        td.colSpan = 7;
+        td.innerHTML = renderHistoryFor(s.name, seasonDuels);
         hRow.appendChild(td);
         body.appendChild(hRow);
       }
@@ -417,10 +527,100 @@
     });
   }
 
+  // ===== Tournoi (bracket local) =====
+  var bracketRounds = null;
+  function roundName(nMatches){
+    if (nMatches===1) return 'Finale';
+    if (nMatches===2) return 'Demi-finales';
+    if (nMatches===4) return 'Quarts';
+    if (nMatches===8) return 'Huitièmes';
+    return nMatches*2 + ' joueurs';
+  }
+  function buildBracket(players){
+    var size = 2; while (size < players.length) size *= 2;
+    var slots = players.slice();
+    while (slots.length < size) slots.push(null); // byes
+    var rounds = [];
+    var r0 = [];
+    for (var i=0;i<size;i+=2){ r0.push({ a:slots[i], b:slots[i+1], winner:(slots[i]&&!slots[i+1])?slots[i]:(!slots[i]&&slots[i+1]?slots[i+1]:null) }); }
+    rounds.push(r0);
+    var count = size/2;
+    while (count > 1){ count/=2; var r=[]; for (var j=0;j<count;j++) r.push({a:null,b:null,winner:null}); rounds.push(r); }
+    // propage les byes déjà décidés
+    propagate(rounds);
+    return rounds;
+  }
+  function propagate(rounds){
+    for (var r=0;r<rounds.length-1;r++){
+      for (var m=0;m<rounds[r].length;m++){
+        var w = rounds[r][m].winner;
+        var nm = rounds[r+1][Math.floor(m/2)];
+        if (m%2===0) nm.a = w; else nm.b = w;
+        // auto-bye au tour suivant
+        if (nm.a && !nm.b && r+1<rounds.length-1===false){}
+      }
+    }
+  }
+  function renderBracket(){
+    var el = document.getElementById('bracket');
+    if (!el || !bracketRounds) return;
+    propagate(bracketRounds);
+    el.innerHTML = '';
+    bracketRounds.forEach(function(round, ri){
+      var col = document.createElement('div');
+      col.className = 'bracket-round';
+      col.innerHTML = '<div class="bracket-round-title">'+roundName(round.length)+'</div>';
+      round.forEach(function(match, mi){
+        var mEl = document.createElement('div');
+        mEl.className = 'bracket-match';
+        ['a','b'].forEach(function(side){
+          var name = match[side];
+          var slot = document.createElement('div');
+          var cls = 'bracket-slot';
+          if (!name) cls += ' empty';
+          else if (match.winner === name) cls += ' win';
+          slot.className = cls;
+          slot.innerHTML = '<span>'+(name?escapeHtml(name):'—')+'</span>';
+          if (name && match.a && match.b){
+            slot.addEventListener('click', function(){ match.winner = name; renderBracket(); });
+          }
+          mEl.appendChild(slot);
+        });
+        col.appendChild(mEl);
+      });
+      el.appendChild(col);
+    });
+    var champ = bracketRounds[bracketRounds.length-1][0].winner;
+    document.getElementById('bracket-champ').textContent = champ ? ('🏆 Vainqueur : ' + champ) : '';
+  }
+  var genBtn = document.getElementById('bracket-generate');
+  if (genBtn){
+    genBtn.addEventListener('click', function(){
+      var raw = document.getElementById('bracket-players').value.split('\n').map(function(s){return s.trim();}).filter(function(s){return s;});
+      if (raw.length < 2){ alert('Il faut au moins 2 joueurs.'); return; }
+      if (raw.length > 16){ raw = raw.slice(0,16); }
+      if (document.getElementById('bracket-shuffle').checked){
+        for (var i=raw.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=raw[i];raw[i]=raw[j];raw[j]=t; }
+      }
+      bracketRounds = buildBracket(raw);
+      document.getElementById('bracket-setup').style.display='none';
+      document.getElementById('bracket-view').style.display='block';
+      renderBracket();
+    });
+    document.getElementById('bracket-reset').addEventListener('click', function(){
+      bracketRounds = null;
+      document.getElementById('bracket-view').style.display='none';
+      document.getElementById('bracket-setup').style.display='block';
+    });
+  }
+
   if (useFirestore){
     firebase.auth().signInAnonymously().catch(function(e){ console.error('Firebase anonymous auth failed', e); });
     firebase.auth().onAuthStateChanged(function(user){
       if (!user) return;
+      db.collection('meta').doc('config').onSnapshot(function(doc){
+        if (doc.exists && doc.data().season){ currentSeason = doc.data().season; renderRanking(latestDuels); }
+      });
       db.collection('duels').orderBy('at','desc').onSnapshot(function(snapshot){
         var duels = snapshot.docs.map(function(doc){ var d = doc.data(); d.id = doc.id; return d; });
         renderRanking(duels);
