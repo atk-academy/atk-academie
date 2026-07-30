@@ -26,8 +26,10 @@
     position:absolute; top:50%; left:50%;
     width:100vw; height:56.25vw; min-height:100vh; min-width:177.78vh;
     transform:translate(-50%,-50%) scale(1.32);
-    filter:blur(15px) brightness(.9) saturate(1.2);
+    filter:blur(24px) brightness(.9) saturate(1.2);
+    opacity:0; transition:opacity 1.2s ease;
   }
+  .video-bg iframe.on{ opacity:1; }
   /* teinte rouge par-dessus la vidéo pour garder le texte lisible (allégée) */
   .video-tint{ position:fixed; inset:0; z-index:-2; pointer-events:none;
     background:
@@ -118,6 +120,8 @@
           onReady: function(e){ e.target.mute(); e.target.playVideo(); },
           onStateChange: function(e){
             if (e.data === YT.PlayerState.PLAYING){
+              // n'affiche l'iframe qu'une fois la lecture démarrée (masque le bouton play de YouTube)
+              document.getElementById('bgplayer').classList.add('on');
               clearInterval(timer);
               timer = setInterval(function(){
                 try{
@@ -128,6 +132,8 @@
           }
         }
       });
+      // filet de sécurité : afficher l'iframe au bout de 5s même si l'état PLAYING n'a pas été détecté
+      setTimeout(function(){ var el=document.getElementById('bgplayer'); if(el) el.classList.add('on'); }, 5000);
     };
   })();
 </script>
