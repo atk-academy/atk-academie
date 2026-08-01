@@ -1,0 +1,105 @@
+<title>Test roues ATK</title>
+<style>
+  :root{ --bg-1:#050303; --bg-2:#170606; --accent:#ff4136; --accent-2:#ff7a6e; --wood:#c98b6a; --gold:#e0b070; --text:#f5eceb; --lo:#a58787; }
+  *{box-sizing:border-box;}
+  body{ margin:0; min-height:100vh; background:linear-gradient(180deg,var(--bg-1),var(--bg-2)); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; padding:36px 20px 60px; }
+  h1{ text-align:center; font-size:22px; margin:0 0 6px; }
+  .sub{ text-align:center; color:var(--lo); font-size:13.5px; margin:0 0 34px; }
+  .grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:22px; max-width:1100px; margin:0 auto; }
+  .card{ background:rgba(255,255,255,.04); border:1px solid rgba(255,90,70,.14); border-radius:22px; padding:26px; display:flex; flex-direction:column; align-items:center; gap:16px; }
+  .card h2{ font-size:15px; margin:0; font-weight:800; letter-spacing:.02em; }
+  .card .note{ font-size:12px; color:var(--lo); margin:-8px 0 0; text-align:center; }
+  .wheel-box{ width:240px; height:240px; display:flex; align-items:center; justify-content:center; }
+  svg.w{ width:230px; height:230px; filter:drop-shadow(0 6px 24px rgba(0,0,0,.6)); animation:spin 30s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .hint{ text-align:center; color:var(--lo); font-size:13px; margin-top:34px; }
+</style>
+<h1>Modèles de roue — choisis ton style</h1>
+<p class="sub">Elles tournent lentement. Dis-moi le numéro (ou plusieurs) que tu préfères et je l'intègre en demi-roue à l'entrée.</p>
+
+<div class="grid">
+
+  <div class="card">
+    <h2>1 · Classique détaillée</h2>
+    <div class="wheel-box">
+      <svg class="w" viewBox="0 0 100 100" fill="none" stroke="var(--wood)">
+        <g stroke-linecap="round" stroke-width="3.5">
+          <line x1="90" y1="50" x2="97" y2="50"/><line x1="78.3" y1="78.3" x2="83.2" y2="83.2"/><line x1="50" y1="90" x2="50" y2="97"/><line x1="21.7" y1="78.3" x2="16.8" y2="83.2"/><line x1="10" y1="50" x2="3" y2="50"/><line x1="21.7" y1="21.7" x2="16.8" y2="16.8"/><line x1="50" y1="10" x2="50" y2="3"/><line x1="78.3" y1="21.7" x2="83.2" y2="16.8"/>
+        </g>
+        <circle cx="50" cy="50" r="40" stroke-width="5"/><circle cx="50" cy="50" r="29" stroke-width="2.5"/>
+        <g stroke-width="4" stroke-linecap="round">
+          <line x1="61" y1="50" x2="79" y2="50"/><line x1="57.8" y1="57.8" x2="70.5" y2="70.5"/><line x1="50" y1="61" x2="50" y2="79"/><line x1="42.2" y1="57.8" x2="29.5" y2="70.5"/><line x1="39" y1="50" x2="21" y2="50"/><line x1="42.2" y1="42.2" x2="29.5" y2="29.5"/><line x1="50" y1="39" x2="50" y2="21"/><line x1="57.8" y1="42.2" x2="70.5" y2="29.5"/>
+        </g>
+        <circle cx="50" cy="50" r="11" fill="var(--wood)" stroke="none"/><circle cx="50" cy="50" r="4.5" fill="#1a0808" stroke="none"/>
+        <g fill="var(--wood)" stroke="none"><circle cx="97" cy="50" r="3.2"/><circle cx="83.2" cy="83.2" r="3.2"/><circle cx="50" cy="97" r="3.2"/><circle cx="16.8" cy="83.2" r="3.2"/><circle cx="3" cy="50" r="3.2"/><circle cx="16.8" cy="16.8" r="3.2"/><circle cx="50" cy="3" r="3.2"/><circle cx="83.2" cy="16.8" r="3.2"/></g>
+      </svg>
+    </div>
+    <p class="note">Le modèle actuel, en plus grand.</p>
+  </div>
+
+  <div class="card">
+    <h2>2 · Bois massive (6 poignées)</h2>
+    <div class="wheel-box">
+      <svg class="w" viewBox="0 0 100 100" fill="none" stroke="var(--wood)">
+        <!-- poignées longues -->
+        <g stroke-linecap="round" stroke-width="5">
+          <line x1="50" y1="12" x2="50" y2="1"/><line x1="82.9" y1="31" x2="92.4" y2="25.5"/><line x1="82.9" y1="69" x2="92.4" y2="74.5"/><line x1="50" y1="88" x2="50" y2="99"/><line x1="17.1" y1="69" x2="7.6" y2="74.5"/><line x1="17.1" y1="31" x2="7.6" y2="25.5"/>
+        </g>
+        <g fill="var(--wood)" stroke="none"><circle cx="50" cy="1.5" r="4.5"/><circle cx="92.8" cy="25.2" r="4.5"/><circle cx="92.8" cy="74.8" r="4.5"/><circle cx="50" cy="98.5" r="4.5"/><circle cx="7.2" cy="74.8" r="4.5"/><circle cx="7.2" cy="25.2" r="4.5"/></g>
+        <circle cx="50" cy="50" r="38" stroke-width="8"/>
+        <circle cx="50" cy="50" r="38" stroke-width="1.5" stroke="#7a4a30"/>
+        <g stroke-width="6" stroke-linecap="round">
+          <line x1="50" y1="14" x2="50" y2="38"/><line x1="81" y1="32" x2="60.8" y2="43.7"/><line x1="81" y1="68" x2="60.8" y2="56.3"/><line x1="50" y1="86" x2="50" y2="62"/><line x1="19" y1="68" x2="39.2" y2="56.3"/><line x1="19" y1="32" x2="39.2" y2="43.7"/>
+        </g>
+        <circle cx="50" cy="50" r="13" fill="var(--gold)" stroke="none"/><circle cx="50" cy="50" r="13" fill="none" stroke="#8a5a30" stroke-width="1.5"/><circle cx="50" cy="50" r="4" fill="#3a2410" stroke="none"/>
+      </svg>
+    </div>
+    <p class="note">Épaisse, style gouvernail en bois.</p>
+  </div>
+
+  <div class="card">
+    <h2>3 · Fine élégante (12 rayons)</h2>
+    <div class="wheel-box">
+      <svg class="w" viewBox="0 0 100 100" fill="none" stroke="var(--gold)">
+        <g id="s3"></g>
+        <circle cx="50" cy="50" r="42" stroke-width="3"/><circle cx="50" cy="50" r="36" stroke-width="1.5"/><circle cx="50" cy="50" r="24" stroke-width="1.5"/>
+        <circle cx="50" cy="50" r="9" fill="var(--gold)" stroke="none"/><circle cx="50" cy="50" r="3.5" fill="#1a0808" stroke="none"/>
+      </svg>
+    </div>
+    <p class="note">Beaucoup de rayons fins, raffinée.</p>
+  </div>
+
+  <div class="card">
+    <h2>4 · Pirate rouge (glow)</h2>
+    <div class="wheel-box">
+      <svg class="w" viewBox="0 0 100 100" fill="none" stroke="var(--accent)" style="filter:drop-shadow(0 0 10px rgba(255,65,54,.55));">
+        <g stroke-linecap="round" stroke-width="4">
+          <line x1="50" y1="14" x2="50" y2="2"/><line x1="75.5" y1="24.5" x2="84" y2="16"/><line x1="86" y1="50" x2="98" y2="50"/><line x1="75.5" y1="75.5" x2="84" y2="84"/><line x1="50" y1="86" x2="50" y2="98"/><line x1="24.5" y1="75.5" x2="16" y2="84"/><line x1="14" y1="50" x2="2" y2="50"/><line x1="24.5" y1="24.5" x2="16" y2="16"/>
+        </g>
+        <g fill="var(--accent)" stroke="none"><circle cx="50" cy="2" r="4.5"/><circle cx="84.5" cy="15.5" r="4.5"/><circle cx="98" cy="50" r="4.5"/><circle cx="84.5" cy="84.5" r="4.5"/><circle cx="50" cy="98" r="4.5"/><circle cx="15.5" cy="84.5" r="4.5"/><circle cx="2" cy="50" r="4.5"/><circle cx="15.5" cy="15.5" r="4.5"/></g>
+        <circle cx="50" cy="50" r="37" stroke-width="6"/>
+        <g stroke-width="5" stroke-linecap="round">
+          <line x1="50" y1="16" x2="50" y2="37"/><line x1="74" y1="26" x2="59" y2="41"/><line x1="84" y1="50" x2="63" y2="50"/><line x1="74" y1="74" x2="59" y2="59"/><line x1="50" y1="84" x2="50" y2="63"/><line x1="26" y1="74" x2="41" y2="59"/><line x1="16" y1="50" x2="37" y2="50"/><line x1="26" y1="26" x2="41" y2="41"/>
+        </g>
+        <circle cx="50" cy="50" r="12" fill="var(--accent)" stroke="none"/><circle cx="50" cy="50" r="4" fill="#1a0808" stroke="none"/>
+      </svg>
+    </div>
+    <p class="note">Aux couleurs ATK, avec halo rouge.</p>
+  </div>
+
+</div>
+<p class="hint">👉 Dis-moi le(s) numéro(s) que tu préfères.</p>
+
+<script>
+  // Génère 12 rayons pour le modèle 3
+  var g = document.getElementById('s3');
+  if (g){
+    var parts='';
+    for (var i=0;i<12;i++){
+      var a=i*30*Math.PI/180, c=Math.cos(a), s=Math.sin(a);
+      parts += '<line x1="'+(50+9*c).toFixed(1)+'" y1="'+(50+9*s).toFixed(1)+'" x2="'+(50+42*c).toFixed(1)+'" y2="'+(50+42*s).toFixed(1)+'" stroke-width="1.8" stroke-linecap="round"/>';
+      parts += '<circle cx="'+(50+42*c).toFixed(1)+'" cy="'+(50+42*s).toFixed(1)+'" r="2.4" fill="var(--gold)" stroke="none"/>';
+    }
+    g.innerHTML = parts;
+  }
+</script>
