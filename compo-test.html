@@ -20,7 +20,7 @@
       filter:drop-shadow(0 4px 18px rgba(0,0,0,.7)); animation:titleglow 4s ease-in-out infinite; }
   /* reflet métallique qui balaie les lettres */
   .title::after{ content:"ATK"; position:absolute; inset:0; font-family:"Metal Mania","Pirata One",serif; font-weight:400; font-size:clamp(6rem,23vw,20rem); line-height:.9; letter-spacing:.03em; text-align:center;
-      background:linear-gradient(105deg,transparent 45%,rgba(255,255,255,.9) 50%,transparent 55%); background-size:300% 100%; -webkit-background-clip:text; background-clip:text; color:transparent;
+      background:linear-gradient(105deg,transparent 45%,rgba(255,255,255,.9) 50%,transparent 55%); background-size:300% 100%; background-repeat:no-repeat; -webkit-background-clip:text; background-clip:text; color:transparent;
       pointer-events:none; animation:sheen 3s ease-in-out infinite; }
   .over{ font-family:Oswald; font-weight:600; letter-spacing:.5em; text-transform:uppercase; color:var(--red2); font-size:clamp(11px,1.4vw,15px); margin-top:20px; text-shadow:0 0 14px rgba(255,65,54,.5); display:flex; justify-content:center; align-items:center; gap:16px; }
   .over::before, .over::after{ content:""; width:34px; height:1px; background:linear-gradient(90deg,transparent,var(--red2)); }
