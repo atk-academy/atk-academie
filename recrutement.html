@@ -1613,18 +1613,23 @@
       ['pointerdown','touchstart','keydown'].forEach(function(e){ document.removeEventListener(e,gest); });
     }
     ['pointerdown','touchstart','keydown'].forEach(function(e){ document.addEventListener(e,gest,{passive:true}); });
-    // Glows rouges : respiration + dérive permanentes, et pulse avec la voix
-    var blobs=[{x:.24,y:.38,r:.30,c:'255,65,54',ph:0},{x:.78,y:.58,r:.34,c:'255,95,75',ph:2},{x:.5,y:.8,r:.26,c:'190,28,22',ph:4}], lvl=0, t0=performance.now();
+    // Belle animation de fond : braises qui montent + halos, présentes en continu, renforcées par la voix
+    var lvl=0, t0=performance.now(), P=[], NP=60;
+    function mkP(reset){ var p={ x:Math.random()*W, y:reset?H+Math.random()*40*dpr:Math.random()*H, r:(1+Math.random()*2.4)*dpr, vy:(0.35+Math.random()*1.0)*dpr, sway:Math.random()*6.28, sp:0.5+Math.random(), life:0, max:4+Math.random()*4, hue:Math.random()<0.5?'255,95,60':'255,150,80' }; if(!reset) p.life=Math.random()*p.max; return p; }
+    for(var k=0;k<NP;k++) P.push(mkP(false));
     (function frame(){ requestAnimationFrame(frame);
       var v=0; if(an){ an.getByteFrequencyData(data); var mx=0,n=data.length; for(var i=0;i<n;i++){ if(data[i]>mx) mx=data[i]; } v=Math.min(1,(mx/255)*2.2); }
-      lvl+=(v-lvl)*0.25; var tt=(performance.now()-t0)/1000;
+      lvl+=(v-lvl)*0.25; var tt=(performance.now()-t0)/1000, spd=1+lvl*2.4, mn=Math.min(W,H);
       g2.clearRect(0,0,W,H); g2.globalCompositeOperation='lighter';
-      for(var b=0;b<blobs.length;b++){ var bl=blobs[b],
-        idle=0.08+0.04*Math.sin(tt*0.9+bl.ph), pulse=idle+lvl*1.0,
-        cx=(bl.x+0.04*Math.sin(tt*0.4+bl.ph))*W, cy=(bl.y+0.04*Math.cos(tt*0.33+bl.ph))*H,
-        rad=(bl.r+pulse*0.42)*Math.min(W,H), al=Math.min(0.85,0.06+pulse*0.5);
-        var rg=g2.createRadialGradient(cx,cy,0,cx,cy,rad); rg.addColorStop(0,'rgba('+bl.c+','+al.toFixed(3)+')'); rg.addColorStop(1,'rgba('+bl.c+',0)');
-        g2.fillStyle=rg; g2.beginPath(); g2.arc(cx,cy,rad,0,7); g2.fill(); }
+      var glows=[[.28,.7,'255,60,50',0],[.72,.6,'200,40,35',2]];
+      for(var b=0;b<glows.length;b++){ var G=glows[b], gx=G[0]*W+Math.sin(tt*0.35+G[3])*0.05*W, gy=G[1]*H, gr=(0.30+0.06*Math.sin(tt*0.6+G[3])+lvl*0.25)*mn, ga=0.10+lvl*0.35;
+        var rg=g2.createRadialGradient(gx,gy,0,gx,gy,gr); rg.addColorStop(0,'rgba('+G[2]+','+ga.toFixed(3)+')'); rg.addColorStop(1,'rgba('+G[2]+',0)');
+        g2.fillStyle=rg; g2.beginPath(); g2.arc(gx,gy,gr,0,7); g2.fill(); }
+      for(var j=0;j<P.length;j++){ var p=P[j]; p.life+=0.016*spd; p.y-=p.vy*spd; p.sway+=0.02*p.sp;
+        if(p.life>=p.max || p.y<-20*dpr){ P[j]=mkP(true); continue; }
+        var px=p.x+Math.sin(p.sway)*15*dpr, lf=p.life/p.max, a=Math.sin(lf*Math.PI)*(0.55+lvl*0.45), rr=p.r*(1+lvl*0.9)*4;
+        var rg2=g2.createRadialGradient(px,p.y,0,px,p.y,rr); rg2.addColorStop(0,'rgba('+p.hue+','+a.toFixed(3)+')'); rg2.addColorStop(0.4,'rgba('+p.hue+','+(a*0.5).toFixed(3)+')'); rg2.addColorStop(1,'rgba('+p.hue+',0)');
+        g2.fillStyle=rg2; g2.beginPath(); g2.arc(px,p.y,rr,0,7); g2.fill(); }
     })();
   })();
 </script>
