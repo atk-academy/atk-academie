@@ -141,8 +141,10 @@
       }
     }
 
-    // 1) tentative immédiate au chargement (souvent bloquée par le navigateur)
-    start();
+    // 1) lancement automatique 0,5 s après le chargement.
+    //    Marche là où le navigateur l'autorise (souvent sur ta propre machine) ;
+    //    sinon il le bloque et on démarre au premier geste (voir plus bas).
+    setTimeout(start, 500);
 
     // 2) sinon : démarrage au tout premier geste (clic / toucher / touche)
     function onGesture(){
