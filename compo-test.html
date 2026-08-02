@@ -20,8 +20,8 @@
       filter:drop-shadow(0 4px 18px rgba(0,0,0,.7)); animation:titleglow 4s ease-in-out infinite; }
   /* reflet métallique qui balaie les lettres */
   .title::after{ content:"ATK"; position:absolute; inset:0; font-family:"Metal Mania","Pirata One",serif; font-weight:400; font-size:clamp(6rem,23vw,20rem); line-height:.9; letter-spacing:.03em; text-align:center;
-      background:linear-gradient(105deg,transparent 45%,rgba(255,255,255,.9) 50%,transparent 55%); background-size:300% 100%; background-repeat:no-repeat; -webkit-background-clip:text; background-clip:text; color:transparent;
-      pointer-events:none; animation:sheen 3s ease-in-out infinite; }
+      background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.35) 46%,rgba(255,255,255,.8) 50%,rgba(255,255,255,.35) 54%,transparent 62%); background-size:300% 100%; background-repeat:no-repeat; -webkit-background-clip:text; background-clip:text; color:transparent;
+      pointer-events:none; animation:sheen 3.2s cubic-bezier(.45,0,.55,1) infinite; }
   .over{ font-family:Oswald; font-weight:600; letter-spacing:.5em; text-transform:uppercase; color:var(--red2); font-size:clamp(11px,1.4vw,15px); margin-top:20px; text-shadow:0 0 14px rgba(255,65,54,.5); display:flex; justify-content:center; align-items:center; gap:16px; }
   .over::before, .over::after{ content:""; width:34px; height:1px; background:linear-gradient(90deg,transparent,var(--red2)); }
   .over::after{ background:linear-gradient(90deg,var(--red2),transparent); }
@@ -37,7 +37,7 @@
   @keyframes emblembreathe{ 0%,100%{opacity:.24;} 50%{opacity:.34;} }
   @keyframes titleglow{ 0%,100%{filter:drop-shadow(0 4px 18px rgba(0,0,0,.7)) drop-shadow(0 0 12px rgba(255,65,54,.15));} 50%{filter:drop-shadow(0 4px 18px rgba(0,0,0,.7)) drop-shadow(0 0 28px rgba(255,65,54,.4));} }
   @keyframes rise{ from{opacity:0; transform:translateY(24px) scale(.96);} to{opacity:1; transform:none;} }
-  @keyframes sheen{ 0%{background-position:230% 0;} 18%{background-position:-130% 0;} 18.01%{background-position:230% 0;} 40%{background-position:-130% 0;} 100%{background-position:-130% 0;} }
+  @keyframes sheen{ 0%{background-position:220% 0;} 26%{background-position:-120% 0;} 26.001%{background-position:220% 0;} 52%{background-position:-120% 0;} 100%{background-position:-120% 0;} }
   @keyframes ember{ 0%{opacity:0; transform:translateY(0) scale(.6);} 15%{opacity:1;} 100%{opacity:0; transform:translateY(-220px) scale(1.1);} }
 </style>
 
