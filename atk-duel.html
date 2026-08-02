@@ -157,13 +157,6 @@
   </div>
 
   <div id="view-duel" class="view active">
-    <div class="glass record-lock" id="record-lock" style="display:none; max-width:380px; margin:0 auto; padding:28px; text-align:center;">
-      <h3 style="margin:0 0 6px;">Enregistrer un match</h3>
-      <p style="color:var(--text-lo); font-size:13px; margin:0 0 16px;">Réservé au staff. Entre le mot de passe pour enregistrer des matchs.</p>
-      <input type="password" id="record-pass" placeholder="Mot de passe" style="width:100%; font-family:inherit; padding:11px 12px; border-radius:12px; border:1px solid var(--border); background:var(--surface-strong); color:var(--text-hi);">
-      <p id="record-err" style="display:none; color:var(--critical); font-size:12.5px; margin:10px 0 0;">Mot de passe incorrect.</p>
-      <button type="button" id="record-btn" class="ctrl-btn plus" style="margin-top:14px; width:100%; padding:12px; border-radius:12px; cursor:pointer; font-weight:800;">Déverrouiller</button>
-    </div>
     <div class="glass duel-card" id="duel-card">
       <div class="duel-row">
         <div class="player">
@@ -277,27 +270,7 @@
     }
   })();
 
-  // Verrou : enregistrer un match est réservé au staff (mot de passe)
-  var RECORD_KEY = 'atk-record-authed';
-  (function recordGate(){
-    var lock = document.getElementById('record-lock');
-    var card = document.getElementById('duel-card');
-    if (!lock || !card) return;
-    function unlocked(){ return isAdmin || localStorage.getItem(RECORD_KEY) === '1'; }
-    function refresh(){
-      if (unlocked()){ lock.style.display = 'none'; card.style.display = ''; }
-      else { lock.style.display = ''; card.style.display = 'none'; }
-    }
-    refresh();
-    document.getElementById('record-btn').addEventListener('click', function(){
-      var inp = document.getElementById('record-pass');
-      var err = document.getElementById('record-err');
-      if (hashStr('ATK:' + inp.value) === ADMIN_HASH){
-        localStorage.setItem(RECORD_KEY, '1'); inp.value=''; err.style.display='none'; refresh();
-      } else { err.style.display='block'; }
-    });
-    document.getElementById('record-pass').addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('record-btn').click(); });
-  })();
+  // Enregistrement d'un match : public, sans mot de passe.
 
   if (isAdmin){
     var adminToolbar = document.createElement('div');
