@@ -84,7 +84,7 @@
     var TAG_DELAY = 2000;      // le tag démarre 2 s après le lancement
     var started = false, tagDone = false, envTimer = null;
 
-    tag.volume = 0.8;
+    tag.volume = 0.4;   // discret : doit se fondre dans la musique, pas ressortir
 
     // Enveloppe en boucle : fondu d'entrée (7s) → plein volume → fondu de sortie → coupe à 45s → repart avec fondu
     function runEnvelope(){
