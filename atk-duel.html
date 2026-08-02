@@ -661,14 +661,13 @@
     function resize(){ W=cv.width=innerWidth*dpr; H=cv.height=innerHeight*dpr; } resize(); addEventListener('resize',resize);
     var ac,an,data;
     function setupAnalyser(){ if(ac) return; try{ ac=new (window.AudioContext||window.webkitAudioContext)(); var s=ac.createMediaElementSource(a); an=ac.createAnalyser(); an.fftSize=256; data=new Uint8Array(an.frequencyBinCount); s.connect(an); an.connect(ac.destination); }catch(e){ an=null; } }
-    // Lecture : tentative au chargement, SANS Web Audio (pour ne pas risquer de couper le son)
-    a.play().catch(function(){});
-    // Au 1er geste : (re)lance le son ET branche l'analyseur (qui a besoin d'un geste pour tourner)
+    // IMPORTANT : on crée le graphe audio AVANT toute lecture, sinon l'analyseur reste à zéro (le rond ne bougerait pas)
+    setupAnalyser();
+    // Le son et l'analyseur ont besoin d'un geste pour démarrer : au 1er clic/scroll on lance tout
     function gest(){
+      if(ac && ac.state!=='running') ac.resume();
       if(a.paused) a.play().catch(function(){});
-      setupAnalyser();
-      if(ac) ac.resume();
-      ['pointerdown','touchstart','keydown'].forEach(function(e){ document.removeEventListener(e,gest); });
+      if(ac && ac.state==='running'){ ['pointerdown','touchstart','keydown'].forEach(function(e){ document.removeEventListener(e,gest); }); }
     }
     ['pointerdown','touchstart','keydown'].forEach(function(e){ document.addEventListener(e,gest,{passive:true}); });
     // Animation de fond : anneau de spectre coordonné à la voix + braises + halos
@@ -676,7 +675,7 @@
     function mkP(reset){ var p={ x:Math.random()*W, y:reset?H+Math.random()*40*dpr:Math.random()*H, r:(1+Math.random()*2.2)*dpr, vy:(0.35+Math.random()*1.0)*dpr, sway:Math.random()*6.28, sp:0.5+Math.random(), life:0, max:4+Math.random()*4, hue:Math.random()<0.5?'255,95,60':'255,150,80' }; if(!reset) p.life=Math.random()*p.max; return p; }
     for(var k=0;k<NP;k++) P.push(mkP(false));
     (function frame(){ requestAnimationFrame(frame);
-      var haveV=false,i; if(an){ an.getByteFrequencyData(data); haveV=true; }
+      var haveV=false,i; if(an && ac && ac.state==='running'){ an.getByteFrequencyData(data); haveV=true; }
       var mx=0; if(haveV){ for(i=0;i<data.length;i++){ if(data[i]>mx) mx=data[i]; } }
       var v=Math.min(1,(mx/255)*2.2);
       lvl+=(v-lvl)*0.25; var tt=(performance.now()-t0)/1000, spd=1+lvl*2.4, mn=Math.min(W,H);
