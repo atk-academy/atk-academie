@@ -649,3 +649,17 @@
   }
 })();
 </script>
+
+<audio id="match-audio" src="assets/match.mp3" preload="auto"></audio>
+<script>
+  (function(){
+    var a = document.getElementById('match-audio');
+    if (!a) return;
+    a.volume = 0.6;
+    var done = false;
+    function go(){ if (done) return; var p = a.play(); if (p && p.then){ p.then(function(){ done = true; }).catch(function(){}); } else { done = true; } }
+    go();  // tente au chargement ; sinon au 1er geste (blocage autoplay navigateur)
+    function g(){ go(); if (done){ ['pointerdown','touchstart','keydown'].forEach(function(e){ document.removeEventListener(e, g); }); } }
+    ['pointerdown','touchstart','keydown'].forEach(function(e){ document.addEventListener(e, g, { passive:true }); });
+  })();
+</script>
