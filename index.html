@@ -78,25 +78,26 @@
     var btn   = document.getElementById('sound-toggle');
     var TARGET = 0.5;          // volume max de la musique de fond
     var FADE_IN = 7;           // fondu d'entrée : 7 s
-    var FADE_OUT_END = 50;     // silence atteint vers 50 s
+    var CUT = 45;              // on coupe / reboucle à 45 s
     var FADE_OUT_DUR = 7;      // durée du fondu de sortie
-    var FADE_OUT_START = FADE_OUT_END - FADE_OUT_DUR;   // début du fondu de sortie (~43 s)
-    var TAG_DELAY = 3000;      // le tag démarre 3 s après le lancement
+    var FADE_OUT_START = CUT - FADE_OUT_DUR;   // début du fondu de sortie (~38 s)
+    var TAG_DELAY = 2000;      // le tag démarre 2 s après le lancement
     var started = false, tagDone = false, envTimer = null;
 
-    tag.volume = 0.95;
+    tag.volume = 0.8;
 
-    // Enveloppe de volume : fondu d'entrée (7s) → plein volume → fondu de sortie (fin ~50s) → stop
+    // Enveloppe en boucle : fondu d'entrée (7s) → plein volume → fondu de sortie → coupe à 45s → repart avec fondu
     function runEnvelope(){
       if (envTimer) clearInterval(envTimer);
       music.volume = 0;
       envTimer = setInterval(function(){
         if (music.paused) return;
-        var t = music.currentTime, v;
+        var t = music.currentTime;
+        if (t >= CUT){ music.currentTime = 0; return; }   // coupe à 45s puis reboucle
+        var v;
         if (t < FADE_IN)             v = TARGET * (t / FADE_IN);
         else if (t < FADE_OUT_START) v = TARGET;
-        else if (t < FADE_OUT_END)   v = TARGET * (1 - (t - FADE_OUT_START) / FADE_OUT_DUR);
-        else { v = 0; music.pause(); clearInterval(envTimer); envTimer = null; }
+        else                         v = TARGET * (1 - (t - FADE_OUT_START) / FADE_OUT_DUR);
         if (!music.muted) music.volume = Math.max(0, Math.min(TARGET, v));
       }, 50);
     }
@@ -144,7 +145,6 @@
       if (music.paused || music.muted){
         music.muted = false;
         if (music.paused){
-          if (music.currentTime >= FADE_OUT_END - 0.1) music.currentTime = 0; // rejoue depuis le début si fini
           music.play().catch(function(){});
           runEnvelope();
         }
