@@ -667,13 +667,16 @@
     go();
     function gest(){ go(); if(done){ ['pointerdown','touchstart','keydown'].forEach(function(e){document.removeEventListener(e,gest);}); } }
     ['pointerdown','touchstart','keydown'].forEach(function(e){ document.addEventListener(e,gest,{passive:true}); });
-    // Glows rouges qui bougent avec la voix
-    var blobs=[{x:.24,y:.38,r:.30,c:'255,65,54'},{x:.78,y:.58,r:.34,c:'255,95,75'},{x:.5,y:.8,r:.26,c:'190,28,22'}], lvl=0;
+    // Glows rouges : respiration + dérive permanentes, et pulse avec la voix
+    var blobs=[{x:.24,y:.38,r:.30,c:'255,65,54',ph:0},{x:.78,y:.58,r:.34,c:'255,95,75',ph:2},{x:.5,y:.8,r:.26,c:'190,28,22',ph:4}], lvl=0, t0=performance.now();
     (function frame(){ requestAnimationFrame(frame);
-      var t=0; if(an){ an.getByteFrequencyData(data); var s=0,n=data.length; for(var i=0;i<n;i++) s+=data[i]; t=(s/n)/255; }
-      lvl+=(t-lvl)*0.22;
+      var v=0; if(an){ an.getByteFrequencyData(data); var s=0,n=data.length; for(var i=0;i<n;i++) s+=data[i]; v=(s/n)/255; }
+      lvl+=(v-lvl)*0.22; var tt=(performance.now()-t0)/1000;
       g2.clearRect(0,0,W,H); g2.globalCompositeOperation='lighter';
-      for(var b=0;b<blobs.length;b++){ var bl=blobs[b], cx=bl.x*W, cy=bl.y*H, rad=(bl.r+lvl*0.25)*Math.min(W,H), al=0.045+lvl*0.4;
+      for(var b=0;b<blobs.length;b++){ var bl=blobs[b],
+        idle=0.12+0.06*Math.sin(tt*0.9+bl.ph), pulse=idle+lvl*0.5,
+        cx=(bl.x+0.03*Math.sin(tt*0.4+bl.ph))*W, cy=(bl.y+0.03*Math.cos(tt*0.33+bl.ph))*H,
+        rad=(bl.r+pulse*0.28)*Math.min(W,H), al=0.05+pulse*0.32;
         var rg=g2.createRadialGradient(cx,cy,0,cx,cy,rad); rg.addColorStop(0,'rgba('+bl.c+','+al.toFixed(3)+')'); rg.addColorStop(1,'rgba('+bl.c+',0)');
         g2.fillStyle=rg; g2.beginPath(); g2.arc(cx,cy,rad,0,7); g2.fill(); }
     })();
