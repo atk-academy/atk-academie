@@ -16,21 +16,11 @@
   html,body{ margin:0; height:100%; }
   body{
     color:var(--text-hi); font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI Variable","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    background:linear-gradient(180deg, var(--bg-1), var(--bg-2)); min-height:100vh; overflow-x:hidden;
+    background:radial-gradient(85% 65% at 50% 42%, #340c09 0%, transparent 72%), linear-gradient(180deg, var(--bg-1), var(--bg-2)); min-height:100vh; overflow-x:hidden;
     display:flex; align-items:center; justify-content:center;
   }
 
-  /* --- Fond vidéo YouTube flou --- */
-  .video-bg{ position:fixed; inset:0; z-index:-3; overflow:hidden; pointer-events:none; background:#0a0303; }
-  .video-bg iframe{
-    position:absolute; top:50%; left:50%;
-    width:100vw; height:56.25vw; min-height:100vh; min-width:177.78vh;
-    transform:translate(-50%,-50%) scale(1.32);
-    filter:blur(24px) brightness(.9) saturate(1.2);
-    opacity:0; transition:opacity 1.2s ease;
-  }
-  .video-bg iframe.on{ opacity:1; }
-  /* teinte rouge par-dessus la vidéo pour garder le texte lisible (allégée) */
+  /* vignette rouge de fond (profondeur + lisibilité du texte) */
   .video-tint{ position:fixed; inset:0; z-index:-2; pointer-events:none;
     background:
       radial-gradient(60% 55% at 50% 42%, rgba(120,12,12,.20), transparent 70%),
@@ -90,94 +80,12 @@
   .nav-dot:hover .circle{ transform:translateY(-6px) scale(1.05); border-color:var(--accent); box-shadow:var(--shadow), 0 0 40px -10px var(--accent); }
   .nav-dot .label{ font-size:15px; font-weight:800; text-shadow:0 1px 6px rgba(0,0,0,.7); }
   .nav-dot .sub{ font-size:12px; color:var(--text-lo); font-weight:700; text-shadow:0 1px 6px rgba(0,0,0,.75); }
-  .sound-toggle{ position:fixed; bottom:20px; right:20px; z-index:5; width:48px; height:48px; border-radius:50%; border:1px solid rgba(255,255,255,.18); background:rgba(20,6,6,.55); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); color:#fff; font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:transform .2s ease, border-color .2s ease; }
-  .sound-toggle:hover{ transform:scale(1.08); border-color:var(--accent); }
-
-  /* Demi-roue de gouvernail — équipage ATK (éventail au survol) */
-  .crew{ position:fixed; top:50%; transform:translateY(-50%); z-index:4; width:460px; height:460px; }
-  .crew.left{ left:-230px; }
-  .crew.right{ right:-230px; }
-  .crew-wheel{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:320px; height:320px; color:var(--accent); filter:drop-shadow(0 0 12px rgba(255,65,54,.55)) drop-shadow(0 5px 22px rgba(0,0,0,.6)); animation:wheelspin 55s linear infinite; z-index:2; }
-  .crew:hover .crew-wheel{ color:var(--accent-2); filter:drop-shadow(0 0 20px rgba(255,65,54,.75)) drop-shadow(0 5px 22px rgba(0,0,0,.6)); }
-  @keyframes wheelspin{ to{ transform:translate(-50%,-50%) rotate(360deg); } }
-  .crew-member{ position:absolute; top:50%; left:50%; z-index:1; display:flex; flex-direction:column; align-items:center; gap:5px; width:74px;
-    transform:translate(-50%,-50%) scale(.2); opacity:0; pointer-events:none;
-    transition:transform .5s cubic-bezier(.2,.9,.25,1), opacity .3s ease; }
-  .crew:hover .crew-member{ transform:translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(1); opacity:1; pointer-events:auto; }
-  .crew-ava{ width:58px; height:58px; border-radius:50%; object-fit:cover; border:2px solid var(--accent); background:var(--surface-strong); box-shadow:0 6px 18px -4px rgba(0,0,0,.7); display:flex; align-items:center; justify-content:center; font-weight:900; font-size:19px; color:var(--accent-2); }
-  .crew-name{ font-weight:800; font-size:12.5px; white-space:nowrap; text-shadow:0 1px 5px rgba(0,0,0,.85); }
-  @media (max-width:920px){ .crew{ display:none; } }
 </style>
 
-<div class="video-bg" aria-hidden="true"><iframe id="bgplayer" allow="autoplay; encrypted-media" frameborder="0" title="fond"
-  src="https://www.youtube.com/embed/26sY_58ofcc?enablejsapi=1&autoplay=1&mute=1&controls=0&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&start=0&loop=1&playlist=26sY_58ofcc"></iframe></div>
 <div class="video-tint" aria-hidden="true"></div>
 <div class="liquid-bg" aria-hidden="true"><span></span><span></span><span></span></div>
-<button id="sound-toggle" class="sound-toggle" aria-label="Activer l'ambiance">🔇</button>
 
-<div class="crew left" aria-hidden="true">
-  <svg class="crew-wheel" viewBox="0 0 100 100" fill="none" stroke="currentColor">
-    <g stroke-linecap="round" stroke-width="4">
-      <line x1="50" y1="14" x2="50" y2="2"/><line x1="75.5" y1="24.5" x2="84" y2="16"/><line x1="86" y1="50" x2="98" y2="50"/><line x1="75.5" y1="75.5" x2="84" y2="84"/><line x1="50" y1="86" x2="50" y2="98"/><line x1="24.5" y1="75.5" x2="16" y2="84"/><line x1="14" y1="50" x2="2" y2="50"/><line x1="24.5" y1="24.5" x2="16" y2="16"/>
-    </g>
-    <g fill="currentColor" stroke="none">
-      <circle cx="50" cy="2" r="4.5"/><circle cx="84.5" cy="15.5" r="4.5"/><circle cx="98" cy="50" r="4.5"/><circle cx="84.5" cy="84.5" r="4.5"/><circle cx="50" cy="98" r="4.5"/><circle cx="15.5" cy="84.5" r="4.5"/><circle cx="2" cy="50" r="4.5"/><circle cx="15.5" cy="15.5" r="4.5"/>
-    </g>
-    <circle cx="50" cy="50" r="37" stroke-width="6"/>
-    <g stroke-width="5" stroke-linecap="round">
-      <line x1="50" y1="16" x2="50" y2="37"/><line x1="74" y1="26" x2="59" y2="41"/><line x1="84" y1="50" x2="63" y2="50"/><line x1="74" y1="74" x2="59" y2="59"/><line x1="50" y1="84" x2="50" y2="63"/><line x1="26" y1="74" x2="41" y2="59"/><line x1="16" y1="50" x2="37" y2="50"/><line x1="26" y1="26" x2="41" y2="41"/>
-    </g>
-    <circle cx="50" cy="50" r="12" fill="currentColor" stroke="none"/>
-    <circle cx="50" cy="50" r="4" fill="#1a0808" stroke="none"/>
-  </svg>
-  <div class="crew-member"><img class="crew-ava" src="assets/crew-zzek.png" alt="ZzeK"><div class="crew-name">ZzeK</div></div>
-  <div class="crew-member"><img class="crew-ava" src="assets/crew-youzeo.png" alt="YOUZEO"><div class="crew-name">YOUZEO</div></div>
-  <div class="crew-member"><img class="crew-ava" src="assets/crew-enclume.png" alt="Enclume"><div class="crew-name">Enclume</div></div>
-  <div class="crew-member"><img class="crew-ava" src="assets/crew-kairo.png" alt="Kairo"><div class="crew-name">Kairo</div></div>
-</div>
 
-<div class="crew right" aria-hidden="true">
-  <svg class="crew-wheel" viewBox="0 0 100 100" fill="none" stroke="currentColor">
-    <g stroke-linecap="round" stroke-width="4">
-      <line x1="50" y1="14" x2="50" y2="2"/><line x1="75.5" y1="24.5" x2="84" y2="16"/><line x1="86" y1="50" x2="98" y2="50"/><line x1="75.5" y1="75.5" x2="84" y2="84"/><line x1="50" y1="86" x2="50" y2="98"/><line x1="24.5" y1="75.5" x2="16" y2="84"/><line x1="14" y1="50" x2="2" y2="50"/><line x1="24.5" y1="24.5" x2="16" y2="16"/>
-    </g>
-    <g fill="currentColor" stroke="none">
-      <circle cx="50" cy="2" r="4.5"/><circle cx="84.5" cy="15.5" r="4.5"/><circle cx="98" cy="50" r="4.5"/><circle cx="84.5" cy="84.5" r="4.5"/><circle cx="50" cy="98" r="4.5"/><circle cx="15.5" cy="84.5" r="4.5"/><circle cx="2" cy="50" r="4.5"/><circle cx="15.5" cy="15.5" r="4.5"/>
-    </g>
-    <circle cx="50" cy="50" r="37" stroke-width="6"/>
-    <g stroke-width="5" stroke-linecap="round">
-      <line x1="50" y1="16" x2="50" y2="37"/><line x1="74" y1="26" x2="59" y2="41"/><line x1="84" y1="50" x2="63" y2="50"/><line x1="74" y1="74" x2="59" y2="59"/><line x1="50" y1="84" x2="50" y2="63"/><line x1="26" y1="74" x2="41" y2="59"/><line x1="16" y1="50" x2="37" y2="50"/><line x1="26" y1="26" x2="41" y2="41"/>
-    </g>
-    <circle cx="50" cy="50" r="12" fill="currentColor" stroke="none"/>
-    <circle cx="50" cy="50" r="4" fill="#1a0808" stroke="none"/>
-  </svg>
-  <div class="crew-member"><img class="crew-ava" src="assets/crew-zzek.png" alt="ZzeK"><div class="crew-name">ZzeK</div></div>
-  <div class="crew-member"><img class="crew-ava" src="assets/crew-youzeo.png" alt="YOUZEO"><div class="crew-name">YOUZEO</div></div>
-  <div class="crew-member"><img class="crew-ava" src="assets/crew-enclume.png" alt="Enclume"><div class="crew-name">Enclume</div></div>
-  <div class="crew-member"><img class="crew-ava" src="assets/crew-kairo.png" alt="Kairo"><div class="crew-name">Kairo</div></div>
-</div>
-
-<script>
-  (function(){
-    var R = 145; // rayon de l'éventail
-    document.querySelectorAll('.crew').forEach(function(crew){
-      var right = crew.classList.contains('right');
-      var members = crew.querySelectorAll('.crew-member');
-      var n = members.length;
-      var spread = 150 * Math.PI/180; // ouverture du demi-cercle (150°)
-      var start = -spread/2;
-      members.forEach(function(m, i){
-        var t = n===1 ? 0.5 : i/(n-1);
-        var ang = start + t*spread;               // -75°..+75° autour de l'horizontale
-        var x = Math.cos(ang) * R * (right ? -1 : 1);
-        var y = Math.sin(ang) * R;
-        m.style.setProperty('--x', x.toFixed(1)+'px');
-        m.style.setProperty('--y', y.toFixed(1)+'px');
-        m.style.transitionDelay = (i*0.05)+'s';
-      });
-    });
-  })();
-</script>
 
 <img class="hero-emblem" src="assets/atk-logo.png" alt="" aria-hidden="true">
 <div class="embers" aria-hidden="true"><i style="left:22%;animation-delay:0s"></i><i style="left:34%;animation-delay:1.4s"></i><i style="left:48%;animation-delay:.6s"></i><i style="left:60%;animation-delay:2.1s"></i><i style="left:72%;animation-delay:3s"></i><i style="left:41%;animation-delay:3.6s"></i></div>
@@ -199,62 +107,3 @@
   </div>
 </div>
 
-<script>
-  (function(){
-    var LOOP_START = 0;     // début de la boucle (secondes)
-    var LOOP_END = 30;      // fin de la boucle (secondes)
-    var player, timer;
-    var tag = document.createElement('script');
-    tag.src = "https://www.youtube.com/iframe_api";
-    document.head.appendChild(tag);
-    window.onYouTubeIframeAPIReady = function(){
-      // On s'attache à l'iframe déjà présente (qui a bien allow="autoplay")
-      player = new YT.Player('bgplayer', {
-        events: {
-          onReady: function(e){ e.target.mute(); e.target.playVideo(); },
-          onStateChange: function(e){
-            if (e.data === YT.PlayerState.PLAYING){
-              // n'affiche l'iframe qu'une fois la lecture démarrée (masque le bouton play de YouTube)
-              document.getElementById('bgplayer').classList.add('on');
-              clearInterval(timer);
-              timer = setInterval(function(){
-                try{
-                  if (player.getCurrentTime() >= LOOP_END){ player.seekTo(LOOP_START, true); }
-                }catch(err){}
-              }, 200);
-            }
-          }
-        }
-      });
-      // filet de sécurité : afficher l'iframe au bout de 5s même si l'état PLAYING n'a pas été détecté
-      setTimeout(function(){ var el=document.getElementById('bgplayer'); if(el) el.classList.add('on'); }, 5000);
-    };
-    // Bouton ambiance / son on-off (active le son de la vidéo de fond)
-    var soundOn = false;
-    var soundBtn = document.getElementById('sound-toggle');
-    if (soundBtn){
-      soundBtn.addEventListener('click', function(){
-        if (!player || !player.unMute) return;
-        soundOn = !soundOn;
-        if (soundOn){ player.unMute(); player.setVolume(35); soundBtn.textContent='🔊'; }
-        else { player.mute(); soundBtn.textContent='🔇'; }
-      });
-    }
-
-    // Place les membres d'équipage en demi-cercle (éventail) autour de chaque demi-roue
-    document.querySelectorAll('.crew').forEach(function(crew){
-      var members = crew.querySelectorAll('.crew-member');
-      var n = members.length, R = 190, spread = 128;
-      var dir = crew.classList.contains('right') ? -1 : 1;
-      members.forEach(function(m, i){
-        var t = n > 1 ? i/(n-1) : .5;
-        var ang = (-spread/2 + t*spread) * Math.PI/180;
-        var x = dir * R * Math.cos(ang);
-        var y = R * Math.sin(ang);
-        m.style.setProperty('--x', x.toFixed(0)+'px');
-        m.style.setProperty('--y', y.toFixed(0)+'px');
-        m.style.transitionDelay = (0.04*i)+'s';
-      });
-    });
-  })();
-</script>
