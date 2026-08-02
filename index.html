@@ -68,41 +68,60 @@
 </div>
 
 <audio id="bg-music" src="assets/bg-music.mp3" preload="auto"></audio>
+<audio id="bg-music-b" src="assets/bg-music.mp3" preload="auto"></audio>
 <audio id="tag-sound" src="assets/tag.mp3" preload="auto"></audio>
 <button id="sound-toggle" class="sound-toggle" aria-label="Couper / activer le son" title="Son">🔊</button>
 
 <script>
   (function(){
-    var music = document.getElementById('bg-music');
-    var tag   = document.getElementById('tag-sound');
-    var btn   = document.getElementById('sound-toggle');
-    var TARGET = 0.5;          // volume max de la musique de fond
-    var FADE_IN = 7;           // fondu d'entrée : 7 s
-    var CUT = 45;              // on coupe / reboucle à 45 s
-    var FADE_OUT_DUR = 7;      // durée du fondu de sortie
-    var FADE_OUT_START = CUT - FADE_OUT_DUR;   // début du fondu de sortie (~38 s)
-    var TAG_DELAY = 2000;      // le tag démarre 2 s après le lancement
-    var started = false, tagDone = false, envTimer = null;
+    // Deux pistes identiques pour un fondu croisé (boucle sans coupure)
+    var players = [document.getElementById('bg-music'), document.getElementById('bg-music-b')];
+    var tag = document.getElementById('tag-sound');
+    var btn = document.getElementById('sound-toggle');
 
-    tag.volume = 0.5;   // discret : doit se fondre dans la musique, juste un poil audible
+    var TARGET = 0.5;      // volume max de la musique
+    var FADE   = 7;        // durée du fondu (entrée, sortie et croisement)
+    var CUT    = 45;       // longueur d'une boucle : 45 s
+    var TAG_DELAY = 2000;  // le tag démarre 2 s après le lancement
 
-    // Enveloppe en boucle : fondu d'entrée (7s) → plein volume → fondu de sortie → coupe à 45s → repart avec fondu
-    function runEnvelope(){
-      if (envTimer) clearInterval(envTimer);
-      music.volume = 0;
-      envTimer = setInterval(function(){
-        if (music.paused) return;
-        var t = music.currentTime;
-        if (t >= CUT){ music.currentTime = 0; return; }   // coupe à 45s puis reboucle
-        var v;
-        if (t < FADE_IN)             v = TARGET * (t / FADE_IN);
-        else if (t < FADE_OUT_START) v = TARGET;
-        else                         v = TARGET * (1 - (t - FADE_OUT_START) / FADE_OUT_DUR);
-        if (!music.muted) music.volume = Math.max(0, Math.min(TARGET, v));
+    var active = 0;        // piste en cours
+    var started = false;   // mis à true de façon SYNCHRONE (corrige le bug du double-clic)
+    var muted = false, tagDone = false, engine = null;
+
+    tag.volume = 0.5;      // discret : doit se fondre dans la musique
+    players.forEach(function(p){ p.volume = 0; });
+
+    // Enveloppe d'une boucle : fondu d'entrée 0→7s, plein 7→38s, fondu de sortie 38→45s
+    function env(t){
+      if (t < FADE)       return TARGET * (t / FADE);
+      if (t < CUT - FADE) return TARGET;
+      if (t < CUT)        return TARGET * (1 - (t - (CUT - FADE)) / FADE);
+      return 0;
+    }
+
+    function startEngine(){
+      if (engine) return;
+      engine = setInterval(function(){
+        players.forEach(function(p){
+          if (p.paused) return;
+          var t = p.currentTime;
+          if (t >= CUT){ p.pause(); return; }      // sa boucle est finie → on l'arrête
+          p.volume = muted ? 0 : Math.max(0, Math.min(TARGET, env(t)));
+        });
+        // Croisement : quand la piste active atteint 38s, on lance l'autre depuis 0
+        // pendant qu'elle finit son fondu de sortie → aucun trou.
+        var a = players[active];
+        if (!a.paused && !a._xf && a.currentTime >= CUT - FADE){
+          a._xf = true;
+          var n = 1 - active, np = players[n];
+          np._xf = false; np.currentTime = 0; np.volume = 0;
+          np.play().catch(function(){});
+          active = n;
+        }
       }, 50);
     }
 
-    function playTag(){
+    function scheduleTag(){
       if (tagDone) return;
       tagDone = true;
       setTimeout(function(){ try{ tag.currentTime = 0; tag.play(); }catch(e){} }, TAG_DELAY);
@@ -110,24 +129,24 @@
 
     function start(){
       if (started) return;
-      music.muted = false;
-      music.volume = 0;
-      var p = music.play();
-      if (p && p.then){
-        p.then(function(){ started = true; runEnvelope(); playTag(); btn.textContent = '🔊'; })
-         .catch(function(){ /* autoplay bloqué : on attend un clic */ });
+      started = true;                 // synchrone : empêche tout double démarrage
+      var p = players[active];
+      p._xf = false; p.currentTime = 0; p.volume = 0;
+      var pr = p.play();
+      if (pr && pr.then){
+        pr.then(function(){ startEngine(); scheduleTag(); })
+          .catch(function(){ started = false; });   // autoplay bloqué → on réessaie au 1er geste
       } else {
-        started = true; runEnvelope(); playTag();
+        startEngine(); scheduleTag();
       }
     }
 
-    // 1) tentative de lecture immédiate au lancement
+    // 1) tentative immédiate au chargement (souvent bloquée par le navigateur)
     start();
 
-    // 2) filet de sécurité : les navigateurs bloquent le son tant qu'on n'a pas
-    //    interagi, donc au premier clic / toucher / touche on démarre.
+    // 2) sinon : démarrage au tout premier geste (clic / toucher / touche)
     function onGesture(){
-      if (!started) start();
+      start();
       if (started){
         ['pointerdown','touchstart','keydown'].forEach(function(ev){
           document.removeEventListener(ev, onGesture);
@@ -138,21 +157,13 @@
       document.addEventListener(ev, onGesture, { passive:true });
     });
 
-    // Bouton mute / activer
+    // Bouton : 1er clic = démarre ; ensuite = coupe / réactive le son
     btn.addEventListener('click', function(e){
       e.stopPropagation();
-      if (!started){ start(); return; }
-      if (music.paused || music.muted){
-        music.muted = false;
-        if (music.paused){
-          music.play().catch(function(){});
-          runEnvelope();
-        }
-        btn.textContent = '🔊';
-      } else {
-        music.muted = true;
-        btn.textContent = '🔇';
-      }
+      var wasStarted = started;
+      if (!wasStarted){ start(); return; }
+      muted = !muted;
+      btn.textContent = muted ? '🔇' : '🔊';
     });
   })();
 </script>
