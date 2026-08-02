@@ -650,16 +650,32 @@
 })();
 </script>
 
+<canvas id="viz" aria-hidden="true" style="position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
 <audio id="match-audio" src="assets/match.mp3" preload="auto"></audio>
 <script>
   (function(){
-    var a = document.getElementById('match-audio');
-    if (!a) return;
-    a.volume = 0.6;
-    var done = false;
-    function go(){ if (done) return; var p = a.play(); if (p && p.then){ p.then(function(){ done = true; }).catch(function(){}); } else { done = true; } }
-    go();  // tente au chargement ; sinon au 1er geste (blocage autoplay navigateur)
-    function g(){ go(); if (done){ ['pointerdown','touchstart','keydown'].forEach(function(e){ document.removeEventListener(e, g); }); } }
-    ['pointerdown','touchstart','keydown'].forEach(function(e){ document.addEventListener(e, g, { passive:true }); });
+    var a=document.getElementById('match-audio'), cv=document.getElementById('viz');
+    if(!a||!cv) return;
+    a.volume=0.6;
+    var g2=cv.getContext('2d'), dpr=Math.min(window.devicePixelRatio||1,2), W=0,H=0;
+    function resize(){ W=cv.width=innerWidth*dpr; H=cv.height=innerHeight*dpr; } resize(); addEventListener('resize',resize);
+    var ac,an,data;
+    function audioSetup(){ if(ac) return; try{ ac=new (window.AudioContext||window.webkitAudioContext)(); var s=ac.createMediaElementSource(a); an=ac.createAnalyser(); an.fftSize=256; data=new Uint8Array(an.frequencyBinCount); s.connect(an); an.connect(ac.destination); }catch(e){} }
+    var done=false;
+    // tente au chargement ; sinon au 1er geste (blocage autoplay navigateur)
+    function go(){ if(done) return; audioSetup(); if(ac&&ac.state==='suspended') ac.resume(); var p=a.play(); if(p&&p.then){ p.then(function(){done=true;}).catch(function(){}); } else { done=true; } }
+    go();
+    function gest(){ go(); if(done){ ['pointerdown','touchstart','keydown'].forEach(function(e){document.removeEventListener(e,gest);}); } }
+    ['pointerdown','touchstart','keydown'].forEach(function(e){ document.addEventListener(e,gest,{passive:true}); });
+    // Glows rouges qui bougent avec la voix
+    var blobs=[{x:.24,y:.38,r:.30,c:'255,65,54'},{x:.78,y:.58,r:.34,c:'255,95,75'},{x:.5,y:.8,r:.26,c:'190,28,22'}], lvl=0;
+    (function frame(){ requestAnimationFrame(frame);
+      var t=0; if(an){ an.getByteFrequencyData(data); var s=0,n=data.length; for(var i=0;i<n;i++) s+=data[i]; t=(s/n)/255; }
+      lvl+=(t-lvl)*0.22;
+      g2.clearRect(0,0,W,H); g2.globalCompositeOperation='lighter';
+      for(var b=0;b<blobs.length;b++){ var bl=blobs[b], cx=bl.x*W, cy=bl.y*H, rad=(bl.r+lvl*0.25)*Math.min(W,H), al=0.045+lvl*0.4;
+        var rg=g2.createRadialGradient(cx,cy,0,cx,cy,rad); rg.addColorStop(0,'rgba('+bl.c+','+al.toFixed(3)+')'); rg.addColorStop(1,'rgba('+bl.c+',0)');
+        g2.fillStyle=rg; g2.beginPath(); g2.arc(cx,cy,rad,0,7); g2.fill(); }
+    })();
   })();
 </script>
