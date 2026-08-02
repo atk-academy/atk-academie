@@ -660,12 +660,16 @@
     var g2=cv.getContext('2d'), dpr=Math.min(window.devicePixelRatio||1,2), W=0,H=0;
     function resize(){ W=cv.width=innerWidth*dpr; H=cv.height=innerHeight*dpr; } resize(); addEventListener('resize',resize);
     var ac,an,data;
-    function audioSetup(){ if(ac) return; try{ ac=new (window.AudioContext||window.webkitAudioContext)(); var s=ac.createMediaElementSource(a); an=ac.createAnalyser(); an.fftSize=256; data=new Uint8Array(an.frequencyBinCount); s.connect(an); an.connect(ac.destination); }catch(e){} }
-    var done=false;
-    // tente au chargement ; sinon au 1er geste (blocage autoplay navigateur)
-    function go(){ if(done) return; audioSetup(); if(ac&&ac.state==='suspended') ac.resume(); var p=a.play(); if(p&&p.then){ p.then(function(){done=true;}).catch(function(){}); } else { done=true; } }
-    go();
-    function gest(){ go(); if(done){ ['pointerdown','touchstart','keydown'].forEach(function(e){document.removeEventListener(e,gest);}); } }
+    function setupAnalyser(){ if(ac) return; try{ ac=new (window.AudioContext||window.webkitAudioContext)(); var s=ac.createMediaElementSource(a); an=ac.createAnalyser(); an.fftSize=256; data=new Uint8Array(an.frequencyBinCount); s.connect(an); an.connect(ac.destination); }catch(e){ an=null; } }
+    // Lecture : tentative au chargement, SANS Web Audio (pour ne pas risquer de couper le son)
+    a.play().catch(function(){});
+    // Au 1er geste : (re)lance le son ET branche l'analyseur (qui a besoin d'un geste pour tourner)
+    function gest(){
+      if(a.paused) a.play().catch(function(){});
+      setupAnalyser();
+      if(ac) ac.resume();
+      ['pointerdown','touchstart','keydown'].forEach(function(e){ document.removeEventListener(e,gest); });
+    }
     ['pointerdown','touchstart','keydown'].forEach(function(e){ document.addEventListener(e,gest,{passive:true}); });
     // Glows rouges : respiration + dérive permanentes, et pulse avec la voix
     var blobs=[{x:.24,y:.38,r:.30,c:'255,65,54',ph:0},{x:.78,y:.58,r:.34,c:'255,95,75',ph:2},{x:.5,y:.8,r:.26,c:'190,28,22',ph:4}], lvl=0, t0=performance.now();
