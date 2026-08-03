@@ -365,6 +365,18 @@
   .vcap.show{ opacity:1; transform:translateX(-50%) translateY(0); }
   .vcap .mc-jp{ display:block; font-size:10.5px; letter-spacing:.32em; color:var(--accent-2); opacity:.8; margin-bottom:4px; }
   .vcap .mc-fr{ display:block; font-weight:700; font-size:clamp(13px,2.1vw,16.5px); letter-spacing:.02em; color:var(--text-hi); }
+  /* Gros choix ATK / L'Academy */
+  .join-choice{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .join-btn{ font-family:inherit; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:5px; padding:22px 14px; border-radius:16px; border:1.5px solid var(--border); background:var(--surface-strong); color:var(--text-hi); transition:transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease; }
+  .join-btn .jb-title{ font-size:23px; font-weight:900; letter-spacing:.02em; line-height:1; }
+  .join-btn .jb-sub{ font-size:12px; color:var(--text-lo); font-weight:600; }
+  .join-btn:hover{ border-color:var(--accent); transform:translateY(-2px); }
+  .join-btn.active{ border-color:transparent; background:linear-gradient(180deg, rgba(255,65,54,.20), rgba(255,65,54,.06)); box-shadow:0 0 0 1.5px var(--accent) inset, 0 12px 30px -14px var(--accent); }
+  .join-btn.active .jb-title{ color:#fff; }
+  .join-btn.active .jb-sub{ color:var(--accent-2); }
+  .target-tag{ display:inline-block; margin-top:5px; font-size:10.5px; font-weight:800; letter-spacing:.04em; padding:2px 9px; border-radius:999px; }
+  .target-tag.atk{ color:#fff; background:linear-gradient(155deg,var(--accent-2),var(--accent)); }
+  .target-tag.academy{ color:var(--accent-2); background:rgba(255,65,54,.12); border:1px solid var(--border); }
 </style>
 
 <div class="liquid-bg" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
@@ -374,7 +386,7 @@
     <div class="brand">
       <div class="brand-badge">__ICON_ANCHOR__</div>
       <div class="brand-text">
-        <div class="eyebrow">ATK Academy</div>
+        <div class="eyebrow">ATK / Academy</div>
         <h1>Recrutement</h1>
       </div>
     </div>
@@ -390,6 +402,13 @@
     <section id="view-form" class="view active">
 
       <form id="candidate-form" novalidate>
+        <div class="glass card join-card">
+          <div class="card-head"><div class="dot id">⚔️</div><h2>Tu veux rejoindre&nbsp;?</h2></div>
+          <div class="join-choice" data-key="target">
+            <button type="button" class="join-btn active" data-value="ATK"><span class="jb-title">ATK</span><span class="jb-sub">La guilde principale</span></button>
+            <button type="button" class="join-btn" data-value="ACADEMY"><span class="jb-title">L'Academy</span><span class="jb-sub">La formation / la relève</span></button>
+          </div>
+        </div>
         <div class="glass card">
           <div class="card-head"><div class="dot id">__ICON_ID__</div><h2>Identité</h2></div>
           <div class="field">
@@ -1055,7 +1074,7 @@
         : '<span class="grade-badge">Non classé</span>';
 
       tr.innerHTML =
-        '<td><div class="pirate-name">'+escapeHtml(c.xbox)+(c.example?'<span class="example-chip">Exemple</span>':'')+'</div><div class="pirate-sub">'+escapeHtml(c.discord)+'</div></td>' +
+        '<td><div class="pirate-name">'+escapeHtml(c.xbox)+(c.example?'<span class="example-chip">Exemple</span>':'')+'</div><div class="pirate-sub">'+escapeHtml(c.discord)+'</div>'+(c.target?'<span class="target-tag '+(c.target==='ACADEMY'?'academy':'atk')+'">'+(c.target==='ACADEMY'?"L'Academy":'ATK')+'</span>':'')+'</td>' +
         '<td><div class="bars">'+barsHtml+'</div></td>' +
         '<td><span class="avg-badge">'+avg.toFixed(1)+'</span></td>' +
         '<td><span class="status-pill '+status.cls+'">'+status.label+'</span></td>' +
@@ -1517,6 +1536,13 @@
     setTimeout(function(){ toast.classList.remove('show'); }, 2600);
   }
 
+  document.querySelectorAll('.join-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.join-btn').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+    });
+  });
+
   document.getElementById('candidate-form').addEventListener('submit', function(e){
     e.preventDefault();
     var xboxInput = document.getElementById('f-xbox');
@@ -1556,7 +1582,9 @@
     var ageBtn = document.querySelector('.choice-group[data-key="age"] .choice-btn.active');
     var situationBtn = document.querySelector('.choice-group[data-key="situation"] .choice-btn.active');
 
+    var joinBtn = document.querySelector('.join-choice .join-btn.active');
     var candidate = {
+      target: joinBtn ? joinBtn.getAttribute('data-value') : 'ATK',
       xbox: xboxInput.value.trim(),
       discord: discordInput.value.trim(),
       hours: hoursInput.value ? parseInt(hoursInput.value, 10) : null,
@@ -1579,6 +1607,7 @@
 
     xboxInput.value = ''; discordInput.value = ''; hoursInput.value = '';
     document.querySelectorAll('.choice-btn').forEach(function(btn){ btn.classList.remove('active'); });
+    document.querySelectorAll('.join-btn').forEach(function(b,i){ b.classList.toggle('active', i===0); });
     document.querySelectorAll('.rating-track').forEach(function(track){
       track.setAttribute('data-value', String(RATING_DEFAULT));
       track.querySelector('.rating-highlight').style.transform = 'translateX(' + ((RATING_DEFAULT-1)*RATING_STEP) + 'px)';
