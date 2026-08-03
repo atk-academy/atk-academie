@@ -1605,6 +1605,9 @@
     var a=document.getElementById('cand-audio'), cv=document.getElementById('viz');
     if(!a||!cv) return;
     a.volume=0.6;
+    // La voix ne se joue qu'UNE fois par visiteur (mémorisé), pas à chaque passage sur la page
+    var VKEY='atk-cand-voice-played', played=false; try{ played=localStorage.getItem(VKEY)==='1'; }catch(e){}
+    a.addEventListener('playing', function(){ played=true; try{ localStorage.setItem(VKEY,'1'); }catch(e){} });
     // Sous-titre voix : 2 temps, synchro avec la voix, disparaît à la fin
     var cap=document.getElementById('cand-caption'), capFr=cap&&cap.querySelector('.mc-fr'), capSwap=null;
     var cues=["ATK va arriver à un point où même toi, tu ne me croiras pas si je te montre.","Nous combattrons, nous transmettrons et nous attaquerons."];
@@ -1626,6 +1629,7 @@
     setupAnalyser();
     // Le son et l'analyseur ont besoin d'un geste pour démarrer : au 1er clic/scroll on lance tout
     function gest(){
+      if(played){ ['pointerdown','touchstart','keydown'].forEach(function(e){ document.removeEventListener(e,gest); }); return; }
       if(ac && ac.state!=='running') ac.resume();
       if(a.paused) a.play().catch(function(){});
       if(ac && ac.state==='running'){ ['pointerdown','touchstart','keydown'].forEach(function(e){ document.removeEventListener(e,gest); }); }
