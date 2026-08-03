@@ -360,6 +360,11 @@
     .stats-row{ grid-template-columns:1fr; }
     .card{ padding:18px 16px 20px; }
   }
+  /* Sous-titre voix (sobre, bas centre, apparaît avec la voix) */
+  .vcap{ position:fixed; left:50%; bottom:6%; transform:translateX(-50%) translateY(10px); z-index:30; pointer-events:none; text-align:center; max-width:min(92vw,660px); padding:10px 20px; border-radius:12px; background:rgba(10,4,4,.58); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); border:1px solid var(--border); box-shadow:0 12px 34px -14px rgba(0,0,0,.7); opacity:0; transition:opacity .55s ease, transform .55s cubic-bezier(.2,.8,.2,1); }
+  .vcap.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+  .vcap .mc-jp{ display:block; font-size:10.5px; letter-spacing:.32em; color:var(--accent-2); opacity:.8; margin-bottom:4px; }
+  .vcap .mc-fr{ display:block; font-weight:700; font-size:clamp(13px,2.1vw,16.5px); letter-spacing:.02em; color:var(--text-hi); }
 </style>
 
 <div class="liquid-bg" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
@@ -1594,11 +1599,25 @@
 
 <canvas id="viz" aria-hidden="true" style="position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
 <audio id="cand-audio" src="assets/candidature.mp3" preload="auto"></audio>
+<div id="cand-caption" class="vcap" aria-hidden="true"><span class="mc-jp">共に戦え</span><span class="mc-fr"></span></div>
 <script>
   (function(){
     var a=document.getElementById('cand-audio'), cv=document.getElementById('viz');
     if(!a||!cv) return;
     a.volume=0.6;
+    // Sous-titre voix : 2 temps, synchro avec la voix, disparaît à la fin
+    var cap=document.getElementById('cand-caption'), capFr=cap&&cap.querySelector('.mc-fr'), capSwap=null;
+    var cues=["ATK va arriver à un point où même toi, tu ne me croiras pas si je te montre.","Nous combattrons, nous transmettrons et nous attaquerons."];
+    if(cap&&capFr){
+      a.addEventListener('playing', function(){
+        cap.classList.add('show'); capFr.textContent=cues[0];
+        clearTimeout(capSwap);
+        var dur=(a.duration&&isFinite(a.duration))?a.duration:13;
+        capSwap=setTimeout(function(){ capFr.textContent=cues[1]; }, dur*0.5*1000);
+      });
+      a.addEventListener('ended', function(){ cap.classList.remove('show'); clearTimeout(capSwap); });
+      a.addEventListener('pause', function(){ cap.classList.remove('show'); clearTimeout(capSwap); });
+    }
     var g2=cv.getContext('2d'), dpr=Math.min(window.devicePixelRatio||1,2), W=0,H=0;
     function resize(){ W=cv.width=innerWidth*dpr; H=cv.height=innerHeight*dpr; } resize(); addEventListener('resize',resize);
     var ac,an,data;
