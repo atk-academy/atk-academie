@@ -256,12 +256,12 @@
     }
   } catch(e) { useFirestore = false; }
 
-  function hashStr(s){
-    var h = 5381;
-    for (var i=0;i<s.length;i++){ h = ((h*33) ^ s.charCodeAt(i)) >>> 0; }
-    return h.toString(16);
+  function sha256(s){
+    return crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)).then(function(buf){
+      return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+    });
   }
-  var ADMIN_HASH = '4fea5cb6';
+  var ADMIN_HASH = '958e9594097496eec6b412d1e3d1cc5a05a5933ced0712c061d34837ff33e2e5';
   var ADMIN_KEY = 'atk-duel-admin';
   var isAdmin = false;
   (function checkAdminAccess(){
@@ -269,10 +269,11 @@
     if (params.get('admin') !== '1') return;
     if (localStorage.getItem(ADMIN_KEY) === '1'){ isAdmin = true; return; }
     var pass = window.prompt('Mot de passe admin :');
-    if (pass !== null && hashStr('ATK:' + pass) === ADMIN_HASH){
-      localStorage.setItem(ADMIN_KEY, '1');
-      isAdmin = true;
-    }
+    if (pass === null) return;
+    sha256('ATK:' + pass).then(function(h){
+      if (h === ADMIN_HASH){ localStorage.setItem(ADMIN_KEY, '1'); location.reload(); }
+      else { alert('Mot de passe incorrect.'); }
+    });
   })();
 
   // Enregistrement d'un match : public, sans mot de passe.

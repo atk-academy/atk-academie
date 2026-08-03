@@ -881,13 +881,13 @@
     });
   });
 
-  var STAFF_HASH = '4fea5cb6';
+  var STAFF_HASH = '958e9594097496eec6b412d1e3d1cc5a05a5933ced0712c061d34837ff33e2e5';
   var AUTH_KEY = 'atk-staff-authed';
 
-  function hashStr(s){
-    var h = 5381;
-    for (var i=0;i<s.length;i++){ h = ((h*33) ^ s.charCodeAt(i)) >>> 0; }
-    return h.toString(16);
+  function sha256(s){
+    return crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)).then(function(buf){
+      return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+    });
   }
 
   function isStaffAuthed(){ return localStorage.getItem(AUTH_KEY) === '1'; }
@@ -910,14 +910,16 @@
     var userInput = document.getElementById('lock-user');
     var passInput = document.getElementById('lock-pass');
     var errorEl = document.getElementById('lock-error');
-    if (hashStr(userInput.value.trim() + ':' + passInput.value) === STAFF_HASH){
-      localStorage.setItem(AUTH_KEY, '1');
-      errorEl.style.display = 'none';
-      userInput.value = ''; passInput.value = '';
-      showBoardView();
-    } else {
-      errorEl.style.display = 'block';
-    }
+    sha256(userInput.value.trim() + ':' + passInput.value).then(function(h){
+      if (h === STAFF_HASH){
+        localStorage.setItem(AUTH_KEY, '1');
+        errorEl.style.display = 'none';
+        userInput.value = ''; passInput.value = '';
+        showBoardView();
+      } else {
+        errorEl.style.display = 'block';
+      }
+    });
   });
 
   document.getElementById('lock-out').addEventListener('click', function(){
