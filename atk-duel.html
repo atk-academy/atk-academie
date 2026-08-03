@@ -138,6 +138,11 @@
   .bracket-round:not(:last-child) .bracket-match:nth-child(odd)::after{ top:50%; height:50%; border-top:2px solid var(--border-strong); border-right:2px solid var(--border-strong); border-top-right-radius:6px; }
   .bracket-round:not(:last-child) .bracket-match:nth-child(even)::after{ bottom:50%; height:50%; border-bottom:2px solid var(--border-strong); border-right:2px solid var(--border-strong); border-bottom-right-radius:6px; }
   .bracket-round:not(:first-child) .bracket-match::before{ content:''; position:absolute; right:100%; width:24px; top:50%; height:2px; background:var(--border-strong); }
+  /* Sous-titre voix (sobre, bas centre, apparaît avec la voix) */
+  .match-caption{ position:fixed; left:50%; bottom:6%; transform:translateX(-50%) translateY(10px); z-index:30; pointer-events:none; text-align:center; max-width:min(90vw,620px); padding:10px 20px; border-radius:12px; background:rgba(10,4,4,.58); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); border:1px solid var(--border); box-shadow:0 12px 34px -14px rgba(0,0,0,.7); opacity:0; transition:opacity .55s ease, transform .55s cubic-bezier(.2,.8,.2,1); }
+  .match-caption.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+  .match-caption .mc-jp{ display:block; font-size:10.5px; letter-spacing:.32em; color:var(--accent-2); opacity:.8; margin-bottom:4px; }
+  .match-caption .mc-fr{ display:block; font-weight:700; font-size:clamp(13px,2.1vw,16.5px); letter-spacing:.02em; color:var(--text-hi); }
 </style>
 
 <div class="liquid-bg" aria-hidden="true"><span></span><span></span><span></span></div>
@@ -652,11 +657,19 @@
 
 <canvas id="viz" aria-hidden="true" style="position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
 <audio id="match-audio" src="assets/match.mp3" preload="auto"></audio>
+<div id="match-caption" class="match-caption" aria-hidden="true"><span class="mc-jp">闘技場、開幕</span><span class="mc-fr">L'arène de combat ATK est ouverte</span></div>
 <script>
   (function(){
     var a=document.getElementById('match-audio'), cv=document.getElementById('viz');
     if(!a||!cv) return;
     a.volume=0.6;
+    // Sous-titre voix : apparaît quand la voix joue, disparaît à la fin
+    var cap=document.getElementById('match-caption');
+    if(cap){
+      a.addEventListener('playing', function(){ cap.classList.add('show'); });
+      a.addEventListener('ended',   function(){ cap.classList.remove('show'); });
+      a.addEventListener('pause',   function(){ cap.classList.remove('show'); });
+    }
     var g2=cv.getContext('2d'), dpr=Math.min(window.devicePixelRatio||1,2), W=0,H=0;
     function resize(){ W=cv.width=innerWidth*dpr; H=cv.height=innerHeight*dpr; } resize(); addEventListener('resize',resize);
     var ac,an,data;
