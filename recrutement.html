@@ -1184,7 +1184,8 @@
       colEl.className = 'pipeline-col';
       if (col.grade) colEl.setAttribute('data-grade', col.grade);
 
-      var items = candidates.filter(function(c){ return (c.grade || null) === col.grade; });
+      // Les candidats ATK (guilde principale) ne sont pas suivis par grade : juste leur candidature.
+      var items = candidates.filter(function(c){ return (c.grade || null) === col.grade && c.target !== 'ATK'; });
 
       var headEl = document.createElement('div');
       headEl.className = 'pipeline-col-head';
