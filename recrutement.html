@@ -377,6 +377,9 @@
   .target-tag{ display:inline-block; margin-top:5px; font-size:10.5px; font-weight:800; letter-spacing:.04em; padding:2px 9px; border-radius:999px; }
   .target-tag.atk{ color:#fff; background:linear-gradient(155deg,var(--accent-2),var(--accent)); }
   .target-tag.academy{ color:var(--accent-2); background:rgba(255,65,54,.12); border:1px solid var(--border); }
+  .target-btn{ font-family:inherit; cursor:pointer; margin-top:5px; }
+  .target-btn.unset{ color:var(--text-faint); background:var(--surface-strong); border:1px dashed var(--border); }
+  .target-btn:hover{ filter:brightness(1.12); }
 </style>
 
 <div class="liquid-bg" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
@@ -1076,7 +1079,9 @@
         : '<span class="grade-badge">Non classé</span>';
 
       tr.innerHTML =
-        '<td><div class="pirate-name">'+escapeHtml(c.xbox)+(c.example?'<span class="example-chip">Exemple</span>':'')+'</div><div class="pirate-sub">'+escapeHtml(c.discord)+'</div>'+(c.target?'<span class="target-tag '+(c.target==='ACADEMY'?'academy':'atk')+'">'+(c.target==='ACADEMY'?"L'Academy":'ATK')+'</span>':'')+'</td>' +
+        '<td><div class="pirate-name">'+escapeHtml(c.xbox)+(c.example?'<span class="example-chip">Exemple</span>':'')+'</div><div class="pirate-sub">'+escapeHtml(c.discord)+'</div>'+
+          '<button type="button" class="target-tag target-btn '+(c.target==='ACADEMY'?'academy':(c.target==='ATK'?'atk':'unset'))+'" data-id="'+c.id+'" data-target="'+(c.target||'')+'" title="Clique pour changer">'+(c.target==='ACADEMY'?"L'Academy":(c.target==='ATK'?'ATK':'Choisir ATK / Academy'))+'</button>'+
+        '</td>' +
         '<td><div class="bars">'+barsHtml+'</div></td>' +
         '<td><span class="avg-badge">'+avg.toFixed(1)+'</span></td>' +
         '<td><span class="status-pill '+status.cls+'">'+status.label+'</span></td>' +
@@ -1085,9 +1090,15 @@
         '<td>'+fmtDate(c.date)+'</td>';
 
       tr.addEventListener('click', function(e){
-        if (e.target.closest('a')) return;
+        if (e.target.closest('a') || e.target.closest('.target-btn')) return;
         openRowId = (openRowId === c.id) ? null : c.id;
         renderBoard();
+      });
+      var tbtn = tr.querySelector('.target-btn');
+      if (tbtn) tbtn.addEventListener('click', function(e){
+        e.stopPropagation();
+        var next = c.target === 'ATK' ? 'ACADEMY' : 'ATK';
+        saveCand(c.id, {target: next});
       });
       body.appendChild(tr);
 
