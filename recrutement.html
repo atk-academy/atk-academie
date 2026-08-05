@@ -1267,7 +1267,8 @@
       var colEl = document.createElement('div');
       colEl.className = 'pipeline-col';
 
-      var items = candidates.filter(function(c){ return (c.assignedTo || null) === col.key; });
+      // Les candidats ATK (guilde principale) ne sont pas suivis en assignation : juste leur candidature.
+      var items = candidates.filter(function(c){ return (c.assignedTo || null) === col.key && c.target !== 'ATK'; });
 
       var headEl = document.createElement('div');
       headEl.className = 'pipeline-col-head';
@@ -1363,7 +1364,8 @@
     var listEl = document.getElementById('graph-pool-list');
     if (!listEl) return;
     listEl.innerHTML = '';
-    candidates.forEach(function(c){
+    // Les candidats ATK (guilde principale) ne sont pas suivis sur le graphe de progression.
+    candidates.filter(function(c){ return c.target !== 'ATK'; }).forEach(function(c){
       var card = document.createElement('div');
       card.className = 'pipeline-card';
       card.draggable = true;
