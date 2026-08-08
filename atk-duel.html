@@ -664,9 +664,9 @@
     var a=document.getElementById('match-audio'), cv=document.getElementById('viz');
     if(!a||!cv) return;
     a.volume=0.6;
-    // La voix ne se joue qu'UNE fois par visiteur (mémorisé), pas à chaque passage sur la page
-    var VKEY='atk-match-voice-played', played=false; try{ played=localStorage.getItem(VKEY)==='1'; }catch(e){}
-    a.addEventListener('playing', function(){ played=true; try{ localStorage.setItem(VKEY,'1'); }catch(e){} });
+    // La voix ne se joue qu'UNE fois par visite de la page (pas à chaque clic), mais rejoue à chaque nouvelle visite
+    var played=false;
+    a.addEventListener('playing', function(){ played=true; });
     // Sous-titre voix : apparaît quand la voix joue, disparaît à la fin
     var cap=document.getElementById('match-caption');
     if(cap){
