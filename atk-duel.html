@@ -892,56 +892,26 @@
       drawWheel(cur);
       if (t < 1){ requestAnimationFrame(frame); return; }
 
-      // Roue arrêtée — on révèle avec suspense
+      // Roue arrêtée — révélation instantanée
       angle = ((startAngle + totalRotation) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
-      drawWheel(angle);
       var idx = pickWinner(angle);
       var name = players[idx];
 
-      // Phase 1 : 3 pulses dorés sur la tranche (600ms chacun)
-      var pulseCount = 0, maxPulse = 3;
-      function pulse(){
-        var pStart = performance.now();
-        var pDur = 600;
-        function pFrame(now){
-          var pt = Math.min((now - pStart) / pDur, 1);
-          // Intensité : monte puis descend (0 → 1 → 0)
-          var intensity = Math.sin(pt * Math.PI);
-          drawWheel(angle, idx, intensity);
-          if (pt < 1){ requestAnimationFrame(pFrame); return; }
-          pulseCount++;
-          if (pulseCount < maxPulse){ pulse(); return; }
+      selected.push(name);
+      players.splice(idx, 1);
+      renderSelected();
+      spinning = false;
+      drawWheel(angle);
 
-          // Phase 2 : flash final intense (s'allume et reste)
-          var fStart = performance.now(), fDur = 400;
-          (function fFrame(now){
-            var ft = Math.min((now - fStart) / fDur, 1);
-            drawWheel(angle, idx, ft);
-            if (ft < 1){ requestAnimationFrame(fFrame); return; }
+      var resultEl = document.getElementById('wheel-result');
+      resultEl.textContent = '✅ ' + name;
+      resultEl.style.animation = 'none';
+      void resultEl.offsetWidth;
+      resultEl.style.animation = 'wheelReveal .3s cubic-bezier(.2,.8,.2,1) both';
 
-            // Phase 3 : révélation du nom + retrait de la roue
-            drawWheel(angle, idx, 1);
-            var resultEl = document.getElementById('wheel-result');
-            resultEl.textContent = '✅ Sélectionné : ' + name;
-            resultEl.style.animation = 'none';
-            void resultEl.offsetWidth; // reflow
-            resultEl.style.animation = 'wheelReveal .4s cubic-bezier(.2,.8,.2,1) both';
-
-            setTimeout(function(){
-              selected.push(name);
-              players.splice(idx, 1);
-              renderSelected();
-              spinning = false;
-              drawWheel(angle);
-              if (players.length >= 1){
-                document.getElementById('wheel-spin-btn').disabled = false;
-              }
-            }, 800);
-          })(performance.now());
-        }
-        requestAnimationFrame(pFrame);
+      if (players.length >= 1){
+        document.getElementById('wheel-spin-btn').disabled = false;
       }
-      pulse();
     }
     requestAnimationFrame(frame);
   }
