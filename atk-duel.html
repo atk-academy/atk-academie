@@ -169,9 +169,10 @@
   .wheel-spin-btn:hover:not(:disabled){ filter:brightness(1.1); }
   .wheel-spin-btn:active:not(:disabled){ transform:scale(.96); }
   .wheel-spin-btn:disabled{ opacity:.5; cursor:default; }
-  .wheel-body{ display:flex; flex-direction:column; align-items:center; gap:0; }
-  .wheel-main{ display:flex; flex-direction:column; align-items:center; }
-  .wheel-selected-panel{ padding-top:20px; width:100%; max-width:440px; display:flex; flex-wrap:wrap; gap:6px; justify-content:center; }
+  .wheel-body{ display:flex; gap:20px; align-items:flex-start; justify-content:center; }
+  .wheel-main{ flex:0 0 auto; display:flex; flex-direction:column; align-items:center; }
+  .wheel-selected-panel{ width:140px; flex-shrink:0; padding-top:8px; display:flex; flex-direction:column; gap:6px; }
+  @media(max-width:600px){ .wheel-body{ flex-direction:column; align-items:center; } .wheel-selected-panel{ width:100%; max-width:440px; flex-direction:row; flex-wrap:wrap; justify-content:center; } }
   .sel-title{ font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:var(--text-faint); width:100%; text-align:center; margin-bottom:4px; }
   .sel-chip{ display:flex; align-items:center; gap:6px; padding:7px 12px; border-radius:999px; background:rgba(255,255,255,.07); border:1px solid var(--border); font-size:12.5px; font-weight:700; color:var(--text-hi); }
   .sel-num{ width:18px; height:18px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:#fff; font-size:10px; font-weight:900; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
@@ -892,26 +893,33 @@
       drawWheel(cur);
       if (t < 1){ requestAnimationFrame(frame); return; }
 
-      // Roue arrêtée — révélation instantanée
+      // Roue arrêtée — flash doré rapide puis révélation
       angle = ((startAngle + totalRotation) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
       var idx = pickWinner(angle);
       var name = players[idx];
 
-      selected.push(name);
-      players.splice(idx, 1);
-      renderSelected();
-      spinning = false;
-      drawWheel(angle);
+      var fStart = performance.now(), fDur = 350;
+      (function fFrame(now){
+        var ft = Math.min((now - fStart) / fDur, 1);
+        drawWheel(angle, idx, Math.sin(ft * Math.PI));
+        if (ft < 1){ requestAnimationFrame(fFrame); return; }
 
-      var resultEl = document.getElementById('wheel-result');
-      resultEl.textContent = '✅ ' + name;
-      resultEl.style.animation = 'none';
-      void resultEl.offsetWidth;
-      resultEl.style.animation = 'wheelReveal .3s cubic-bezier(.2,.8,.2,1) both';
+        selected.push(name);
+        players.splice(idx, 1);
+        renderSelected();
+        spinning = false;
+        drawWheel(angle);
 
-      if (players.length >= 1){
-        document.getElementById('wheel-spin-btn').disabled = false;
-      }
+        var resultEl = document.getElementById('wheel-result');
+        resultEl.textContent = '✅ ' + name;
+        resultEl.style.animation = 'none';
+        void resultEl.offsetWidth;
+        resultEl.style.animation = 'wheelReveal .3s cubic-bezier(.2,.8,.2,1) both';
+
+        if (players.length >= 1){
+          document.getElementById('wheel-spin-btn').disabled = false;
+        }
+      })(performance.now());
     }
     requestAnimationFrame(frame);
   }
