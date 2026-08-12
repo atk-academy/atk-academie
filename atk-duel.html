@@ -143,6 +143,23 @@
   .match-caption.show{ opacity:1; transform:translateX(-50%) translateY(0); }
   .match-caption .mc-jp{ display:block; font-size:10.5px; letter-spacing:.32em; color:var(--accent-2); opacity:.8; margin-bottom:4px; }
   .match-caption .mc-fr{ display:block; font-weight:700; font-size:clamp(13px,2.1vw,16.5px); letter-spacing:.02em; color:var(--text-hi); }
+  /* ===== Wheel ===== */
+  .wheel-setup{ padding:24px; max-width:520px; margin:0 auto; }
+  .wheel-setup h3{ margin:0 0 6px; font-size:17px; }
+  #wheel-start-btn{ font-family:inherit; font-size:14px; font-weight:800; color:#fff5f4; background:linear-gradient(135deg, var(--accent), var(--accent-2)); border:none; padding:12px 24px; border-radius:999px; cursor:pointer; box-shadow:0 8px 24px -8px var(--accent); }
+  #wheel-start-btn:hover{ filter:brightness(1.08); }
+  .wheel-top{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
+  .wheel-result{ font-size:15px; font-weight:900; color:var(--gold-2); min-height:22px; }
+  .wheel-arena{ position:relative; display:flex; justify-content:center; align-items:center; margin:0 auto; width:fit-content; }
+  .wheel-pointer{ position:absolute; top:-18px; left:50%; transform:translateX(-50%); font-size:22px; color:var(--accent); z-index:2; line-height:1; filter:drop-shadow(0 2px 6px rgba(255,65,54,.7)); }
+  #wheel-canvas{ display:block; border-radius:50%; box-shadow:0 0 0 4px rgba(255,65,54,.18), 0 20px 60px -20px rgba(0,0,0,.8); }
+  .wheel-controls{ text-align:center; margin-top:20px; }
+  .wheel-spin-btn{ font-family:inherit; font-size:18px; font-weight:900; letter-spacing:.08em; color:#fff; background:linear-gradient(135deg,var(--accent),var(--accent-2)); border:none; padding:16px 52px; border-radius:999px; cursor:pointer; box-shadow:0 10px 30px -10px var(--accent); transition:transform .1s, filter .1s; }
+  .wheel-spin-btn:hover:not(:disabled){ filter:brightness(1.1); }
+  .wheel-spin-btn:active:not(:disabled){ transform:scale(.96); }
+  .wheel-spin-btn:disabled{ opacity:.5; cursor:default; }
+  .wheel-eliminated{ margin-top:20px; display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
+  .elim-chip{ font-size:12px; font-weight:700; padding:5px 12px; border-radius:999px; background:rgba(255,255,255,.06); border:1px solid var(--border); color:var(--text-lo); }
 </style>
 
 <div class="liquid-bg" aria-hidden="true"><span></span><span></span><span></span></div>
@@ -158,6 +175,7 @@
       <button type="button" class="active" data-view="duel" role="tab" aria-selected="true">Nouveau match</button>
       <button type="button" data-view="ranking" role="tab" aria-selected="false">Classement</button>
       <button type="button" data-view="bracket" role="tab" aria-selected="false">Tournoi</button>
+      <button type="button" data-view="wheel" role="tab" aria-selected="false">Wheel</button>
     </div>
   </div>
 
@@ -227,6 +245,32 @@
         <button type="button" class="reset-btn" id="bracket-reset">Nouveau tournoi</button>
       </div>
       <div class="bracket-scroll"><div class="bracket" id="bracket"></div></div>
+    </div>
+  </div>
+
+  <div id="view-wheel" class="view">
+    <div class="glass wheel-setup" id="wheel-setup">
+      <h3>Wheel de la catégorie</h3>
+      <p class="bracket-hint">Un pseudo par ligne. La roue tourne et élimine le joueur choisi à chaque spin.</p>
+      <textarea id="wheel-players" placeholder="Joueur 1&#10;Joueur 2&#10;Joueur 3&#10;Joueur 4"></textarea>
+      <div class="bracket-actions">
+        <span></span>
+        <button type="button" id="wheel-start-btn">Lancer la roue</button>
+      </div>
+    </div>
+    <div id="wheel-view" style="display:none;">
+      <div class="wheel-top">
+        <div id="wheel-result" class="wheel-result"></div>
+        <button type="button" class="reset-btn" id="wheel-reset">Recommencer</button>
+      </div>
+      <div class="wheel-arena">
+        <div class="wheel-pointer">▼</div>
+        <canvas id="wheel-canvas" width="440" height="440"></canvas>
+      </div>
+      <div class="wheel-controls">
+        <button type="button" id="wheel-spin-btn" class="wheel-spin-btn">SPIN</button>
+      </div>
+      <div id="wheel-eliminated" class="wheel-eliminated"></div>
     </div>
   </div>
 </div>
@@ -653,6 +697,152 @@
       }, function(err){ console.error('Firestore snapshot error', err); });
     });
   }
+})();
+
+// ===== WHEEL =====
+(function(){
+  var COLORS = ['#b01010','#c0290d','#991515','#a82020','#c43333','#8b0e0e','#d43c1a','#a01818'];
+  var players = [];
+  var eliminated = [];
+  var spinning = false;
+  var angle = 0;
+  var winner = null;
+
+  var canvas = document.getElementById('wheel-canvas');
+  var ctx = canvas ? canvas.getContext('2d') : null;
+  var DPR = Math.min(window.devicePixelRatio || 1, 2);
+
+  function resize(){
+    if (!canvas) return;
+    var size = Math.min(440, window.innerWidth - 48);
+    canvas.style.width = size + 'px';
+    canvas.style.height = size + 'px';
+    canvas.width = size * DPR;
+    canvas.height = size * DPR;
+  }
+
+  function drawWheel(rot){
+    if (!ctx || !players.length) return;
+    var w = canvas.width, h = canvas.height, cx = w/2, cy = h/2, R = Math.min(cx,cy) - 4*DPR;
+    ctx.clearRect(0,0,w,h);
+    var step = (Math.PI*2) / players.length;
+    players.forEach(function(name, i){
+      var a0 = rot + i * step, a1 = a0 + step;
+      // Slice
+      ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,R,a0,a1); ctx.closePath();
+      ctx.fillStyle = COLORS[i % COLORS.length]; ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,.10)'; ctx.lineWidth = 1.5*DPR; ctx.stroke();
+      // Label
+      ctx.save();
+      ctx.translate(cx,cy);
+      ctx.rotate(a0 + step/2);
+      ctx.textAlign = 'right';
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold ' + Math.max(11, Math.min(15, 200/players.length)) * DPR + 'px -apple-system,BlinkMacSystemFont,SF Pro Display,sans-serif';
+      ctx.shadowColor = 'rgba(0,0,0,.6)'; ctx.shadowBlur = 4*DPR;
+      ctx.fillText(name, R - 14*DPR, 5*DPR);
+      ctx.restore();
+    });
+    // Centre
+    ctx.beginPath(); ctx.arc(cx,cy,18*DPR,0,Math.PI*2);
+    ctx.fillStyle = '#0e0303'; ctx.fill();
+    ctx.strokeStyle = 'rgba(255,90,70,.5)'; ctx.lineWidth = 2*DPR; ctx.stroke();
+  }
+
+  function pickWinner(finalAngle){
+    var step = (Math.PI*2) / players.length;
+    // pointer is at top (−π/2). Find which slice is under it.
+    var norm = (((-finalAngle % (Math.PI*2)) + Math.PI*2) % (Math.PI*2));
+    var idx = Math.floor(norm / step) % players.length;
+    return idx;
+  }
+
+  function spin(){
+    if (spinning || players.length < 2) return;
+    spinning = true;
+    document.getElementById('wheel-spin-btn').disabled = true;
+    document.getElementById('wheel-result').textContent = '';
+
+    var extraSpins = 6 + Math.floor(Math.random()*4);
+    var extraAngle = Math.random() * Math.PI * 2;
+    var totalRot = angle + extraSpins * Math.PI * 2 + extraAngle;
+    var duration = 3500 + Math.random()*1000;
+    var start = null;
+
+    function ease(t){ return 1 - Math.pow(1-t,4); }
+
+    function frame(ts){
+      if (!start) start = ts;
+      var t = Math.min((ts-start)/duration, 1);
+      angle = angle + (totalRot - angle) * ease(t);
+      drawWheel(angle);
+      if (t < 1){ requestAnimationFrame(frame); return; }
+      angle = totalRot % (Math.PI * 2);
+      spinning = false;
+      var idx = pickWinner(angle);
+      var name = players[idx];
+      eliminated.push(name);
+      players.splice(idx, 1);
+      renderEliminated();
+      var resultEl = document.getElementById('wheel-result');
+      resultEl.textContent = '✅ Sélectionné : ' + name;
+      if (players.length >= 2){
+        document.getElementById('wheel-spin-btn').disabled = false;
+        drawWheel(angle);
+      } else if (players.length === 1){
+        eliminated.push(players[0]);
+        players = [];
+        renderEliminated();
+        drawWheel(angle);
+      } else {
+        drawWheel(angle);
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  function renderEliminated(){
+    var el = document.getElementById('wheel-eliminated');
+    if (!el) return;
+    el.innerHTML = eliminated.map(function(n){
+      return '<span class="elim-chip">✅ ' + n + '</span>';
+    }).join('');
+  }
+
+  function startWheel(){
+    var raw = document.getElementById('wheel-players').value.split('\n').map(function(s){return s.trim();}).filter(Boolean);
+    if (raw.length < 2){ alert('Il faut au moins 2 joueurs.'); return; }
+    players = raw.slice(0, 20);
+    eliminated = [];
+    angle = 0;
+    winner = null;
+    document.getElementById('wheel-setup').style.display = 'none';
+    document.getElementById('wheel-view').style.display = 'block';
+    resize();
+    drawWheel(angle);
+    renderEliminated();
+    document.getElementById('wheel-result').textContent = '';
+    document.getElementById('wheel-spin-btn').disabled = false;
+  }
+
+  var startBtn = document.getElementById('wheel-start-btn');
+  if (startBtn) startBtn.addEventListener('click', startWheel);
+
+  var spinBtn = document.getElementById('wheel-spin-btn');
+  if (spinBtn) spinBtn.addEventListener('click', spin);
+
+  var resetBtn = document.getElementById('wheel-reset');
+  if (resetBtn) resetBtn.addEventListener('click', function(){
+    players = []; eliminated = []; angle = 0;
+    document.getElementById('wheel-view').style.display = 'none';
+    document.getElementById('wheel-setup').style.display = 'block';
+  });
+
+  window.addEventListener('resize', function(){
+    if (document.getElementById('wheel-view').style.display !== 'none'){
+      resize(); drawWheel(angle);
+    }
+  });
 })();
 </script>
 
