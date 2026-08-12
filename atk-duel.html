@@ -159,8 +159,10 @@
   .wheel-result{ font-size:15px; font-weight:900; color:var(--gold-2); min-height:22px; }
   @keyframes wheelReveal{ from{ opacity:0; transform:scale(.7) translateY(6px); } to{ opacity:1; transform:scale(1) translateY(0); } }
   .wheel-arena{ position:relative; display:flex; justify-content:center; align-items:center; margin:0 auto; width:fit-content; }
-  .wheel-pointer{ position:absolute; top:-18px; left:50%; transform:translateX(-50%); font-size:22px; color:var(--accent); z-index:2; line-height:1; filter:drop-shadow(0 2px 6px rgba(255,65,54,.7)); }
-  #wheel-canvas{ display:block; border-radius:50%; box-shadow:0 0 0 4px rgba(255,65,54,.18), 0 20px 60px -20px rgba(0,0,0,.8); }
+  .wheel-pointer{ position:absolute; top:-20px; left:50%; transform:translateX(-50%); font-size:20px; color:rgba(255,255,255,.9); z-index:3; line-height:1; filter:drop-shadow(0 2px 8px rgba(255,80,60,.9)) drop-shadow(0 0 4px rgba(255,255,255,.5)); }
+  /* iOS 26 liquid glass — backdrop blur layer behind the canvas */
+  .wheel-glass-bg{ position:absolute; border-radius:50%; width:100%; height:100%; backdrop-filter:blur(24px) saturate(1.6); -webkit-backdrop-filter:blur(24px) saturate(1.6); background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.18); box-shadow:0 0 0 1px rgba(255,255,255,.06) inset, 0 30px 80px -20px rgba(0,0,0,.75); z-index:0; }
+  #wheel-canvas{ display:block; border-radius:50%; position:relative; z-index:1; }
   .wheel-controls{ text-align:center; margin-top:20px; }
   .wheel-spin-btn{ font-family:inherit; font-size:18px; font-weight:900; letter-spacing:.08em; color:#fff; background:linear-gradient(135deg,var(--accent),var(--accent-2)); border:none; padding:16px 52px; border-radius:999px; cursor:pointer; box-shadow:0 10px 30px -10px var(--accent); transition:transform .1s, filter .1s; }
   .wheel-spin-btn:hover:not(:disabled){ filter:brightness(1.1); }
@@ -285,6 +287,7 @@
         <div class="wheel-main">
           <div class="wheel-arena">
             <div class="wheel-pointer">▼</div>
+            <div class="wheel-glass-bg"></div>
             <canvas id="wheel-canvas" width="440" height="440"></canvas>
           </div>
           <div class="wheel-controls">
@@ -723,7 +726,11 @@
 
 // ===== WHEEL =====
 (function(){
-  var COLORS = ['#b01010','#c0290d','#991515','#a82020','#c43333','#8b0e0e','#d43c1a','#a01818'];
+  // iOS 26 liquid glass — translucent tinted slices
+  var COLORS = [
+    'rgba(220,55,40,0.22)','rgba(180,30,20,0.28)','rgba(200,45,30,0.20)','rgba(240,70,50,0.18)',
+    'rgba(190,35,25,0.26)','rgba(215,60,40,0.22)','rgba(170,25,15,0.30)','rgba(230,65,45,0.20)'
+  ];
   var players = [];
   var selected = [];
   var spinning = false;
@@ -747,46 +754,97 @@
     var w = canvas.width, h = canvas.height, cx = w/2, cy = h/2, R = Math.min(cx,cy) - 4*DPR;
     ctx.clearRect(0,0,w,h);
     var step = (Math.PI*2) / players.length;
+
     players.forEach(function(name, i){
-      var a0 = rot + i * step, a1 = a0 + step;
+      var a0 = rot + i * step, a1 = a0 + step, mid = a0 + step/2;
       var isHL = (highlightIdx === i);
-      // Slice
+
+      // --- Base slice fill (glass tint) ---
       ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,R,a0,a1); ctx.closePath();
       if (isHL && hlIntensity > 0){
-        // Golden flash on winner
-        var g = ctx.createRadialGradient(cx,cy,0,cx,cy,R);
         var hi = hlIntensity;
-        g.addColorStop(0,'rgba(255,215,50,'+(.7*hi)+')');
-        g.addColorStop(0.5,'rgba(220,130,20,'+(.5*hi)+')');
-        g.addColorStop(1,'rgba(180,80,10,'+(.3*hi)+')');
-        ctx.fillStyle = g;
+        var gHL = ctx.createRadialGradient(cx,cy,0,cx,cy,R);
+        gHL.addColorStop(0,'rgba(255,210,60,'+(.18*hi)+')');
+        gHL.addColorStop(0.6,'rgba(240,150,20,'+(.28*hi)+')');
+        gHL.addColorStop(1,'rgba(200,100,10,'+(.38*hi)+')');
+        ctx.fillStyle = gHL;
       } else {
         ctx.fillStyle = COLORS[i % COLORS.length];
       }
       ctx.fill();
+
+      // --- Specular arc : reflet lumineux iOS glass sur le bord externe ---
+      ctx.save();
+      ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,R,a0,a1); ctx.closePath();
+      ctx.clip();
+      // Gradient radial du centre vers le bord — bord plus lumineux
+      var specR = ctx.createRadialGradient(cx,cy,R*0.55,cx,cy,R);
+      specR.addColorStop(0,'rgba(255,255,255,0)');
+      specR.addColorStop(0.75,'rgba(255,255,255,0)');
+      specR.addColorStop(1, isHL && hlIntensity > 0
+        ? 'rgba(255,240,100,'+(0.45*hlIntensity)+')'
+        : 'rgba(255,255,255,0.13)');
+      ctx.fillStyle = specR;
+      ctx.fillRect(0,0,w,h);
+      // Reflet de la moitié supérieure (comme iOS) — arc blanc sur le dessus
+      var lx = cx + Math.cos(mid)*R*0.72, ly = cy + Math.sin(mid)*R*0.72;
+      var specL = ctx.createRadialGradient(lx,ly,0,lx,ly,R*0.38);
+      specL.addColorStop(0, isHL && hlIntensity > 0
+        ? 'rgba(255,240,100,'+(0.22*hlIntensity)+')'
+        : 'rgba(255,255,255,0.10)');
+      specL.addColorStop(1,'rgba(255,255,255,0)');
+      ctx.fillStyle = specL;
+      ctx.fillRect(0,0,w,h);
+      ctx.restore();
+
+      // --- Divider lines (blanc verre) ---
+      ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,R,a0,a1); ctx.closePath();
       if (isHL && hlIntensity > 0){
-        ctx.strokeStyle = 'rgba(255,220,50,'+(.9*hlIntensity)+')';
-        ctx.lineWidth = 3*DPR;
+        ctx.strokeStyle = 'rgba(255,230,80,'+(0.8*hlIntensity)+')';
+        ctx.lineWidth = 2.5*DPR;
       } else {
-        ctx.strokeStyle = 'rgba(255,255,255,.10)'; ctx.lineWidth = 1.5*DPR;
+        ctx.strokeStyle = 'rgba(255,255,255,0.20)';
+        ctx.lineWidth = 1*DPR;
       }
       ctx.stroke();
-      // Label
+
+      // --- Label ---
       ctx.save();
       ctx.translate(cx,cy);
-      ctx.rotate(a0 + step/2);
+      ctx.rotate(mid);
       ctx.textAlign = 'right';
-      ctx.fillStyle = (isHL && hlIntensity > 0) ? '#fff' : '#fff';
-      ctx.font = (isHL && hlIntensity > 0 ? '900 ' : 'bold ') + Math.max(11, Math.min(15, 200/players.length)) * DPR + 'px -apple-system,BlinkMacSystemFont,SF Pro Display,sans-serif';
-      ctx.shadowColor = (isHL && hlIntensity > 0) ? 'rgba(255,200,0,.8)' : 'rgba(0,0,0,.6)';
-      ctx.shadowBlur = (isHL && hlIntensity > 0) ? 10*DPR*hlIntensity : 4*DPR;
-      ctx.fillText(name, R - 14*DPR, 5*DPR);
+      var fontSize = Math.max(11, Math.min(14, 180/players.length)) * DPR;
+      ctx.font = (isHL && hlIntensity > 0 ? '800' : '700') + ' ' + fontSize + 'px -apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif';
+      ctx.shadowColor = 'rgba(0,0,0,0.7)';
+      ctx.shadowBlur = 6*DPR;
+      ctx.fillStyle = isHL && hlIntensity > 0
+        ? 'rgba(255,248,180,1)'
+        : 'rgba(255,255,255,0.92)';
+      ctx.fillText(name, R - 16*DPR, fontSize*0.38);
       ctx.restore();
     });
-    // Centre
-    ctx.beginPath(); ctx.arc(cx,cy,18*DPR,0,Math.PI*2);
-    ctx.fillStyle = '#0e0303'; ctx.fill();
-    ctx.strokeStyle = 'rgba(255,90,70,.5)'; ctx.lineWidth = 2*DPR; ctx.stroke();
+
+    // --- Anneau extérieur glass ---
+    ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2);
+    ctx.strokeStyle = 'rgba(255,255,255,0.22)';
+    ctx.lineWidth = 1.5*DPR;
+    ctx.stroke();
+
+    // --- Centre disc glass ---
+    var cR = 20*DPR;
+    ctx.beginPath(); ctx.arc(cx,cy,cR,0,Math.PI*2);
+    var cg = ctx.createRadialGradient(cx-cR*0.3,cy-cR*0.3,0,cx,cy,cR);
+    cg.addColorStop(0,'rgba(80,20,20,0.9)');
+    cg.addColorStop(1,'rgba(20,5,5,0.95)');
+    ctx.fillStyle = cg;
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+    ctx.lineWidth = 1.5*DPR;
+    ctx.stroke();
+    // Petit reflet sur le centre
+    ctx.beginPath(); ctx.arc(cx-cR*0.28,cy-cR*0.28,cR*0.32,0,Math.PI*2);
+    ctx.fillStyle = 'rgba(255,255,255,0.12)';
+    ctx.fill();
   }
 
   function pickWinner(finalAngle){
