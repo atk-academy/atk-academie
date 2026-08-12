@@ -165,8 +165,13 @@
   .wheel-spin-btn:hover:not(:disabled){ filter:brightness(1.1); }
   .wheel-spin-btn:active:not(:disabled){ transform:scale(.96); }
   .wheel-spin-btn:disabled{ opacity:.5; cursor:default; }
-  .wheel-eliminated{ margin-top:20px; display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
-  .elim-chip{ font-size:12px; font-weight:700; padding:5px 12px; border-radius:999px; background:rgba(255,255,255,.06); border:1px solid var(--border); color:var(--text-lo); }
+  .wheel-body{ display:flex; gap:20px; align-items:flex-start; }
+  .wheel-main{ flex:1 1 0; min-width:0; }
+  .wheel-selected-panel{ width:150px; flex-shrink:0; padding-top:12px; }
+  .sel-title{ font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:var(--text-faint); margin-bottom:10px; }
+  .sel-chip{ display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:10px; background:rgba(255,255,255,.05); border:1px solid var(--border); margin-bottom:6px; font-size:12.5px; font-weight:700; color:var(--text-hi); }
+  .sel-num{ width:18px; height:18px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:#fff; font-size:10px; font-weight:900; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  @media(max-width:560px){ .wheel-body{ flex-direction:column; } .wheel-selected-panel{ width:100%; display:flex; flex-wrap:wrap; gap:6px; } .sel-title{ width:100%; } }
 </style>
 
 <div class="liquid-bg" aria-hidden="true"><span></span><span></span><span></span></div>
@@ -275,12 +280,17 @@
         <div id="wheel-result" class="wheel-result"></div>
         <button type="button" class="reset-btn" id="wheel-reset">Recommencer</button>
       </div>
-      <div class="wheel-arena">
-        <div class="wheel-pointer">▼</div>
-        <canvas id="wheel-canvas" width="440" height="440"></canvas>
-      </div>
-      <div class="wheel-controls">
-        <button type="button" id="wheel-spin-btn" class="wheel-spin-btn">SPIN</button>
+      <div class="wheel-body">
+        <div class="wheel-main">
+          <div class="wheel-arena">
+            <div class="wheel-pointer">▼</div>
+            <canvas id="wheel-canvas" width="440" height="440"></canvas>
+          </div>
+          <div class="wheel-controls">
+            <button type="button" id="wheel-spin-btn" class="wheel-spin-btn">SPIN</button>
+          </div>
+        </div>
+        <div id="wheel-selected" class="wheel-selected-panel"></div>
       </div>
     </div>
   </div>
@@ -714,6 +724,7 @@
 (function(){
   var COLORS = ['#b01010','#c0290d','#991515','#a82020','#c43333','#8b0e0e','#d43c1a','#a01818'];
   var players = [];
+  var selected = [];
   var spinning = false;
   var angle = 0;
 
@@ -790,26 +801,40 @@
       spinning = false;
       var idx = pickWinner(angle);
       var name = players[idx];
-      eliminated.push(name);
+      selected.push(name);
       players.splice(idx, 1);
-      renderEliminated();
+      renderSelected();
       var resultEl = document.getElementById('wheel-result');
       resultEl.textContent = '✅ Sélectionné : ' + name;
-      document.getElementById('wheel-spin-btn').disabled = false;
+      if (players.length >= 1){
+        document.getElementById('wheel-spin-btn').disabled = false;
+      }
       drawWheel(angle);
     }
     requestAnimationFrame(frame);
+  }
+
+  function renderSelected(){
+    var el = document.getElementById('wheel-selected');
+    if (!el) return;
+    if (!selected.length){ el.innerHTML = ''; return; }
+    el.innerHTML = '<div class="sel-title">Sélectionnés</div>' +
+      selected.map(function(n, i){
+        return '<div class="sel-chip"><span class="sel-num">'+(i+1)+'</span>'+n+'</div>';
+      }).join('');
   }
 
   function startWheel(){
     var raw = document.getElementById('wheel-players').value.split('\n').map(function(s){return s.trim();}).filter(Boolean);
     if (raw.length < 2){ alert('Il faut au moins 2 joueurs.'); return; }
     players = raw.slice(0, 20);
+    selected = [];
     angle = 0;
     document.getElementById('wheel-setup').style.display = 'none';
     document.getElementById('wheel-view').style.display = 'block';
     resize();
     drawWheel(angle);
+    renderSelected();
     document.getElementById('wheel-result').textContent = '';
     document.getElementById('wheel-spin-btn').disabled = false;
   }
@@ -822,7 +847,7 @@
 
   var resetBtn = document.getElementById('wheel-reset');
   if (resetBtn) resetBtn.addEventListener('click', function(){
-    players = []; angle = 0;
+    players = []; selected = []; angle = 0;
     document.getElementById('wheel-view').style.display = 'none';
     document.getElementById('wheel-setup').style.display = 'block';
   });
