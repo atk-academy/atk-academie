@@ -112,7 +112,7 @@
   .bracket-setup{ padding:24px; max-width:520px; margin:0 auto; }
   .bracket-setup h3{ margin:0 0 6px; font-size:17px; }
   .bracket-hint{ margin:0 0 14px; font-size:12.5px; color:var(--text-lo); }
-  .bracket-setup textarea{ width:100%; min-height:150px; font-family:inherit; font-size:14px; padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--surface-strong); color:var(--text-hi); resize:vertical; }
+  .bracket-setup textarea{ width:100%; min-height:220px; font-family:inherit; font-size:14px; padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--surface-strong); color:var(--text-hi); resize:vertical; }
   .bracket-actions{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:14px; flex-wrap:wrap; }
   .shuffle-lbl{ font-size:12.5px; color:var(--text-lo); font-weight:700; display:flex; align-items:center; gap:6px; }
   #bracket-generate{ font-family:inherit; font-size:14px; font-weight:800; color:#fff5f4; background:linear-gradient(135deg, var(--accent), var(--accent-2)); border:none; padding:12px 24px; border-radius:999px; cursor:pointer; box-shadow:0 8px 24px -8px var(--accent); }
@@ -144,10 +144,17 @@
   .match-caption .mc-jp{ display:block; font-size:10.5px; letter-spacing:.32em; color:var(--accent-2); opacity:.8; margin-bottom:4px; }
   .match-caption .mc-fr{ display:block; font-weight:700; font-size:clamp(13px,2.1vw,16.5px); letter-spacing:.02em; color:var(--text-hi); }
   /* ===== Wheel ===== */
-  .wheel-setup{ padding:24px; max-width:520px; margin:0 auto; }
-  .wheel-setup h3{ margin:0 0 6px; font-size:17px; }
-  #wheel-start-btn{ font-family:inherit; font-size:14px; font-weight:800; color:#fff5f4; background:linear-gradient(135deg, var(--accent), var(--accent-2)); border:none; padding:12px 24px; border-radius:999px; cursor:pointer; box-shadow:0 8px 24px -8px var(--accent); }
-  #wheel-start-btn:hover{ filter:brightness(1.08); }
+  .wheel-setup{ padding:32px 28px 28px; max-width:520px; margin:0 auto; }
+  .wheel-setup-head{ display:flex; align-items:center; gap:14px; margin-bottom:20px; }
+  .wheel-icon{ width:44px; height:44px; border-radius:14px; background:linear-gradient(135deg,var(--accent),var(--accent-2)); display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; box-shadow:0 6px 20px -6px var(--accent); }
+  .wheel-setup-head h3{ margin:0; font-size:19px; font-weight:900; letter-spacing:.01em; }
+  .wheel-setup-head p{ margin:4px 0 0; font-size:12px; color:var(--text-lo); }
+  .wheel-textarea{ width:100%; min-height:240px; font-family:inherit; font-size:14px; font-weight:600; padding:16px; border-radius:16px; border:1.5px solid var(--border); background:rgba(255,255,255,.04); color:var(--text-hi); resize:vertical; outline:none; transition:border-color .2s; line-height:1.7; letter-spacing:.01em; }
+  .wheel-textarea:focus{ border-color:var(--accent); background:rgba(255,65,54,.04); }
+  .wheel-textarea::placeholder{ color:var(--text-faint); font-weight:500; }
+  #wheel-start-btn{ font-family:inherit; font-size:14px; font-weight:800; color:#fff5f4; background:linear-gradient(135deg, var(--accent), var(--accent-2)); border:none; padding:13px 28px; border-radius:999px; cursor:pointer; box-shadow:0 8px 24px -8px var(--accent); letter-spacing:.03em; }
+  #wheel-start-btn:hover{ filter:brightness(1.1); transform:translateY(-1px); }
+  #wheel-start-btn:active{ transform:scale(.97); }
   .wheel-top{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
   .wheel-result{ font-size:15px; font-weight:900; color:var(--gold-2); min-height:22px; }
   .wheel-arena{ position:relative; display:flex; justify-content:center; align-items:center; margin:0 auto; width:fit-content; }
@@ -250,12 +257,17 @@
 
   <div id="view-wheel" class="view">
     <div class="glass wheel-setup" id="wheel-setup">
-      <h3>Wheel de la catégorie</h3>
-      <p class="bracket-hint">Un pseudo par ligne. La roue tourne et élimine le joueur choisi à chaque spin.</p>
-      <textarea id="wheel-players" placeholder="Joueur 1&#10;Joueur 2&#10;Joueur 3&#10;Joueur 4"></textarea>
-      <div class="bracket-actions">
+      <div class="wheel-setup-head">
+        <div class="wheel-icon">🎡</div>
+        <div>
+          <h3>Wheel de la catégorie</h3>
+          <p>Un pseudo par ligne — la roue tourne et désigne un joueur au hasard.</p>
+        </div>
+      </div>
+      <textarea class="wheel-textarea" id="wheel-players" placeholder="Joueur 1&#10;Joueur 2&#10;Joueur 3&#10;Joueur 4"></textarea>
+      <div class="bracket-actions" style="margin-top:16px;">
         <span></span>
-        <button type="button" id="wheel-start-btn">Lancer la roue</button>
+        <button type="button" id="wheel-start-btn">🎡 Lancer la roue</button>
       </div>
     </div>
     <div id="wheel-view" style="display:none;">
@@ -270,7 +282,6 @@
       <div class="wheel-controls">
         <button type="button" id="wheel-spin-btn" class="wheel-spin-btn">SPIN</button>
       </div>
-      <div id="wheel-eliminated" class="wheel-eliminated"></div>
     </div>
   </div>
 </div>
@@ -703,10 +714,8 @@
 (function(){
   var COLORS = ['#b01010','#c0290d','#991515','#a82020','#c43333','#8b0e0e','#d43c1a','#a01818'];
   var players = [];
-  var eliminated = [];
   var spinning = false;
   var angle = 0;
-  var winner = null;
 
   var canvas = document.getElementById('wheel-canvas');
   var ctx = canvas ? canvas.getContext('2d') : null;
@@ -758,7 +767,7 @@
   }
 
   function spin(){
-    if (spinning || players.length < 2) return;
+    if (spinning || players.length < 1) return;
     spinning = true;
     document.getElementById('wheel-spin-btn').disabled = true;
     document.getElementById('wheel-result').textContent = '';
@@ -786,41 +795,21 @@
       renderEliminated();
       var resultEl = document.getElementById('wheel-result');
       resultEl.textContent = '✅ Sélectionné : ' + name;
-      if (players.length >= 2){
-        document.getElementById('wheel-spin-btn').disabled = false;
-        drawWheel(angle);
-      } else if (players.length === 1){
-        eliminated.push(players[0]);
-        players = [];
-        renderEliminated();
-        drawWheel(angle);
-      } else {
-        drawWheel(angle);
-      }
+      document.getElementById('wheel-spin-btn').disabled = false;
+      drawWheel(angle);
     }
     requestAnimationFrame(frame);
-  }
-
-  function renderEliminated(){
-    var el = document.getElementById('wheel-eliminated');
-    if (!el) return;
-    el.innerHTML = eliminated.map(function(n){
-      return '<span class="elim-chip">✅ ' + n + '</span>';
-    }).join('');
   }
 
   function startWheel(){
     var raw = document.getElementById('wheel-players').value.split('\n').map(function(s){return s.trim();}).filter(Boolean);
     if (raw.length < 2){ alert('Il faut au moins 2 joueurs.'); return; }
     players = raw.slice(0, 20);
-    eliminated = [];
     angle = 0;
-    winner = null;
     document.getElementById('wheel-setup').style.display = 'none';
     document.getElementById('wheel-view').style.display = 'block';
     resize();
     drawWheel(angle);
-    renderEliminated();
     document.getElementById('wheel-result').textContent = '';
     document.getElementById('wheel-spin-btn').disabled = false;
   }
@@ -833,7 +822,7 @@
 
   var resetBtn = document.getElementById('wheel-reset');
   if (resetBtn) resetBtn.addEventListener('click', function(){
-    players = []; eliminated = []; angle = 0;
+    players = []; angle = 0;
     document.getElementById('wheel-view').style.display = 'none';
     document.getElementById('wheel-setup').style.display = 'block';
   });
