@@ -865,6 +865,47 @@
 
     var notesHtml = c.notes ? '<div class="glass card" style="margin-top:14px;"><div class="k" style="font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-faint);font-weight:700;margin-bottom:8px;">Message du staff</div><p style="margin:0;font-size:13.5px;color:var(--text-hi);line-height:1.6;">'+escapeHtml(c.notes)+'</p></div>' : '';
 
+    var hist = historyFor(c);
+    var MAX_SCORE = 610;
+    var THRESHOLDS = [
+      { score:150, label:'Argent', color:'var(--silver-2)' },
+      { score:250, label:'Or', color:'var(--gold-2)' },
+      { score:400, label:'Diamant', color:'var(--diamond-2)' },
+      { score:550, label:'Champion', color:'var(--champion-2)' }
+    ];
+    var svgW = 500, svgH = 200, padL = 34, padR = 80, padT = 12, padB = 26;
+    var innerW = svgW - padL - padR, innerH = svgH - padT - padB;
+    var scoreToY = function(s){ return padT + innerH - (s / MAX_SCORE) * innerH; };
+    var tier = tierForScore(hist[hist.length-1].score);
+    var svgParts = [];
+    THRESHOLDS.forEach(function(t){
+      var y = scoreToY(t.score);
+      svgParts.push('<line x1="'+padL+'" y1="'+y.toFixed(1)+'" x2="'+(svgW-padR)+'" y2="'+y.toFixed(1)+'" stroke="'+t.color+'" stroke-width="1" stroke-dasharray="4 3" opacity=".5"/>');
+      svgParts.push('<text x="'+(svgW-padR+6)+'" y="'+(y+4).toFixed(1)+'" fill="'+t.color+'" font-size="9" font-weight="700">'+t.label+'</text>');
+    });
+    var n = hist.length;
+    var pts = hist.map(function(pt, i){
+      return { x: n===1 ? padL : padL + (innerW/(n-1))*i, y: scoreToY(pt.score), month: pt.month };
+    });
+    var poly = pts.map(function(p){ return p.x.toFixed(1)+','+p.y.toFixed(1); }).join(' ');
+    var pathD = 'M'+pts.map(function(p){ return p.x.toFixed(1)+','+p.y.toFixed(1); }).join(' L');
+    svgParts.push('<path id="cand-score-path" d="'+pathD+'" fill="none" stroke="none"/>');
+    svgParts.push('<polyline points="'+poly+'" fill="none" stroke="'+tier.color+'" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>');
+    svgParts.push('<circle r="4" fill="'+tier.color+'" filter="url(#glow)"><animateMotion dur="2s" repeatCount="indefinite"><mpath href="#cand-score-path"/></animateMotion></circle>');
+    pts.forEach(function(p, i){
+      var isLast = i === pts.length-1;
+      if (isLast){ svgParts.push('<circle cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="6" fill="none" stroke="'+tier.color+'" stroke-width="1.5" opacity=".5"><animate attributeName="r" values="5;9;5" dur="2.6s" repeatCount="indefinite"/><animate attributeName="opacity" values=".5;0;.5" dur="2.6s" repeatCount="indefinite"/></circle>'); }
+      svgParts.push('<circle cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="4" fill="'+tier.color+'" stroke="var(--bg-1)" stroke-width="1.5"/>');
+      svgParts.push('<text x="'+p.x.toFixed(1)+'" y="'+(svgH-6)+'" text-anchor="middle" fill="var(--text-faint)" font-size="9">M'+p.month+'</text>');
+    });
+    var graphHtml = '<div class="glass card" style="margin-top:14px;">' +
+      '<div style="font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-faint);font-weight:700;margin-bottom:10px;">Progression · score '+hist[hist.length-1].score+'</div>' +
+      '<svg viewBox="0 0 '+svgW+' '+svgH+'" style="width:100%;height:auto;overflow:visible;">' +
+        '<defs><filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>' +
+        svgParts.join('') +
+      '</svg>' +
+      '</div>';
+
     el.innerHTML =
       '<div class="glass card" style="margin-bottom:14px;">' +
         '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:18px;">' +
@@ -883,6 +924,7 @@
           '<span style="font-size:18px;font-weight:900;color:var(--text-hi);">'+avg.toFixed(1)+' / 10</span>' +
         '</div>' +
       '</div>' +
+      graphHtml +
       notesHtml +
       '<div style="text-align:center;margin-top:16px;"><button type="button" class="reset-btn" id="status-logout">Se déconnecter</button></div>';
 
