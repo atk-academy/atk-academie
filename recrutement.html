@@ -396,7 +396,6 @@
     <div class="segmented" role="tablist">
       <button type="button" class="active" data-view="form" role="tab" aria-selected="true">Candidature</button>
       <button type="button" data-view="status" role="tab" aria-selected="false">Ma candidature</button>
-      <button type="button" data-view="clips" role="tab" aria-selected="false">Clips</button>
       <button type="button" data-view="board" role="tab" aria-selected="false">Suivi</button>
     </div>
   </header>
@@ -597,11 +596,6 @@
       </div>
     </section>
 
-    <section id="view-clips" class="view">
-      <p class="pipeline-hint" style="text-align:center;">Les clips soumis par les candidats.</p>
-      <div id="clips-gallery" class="clips-gallery"></div>
-      <div class="empty-state" id="clips-empty" style="display:none;">Aucun clip pour l'instant.</div>
-    </section>
   </main>
 
   <div class="toast" id="toast"><div class="tick">__ICON_CHECK__</div><span>Candidature envoyée à l'équipage ATK !</span></div>
@@ -823,7 +817,6 @@
       document.getElementById('view-'+tab.getAttribute('data-view')).classList.add('active');
       var v = tab.getAttribute('data-view');
       if (v === 'board') showBoardView();
-      if (v === 'clips') renderClips();
     });
   });
 
@@ -850,25 +843,6 @@
   function ytThumb(url){
     var m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/);
     return m ? 'https://i.ytimg.com/vi/'+m[1]+'/mqdefault.jpg' : null;
-  }
-  function renderClips(){
-    var g = document.getElementById('clips-gallery');
-    var empty = document.getElementById('clips-empty');
-    if (!g) return;
-    var items = [];
-    candidates.slice().sort(function(a,b){ return (b.date||0)-(a.date||0); }).forEach(function(c){
-      (c.clips||[]).forEach(function(u){ if(u) items.push({url:u}); });
-    });
-    g.innerHTML = '';
-    empty.style.display = items.length ? 'none' : 'block';
-    items.forEach(function(it, idx){
-      var th = ytThumb(it.url);
-      var a = document.createElement('div');
-      a.className = 'clip-card noopen';
-      a.innerHTML = (th ? '<div class="clip-thumb" style="background-image:url('+th+')"></div>' : '<div class="clip-thumb noimg"></div>') +
-        '<div class="clip-name">Clip '+(idx+1)+'</div>';
-      g.appendChild(a);
-    });
   }
 
   var staffTabs = document.querySelectorAll('[data-staff-view]');
