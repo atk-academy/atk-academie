@@ -1680,11 +1680,13 @@
     });
     clipList.innerHTML = ''; clipList.appendChild(newClipRow());
 
-    // Affiche le code d'accès au candidat
-    var codeScreen = document.getElementById('code-reveal-screen');
-    document.getElementById('code-reveal-value').textContent = accessCode;
-    document.getElementById('code-reveal-xbox').textContent = candidate.xbox;
-    codeScreen.style.display = 'flex';
+    // Affiche le code d'accès uniquement pour les candidatures Academy
+    if (candidate.target === 'ACADEMY') {
+      var codeScreen = document.getElementById('code-reveal-screen');
+      document.getElementById('code-reveal-value').textContent = accessCode;
+      document.getElementById('code-reveal-xbox').textContent = candidate.xbox;
+      codeScreen.style.display = 'flex';
+    }
 
     showToast();
   });
