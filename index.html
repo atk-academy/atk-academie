@@ -44,16 +44,6 @@
   .sound-toggle:hover{ transform:scale(1.08); border-color:var(--red); }
 </style>
 
-<style>
-  #intro-wrap{ position:fixed;inset:0;z-index:999;background:#000;display:flex;align-items:center;justify-content:center; }
-  #intro-cv{ position:absolute;inset:0;width:100%;height:100%; }
-  #intro-atk{ position:relative;z-index:2;font-family:"Metal Mania","Pirata One",serif;font-weight:400;font-size:clamp(6rem,23vw,20rem);line-height:.9;letter-spacing:.03em;background:linear-gradient(180deg,#fff 0%,#f0c9c4 38%,#ff4136 74%,#9c1a12 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 40px rgba(255,65,54,.9));opacity:0;transform-origin:center;pointer-events:none; }
-</style>
-<div id="intro-wrap">
-  <canvas id="intro-cv"></canvas>
-  <div id="intro-atk">ATK</div>
-</div>
-
 <div class="stage">
   <div class="bg"></div>
   <div class="pulse-red"></div>
