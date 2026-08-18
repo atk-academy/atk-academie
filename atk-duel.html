@@ -11,6 +11,9 @@
     --gold:#b8860b; --gold-2:#f0c860;
     --shadow:0 20px 60px -20px rgba(0,0,0,.7);
     --radius-lg:26px; --radius-md:18px; --radius-sm:12px;
+    --sloop:#ff6b6b; --sloop-bg:rgba(255,107,107,.10); --sloop-bd:rgba(255,107,107,.32);
+    --brig:#c0392b;  --brig-bg:rgba(192,57,43,.12);    --brig-bd:rgba(192,57,43,.38);
+    --gal:#7b1111;   --gal-bg:rgba(123,17,17,.18);     --gal-bd:rgba(123,17,17,.55);
   }
   *{box-sizing:border-box;}
   html,body{ margin:0; min-height:100%; }
@@ -143,39 +146,67 @@
   .match-caption.show{ opacity:1; transform:translateX(-50%) translateY(0); }
   .match-caption .mc-jp{ display:block; font-size:10.5px; letter-spacing:.32em; color:var(--accent-2); opacity:.8; margin-bottom:4px; }
   .match-caption .mc-fr{ display:block; font-weight:700; font-size:clamp(13px,2.1vw,16.5px); letter-spacing:.02em; color:var(--text-hi); }
-  /* ===== Wheel ===== */
-  .wheel-setup{ padding:32px 28px 28px; max-width:520px; margin:0 auto; }
-  .wheel-setup-head{ display:flex; align-items:center; gap:14px; margin-bottom:20px; }
-  .wheel-icon{ width:44px; height:44px; border-radius:14px; background:linear-gradient(135deg,var(--accent),var(--accent-2)); display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; box-shadow:0 6px 20px -6px var(--accent); }
-  .wheel-setup-head h3{ margin:0; font-size:19px; font-weight:900; letter-spacing:.01em; }
-  .wheel-setup-head p{ margin:4px 0 0; font-size:12px; color:var(--text-lo); }
-  .wheel-textarea{ width:100%; min-height:240px; font-family:inherit; font-size:14px; font-weight:600; padding:16px; border-radius:16px; border:1.5px solid var(--border); background:rgba(255,255,255,.04); color:var(--text-hi); resize:vertical; outline:none; transition:border-color .2s; line-height:1.7; letter-spacing:.01em; }
-  .wheel-textarea:focus{ border-color:var(--accent); background:rgba(255,65,54,.04); }
-  .wheel-textarea::placeholder{ color:var(--text-faint); font-weight:500; }
-  #wheel-start-btn{ font-family:inherit; font-size:14px; font-weight:800; color:#fff5f4; background:linear-gradient(135deg, var(--accent), var(--accent-2)); border:none; padding:13px 28px; border-radius:999px; cursor:pointer; box-shadow:0 8px 24px -8px var(--accent); letter-spacing:.03em; }
-  #wheel-start-btn:hover{ filter:brightness(1.1); transform:translateY(-1px); }
-  #wheel-start-btn:active{ transform:scale(.97); }
-  .wheel-top{ text-align:center; margin-bottom:12px; }
-  .wheel-result{ font-size:15px; font-weight:900; color:var(--gold-2); min-height:22px; }
-  @keyframes wheelReveal{ from{ opacity:0; transform:scale(.7) translateY(6px); } to{ opacity:1; transform:scale(1) translateY(0); } }
-  .wheel-arena{ position:relative; display:flex; justify-content:center; align-items:center; margin:0 auto; width:fit-content; }
-  .wheel-pointer{ position:absolute; top:-20px; left:50%; transform:translateX(-50%); font-size:20px; color:rgba(255,255,255,.9); z-index:3; line-height:1; filter:drop-shadow(0 2px 8px rgba(255,80,60,.9)) drop-shadow(0 0 4px rgba(255,255,255,.5)); }
-  /* iOS 26 liquid glass */
-  .wheel-glass-bg{ position:absolute; border-radius:50%; width:100%; height:100%; backdrop-filter:blur(28px) saturate(1.8); -webkit-backdrop-filter:blur(28px) saturate(1.8); background:linear-gradient(145deg,rgba(255,255,255,.18) 0%,rgba(255,255,255,.07) 55%,rgba(255,255,255,.12) 100%); border:1.5px solid rgba(255,255,255,.40); box-shadow:inset 0 2px 0 rgba(255,255,255,.55), inset 0 0 0 1px rgba(255,255,255,.12), 0 30px 80px -20px rgba(0,0,0,.8); z-index:0; }
-  .wheel-arena::after{ content:''; position:absolute; border-radius:50%; width:100%; height:100%; background:linear-gradient(160deg,rgba(255,255,255,.14) 0%,rgba(255,255,255,.04) 40%,transparent 65%); pointer-events:none; z-index:2; }
-  #wheel-canvas{ display:block; border-radius:50%; position:relative; z-index:1; }
-  .wheel-controls{ text-align:center; margin-top:20px; display:flex; flex-direction:column; align-items:center; gap:12px; }
-  .wheel-spin-btn{ font-family:inherit; font-size:18px; font-weight:900; letter-spacing:.08em; color:#fff; background:linear-gradient(135deg,var(--accent),var(--accent-2)); border:none; padding:16px 52px; border-radius:999px; cursor:pointer; box-shadow:0 10px 30px -10px var(--accent); transition:transform .1s, filter .1s; }
-  .wheel-spin-btn:hover:not(:disabled){ filter:brightness(1.1); }
-  .wheel-spin-btn:active:not(:disabled){ transform:scale(.96); }
-  .wheel-spin-btn:disabled{ opacity:.5; cursor:default; }
-  .wheel-body{ display:flex; gap:20px; align-items:flex-start; justify-content:center; }
-  .wheel-main{ flex:0 0 auto; display:flex; flex-direction:column; align-items:center; }
-  .wheel-selected-panel{ width:140px; flex-shrink:0; padding-top:8px; display:flex; flex-direction:column; gap:6px; }
-  @media(max-width:600px){ .wheel-body{ flex-direction:column; align-items:center; } .wheel-selected-panel{ width:100%; max-width:440px; flex-direction:row; flex-wrap:wrap; justify-content:center; } }
-  .sel-title{ font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:var(--text-faint); width:100%; text-align:center; margin-bottom:4px; }
-  .sel-chip{ display:flex; align-items:center; gap:6px; padding:7px 12px; border-radius:999px; background:rgba(255,255,255,.07); border:1px solid var(--border); font-size:12.5px; font-weight:700; color:var(--text-hi); }
-  .sel-num{ width:18px; height:18px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:#fff; font-size:10px; font-weight:900; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  /* ===== Crew Generator ===== */
+  #view-crew .crew-wrap{ max-width:620px; margin:0 auto; display:flex; flex-direction:column; gap:16px; }
+  .crew-card-label{ font-size:10px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--text-faint); margin-bottom:14px; }
+  .crew-input-row{ display:flex; gap:8px; }
+  .crew-glass-input{ flex:1; background:rgba(255,255,255,.06); border:1px solid var(--border); border-radius:12px; padding:11px 15px; color:var(--text-hi); font-size:.9rem; font-family:inherit; outline:none; transition:border-color .15s; box-shadow:inset 0 1px 0 rgba(255,255,255,.12); }
+  .crew-glass-input:focus{ border-color:var(--accent); }
+  .crew-glass-input::placeholder{ color:var(--text-faint); }
+  .crew-btn{ background:var(--accent); border:none; border-radius:12px; padding:11px 18px; color:#fff; font-family:inherit; font-weight:700; font-size:.85rem; cursor:pointer; transition:background .15s,transform .1s; box-shadow:0 4px 16px rgba(255,65,54,.3); }
+  .crew-btn:hover{ background:var(--accent-2); }
+  .crew-btn:active{ transform:scale(.96); }
+  .crew-btn-sm{ padding:8px 14px; font-size:.78rem; border-radius:10px; }
+  .crew-btn-ghost{ background:rgba(255,255,255,.07); color:var(--text-hi); box-shadow:inset 0 1.5px 0 rgba(255,255,255,.12),0 2px 8px rgba(0,0,0,.2); border:1px solid var(--border); }
+  .crew-btn-ghost:hover{ background:rgba(255,255,255,.12); }
+  .crew-chips{ display:flex; flex-wrap:wrap; gap:7px; margin-top:13px; min-height:34px; align-items:flex-start; }
+  .crew-chip{ display:flex; align-items:center; gap:5px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.14); border-radius:999px; padding:5px 11px 5px 13px; font-size:.82rem; font-weight:500; box-shadow:inset 0 1px 0 rgba(255,255,255,.18); animation:crewPopIn .18s cubic-bezier(.34,1.56,.64,1) both; }
+  .crew-chip-del{ background:none; border:none; color:var(--text-lo); cursor:pointer; font-size:.8rem; padding:1px 0 0; transition:color .12s; }
+  .crew-chip-del:hover{ color:var(--critical); }
+  .crew-empty-hint{ color:var(--text-faint); font-size:.82rem; font-style:italic; }
+  .ship-btns{ display:flex; gap:10px; }
+  .ship-btn{ flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; background:var(--surface); border:1.5px solid var(--border); border-radius:16px; padding:16px 10px; cursor:pointer; font-family:inherit; transition:background .18s,border-color .18s,transform .12s; box-shadow:var(--shadow); }
+  .ship-btn:hover{ background:var(--surface-strong); transform:translateY(-2px); }
+  .ship-btn:active{ transform:scale(.97); }
+  .ship-svg{ width:3rem; height:3rem; display:block; }
+  .ship-btn-name{ font-weight:700; font-size:.82rem; letter-spacing:.02em; color:var(--text-hi); }
+  .ship-btn-sz{ font-size:.72rem; color:var(--text-lo); }
+  .ship-btn.sloop{ border-color:var(--sloop-bd); color:var(--sloop); }
+  .ship-btn.sloop:hover{ background:var(--sloop-bg); border-color:var(--sloop); }
+  .ship-btn.brig{ border-color:var(--brig-bd); color:var(--brig); }
+  .ship-btn.brig:hover{ background:var(--brig-bg); border-color:var(--brig); }
+  .ship-btn.gal{ border-color:var(--gal-bd); color:var(--gal); }
+  .ship-btn.gal:hover{ background:var(--gal-bg); border-color:var(--gal); }
+  .crew-fleet{ display:flex; flex-wrap:wrap; gap:7px; margin-top:14px; min-height:32px; align-items:flex-start; }
+  .crew-fleet-chip{ display:flex; align-items:center; gap:5px; border-radius:10px; padding:5px 11px; font-size:.78rem; font-weight:700; letter-spacing:.02em; border:1px solid; animation:crewPopIn .18s cubic-bezier(.34,1.56,.64,1) both; box-shadow:inset 0 1px 0 rgba(255,255,255,.14); }
+  .crew-fleet-chip.sloop{ background:var(--sloop-bg); border-color:var(--sloop-bd); color:var(--sloop); }
+  .crew-fleet-chip.brig { background:var(--brig-bg); border-color:var(--brig-bd); color:var(--brig); }
+  .crew-fleet-chip.gal  { background:var(--gal-bg); border-color:var(--gal-bd); color:var(--gal); }
+  .crew-fleet-chip .cfc-del{ background:none; border:none; color:inherit; opacity:.55; cursor:pointer; font-size:.8rem; padding:0 0 0 2px; transition:opacity .12s; }
+  .crew-fleet-chip .cfc-del:hover{ opacity:1; }
+  .crew-counter{ display:flex; align-items:center; justify-content:space-between; margin-top:14px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.09); border-radius:12px; padding:10px 16px; }
+  .crew-counter-side{ display:flex; flex-direction:column; align-items:center; gap:2px; }
+  .crew-counter-num{ font-size:1.15rem; font-weight:800; font-variant-numeric:tabular-nums; }
+  .crew-counter-lbl{ font-size:.65rem; letter-spacing:.1em; text-transform:uppercase; color:var(--text-faint); }
+  .crew-counter-status{ font-size:.8rem; font-weight:600; }
+  .crew-results{ display:flex; flex-direction:column; gap:13px; }
+  .crew-ship-card{ border-radius:18px; padding:20px 22px; border:1.5px solid; background:var(--surface); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); box-shadow:var(--shadow); animation:crewSlideUp .28s cubic-bezier(.34,1.3,.64,1) both; }
+  .crew-ship-card.sloop{ border-color:var(--sloop-bd); }
+  .crew-ship-card.brig { border-color:var(--brig-bd); }
+  .crew-ship-card.gal  { border-color:var(--gal-bd); }
+  .crew-ship-head{ display:flex; align-items:center; gap:10px; margin-bottom:13px; }
+  .crew-ship-ic{ width:2rem; height:2rem; flex-shrink:0; display:block; }
+  .crew-ship-ttl{ font-weight:800; font-size:.95rem; }
+  .crew-ship-ttl.sloop{ color:var(--sloop); }
+  .crew-ship-ttl.brig { color:var(--brig); }
+  .crew-ship-ttl.gal  { color:var(--gal); }
+  .crew-ship-sz{ margin-left:auto; font-size:.7rem; letter-spacing:.08em; text-transform:uppercase; color:var(--text-lo); font-weight:600; }
+  .crew-list-names{ display:flex; flex-wrap:wrap; gap:7px; }
+  .crew-name-pill{ background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); border-radius:9px; padding:6px 13px; font-size:.85rem; font-weight:600; box-shadow:inset 0 1px 0 rgba(255,255,255,.15); }
+  .crew-regen-row{ display:flex; gap:9px; margin-top:16px; }
+  .crew-regen-row .crew-btn{ flex:1; }
+  @keyframes crewPopIn{ from{opacity:0;transform:scale(.78);} to{opacity:1;transform:scale(1);} }
+  @keyframes crewSlideUp{ from{opacity:0;transform:translateY(14px);} to{opacity:1;transform:translateY(0);} }
 </style>
 
 <div class="liquid-bg" aria-hidden="true"><span></span><span></span><span></span></div>
@@ -191,7 +222,7 @@
       <button type="button" class="active" data-view="duel" role="tab" aria-selected="true">Nouveau match</button>
       <button type="button" data-view="ranking" role="tab" aria-selected="false">Classement</button>
       <button type="button" data-view="bracket" role="tab" aria-selected="false">Tournoi</button>
-      <button type="button" data-view="wheel" role="tab" aria-selected="false">Wheel</button>
+      <button type="button" data-view="crew" role="tab" aria-selected="false">Équipages</button>
     </div>
   </div>
 
@@ -264,39 +295,101 @@
     </div>
   </div>
 
-  <div id="view-wheel" class="view">
-    <div class="glass wheel-setup" id="wheel-setup">
-      <div class="wheel-setup-head">
-        <div class="wheel-icon">🎡</div>
-        <div>
-          <h3>Wheel</h3>
-          <p>Un pseudo par ligne — la roue tourne et désigne un joueur au hasard.</p>
+  <div id="view-crew" class="view">
+    <div class="crew-wrap">
+
+      <!-- Joueurs -->
+      <div class="glass" style="padding:22px;">
+        <div class="crew-card-label">Joueurs</div>
+        <div class="crew-input-row">
+          <input id="crewNameInput" class="crew-glass-input" type="text" placeholder="Pseudo du joueur…" maxlength="32" autocomplete="off">
+          <button class="crew-btn crew-btn-sm" onclick="crewAddName()">Ajouter</button>
+        </div>
+        <div class="crew-chips" id="crewNameChips">
+          <span class="crew-empty-hint">Aucun joueur ajouté</span>
         </div>
       </div>
-      <textarea class="wheel-textarea" id="wheel-players" placeholder="Joueur 1&#10;Joueur 2&#10;Joueur 3&#10;Joueur 4"></textarea>
-      <div class="bracket-actions" style="margin-top:16px;">
-        <span></span>
-        <button type="button" id="wheel-start-btn">🎡 Lancer la roue</button>
-      </div>
-    </div>
-    <div id="wheel-view" style="display:none;">
-      <div class="wheel-top">
-        <div id="wheel-result" class="wheel-result"></div>
-      </div>
-      <div class="wheel-body">
-        <div class="wheel-main">
-          <div class="wheel-arena">
-            <div class="wheel-pointer">▼</div>
-            <div class="wheel-glass-bg"></div>
-            <canvas id="wheel-canvas" width="440" height="440"></canvas>
+
+      <!-- Flotte -->
+      <div class="glass" style="padding:22px;">
+        <div class="crew-card-label">Composition de la flotte</div>
+        <div class="ship-btns">
+          <button class="ship-btn sloop" onclick="crewAddShip('sloop')">
+            <svg class="ship-svg" viewBox="0 0 56 56" fill="none">
+              <path d="M8 40 Q28 46 48 40 L44 50 Q28 54 12 50 Z" fill="currentColor" opacity=".8"/>
+              <rect x="32" y="32" width="10" height="8" rx="2" fill="currentColor" opacity=".5"/>
+              <line x1="22" y1="8" x2="22" y2="40" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"/>
+              <line x1="13" y1="39" x2="36" y2="39" stroke="rgba(255,255,255,.6)" stroke-width="1.2" stroke-linecap="round"/>
+              <path d="M22 10 L22 37 L43 37 Z" fill="rgba(255,255,255,.72)"/>
+              <path d="M22 12 L5 37 L22 37 Z" fill="rgba(255,255,255,.5)"/>
+              <line x1="22" y1="40" x2="3" y2="32" stroke="rgba(255,255,255,.55)" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <span class="ship-btn-name">Sloop</span>
+            <span class="ship-btn-sz">2 joueurs</span>
+          </button>
+          <button class="ship-btn brig" onclick="crewAddShip('brig')">
+            <svg class="ship-svg" viewBox="0 0 56 56" fill="none">
+              <path d="M4 37 Q28 44 52 37 L48 48 Q28 53 8 48 Z" fill="currentColor" opacity=".8"/>
+              <rect x="36" y="27" width="13" height="10" rx="2" fill="currentColor" opacity=".58"/>
+              <line x1="8" y1="37" x2="1" y2="29" stroke="rgba(255,255,255,.55)" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="16" y1="7" x2="16" y2="37" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"/>
+              <rect x="7" y="9" width="18" height="14" rx="1" fill="rgba(255,255,255,.72)"/>
+              <line x1="6" y1="9" x2="26" y2="9" stroke="rgba(255,255,255,.75)" stroke-width="1.2" stroke-linecap="round"/>
+              <line x1="35" y1="10" x2="35" y2="37" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"/>
+              <path d="M35 12 L35 35 L51 33 Z" fill="rgba(255,255,255,.65)"/>
+              <line x1="27" y1="36" x2="50" y2="36" stroke="rgba(255,255,255,.6)" stroke-width="1.2" stroke-linecap="round"/>
+              <line x1="16" y1="8" x2="35" y2="11" stroke="rgba(255,255,255,.35)" stroke-width="1"/>
+            </svg>
+            <span class="ship-btn-name">Brigantine</span>
+            <span class="ship-btn-sz">3 joueurs</span>
+          </button>
+          <button class="ship-btn gal" onclick="crewAddShip('gal')">
+            <svg class="ship-svg" viewBox="0 0 56 56" fill="none">
+              <path d="M2 35 Q28 43 54 35 L51 47 Q28 53 5 47 Z" fill="currentColor" opacity=".85"/>
+              <rect x="40" y="22" width="14" height="13" rx="2" fill="currentColor" opacity=".68"/>
+              <rect x="2" y="28" width="10" height="7" rx="1" fill="currentColor" opacity=".55"/>
+              <circle cx="17" cy="39" r="1.5" fill="rgba(0,0,0,.3)"/>
+              <circle cx="25" cy="40" r="1.5" fill="rgba(0,0,0,.3)"/>
+              <circle cx="33" cy="40" r="1.5" fill="rgba(0,0,0,.3)"/>
+              <line x1="8" y1="35" x2="1" y2="27" stroke="rgba(255,255,255,.6)" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="14" y1="8" x2="14" y2="35" stroke="rgba(255,255,255,.85)" stroke-width="1.8" stroke-linecap="round"/>
+              <rect x="5" y="10" width="18" height="12" rx="1" fill="rgba(255,255,255,.7)"/>
+              <line x1="4" y1="10" x2="24" y2="10" stroke="rgba(255,255,255,.78)" stroke-width="1.2" stroke-linecap="round"/>
+              <line x1="28" y1="3" x2="28" y2="35" stroke="rgba(255,255,255,.9)" stroke-width="2.2" stroke-linecap="round"/>
+              <rect x="17" y="5" width="22" height="16" rx="1" fill="rgba(255,255,255,.75)"/>
+              <line x1="16" y1="5" x2="40" y2="5" stroke="rgba(255,255,255,.82)" stroke-width="1.4" stroke-linecap="round"/>
+              <line x1="43" y1="12" x2="43" y2="35" stroke="rgba(255,255,255,.85)" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M43 14 L43 33 L54 31 Z" fill="rgba(255,255,255,.62)"/>
+              <line x1="14" y1="9" x2="28" y2="4" stroke="rgba(255,255,255,.35)" stroke-width=".9"/>
+              <line x1="28" y1="4" x2="43" y2="13" stroke="rgba(255,255,255,.35)" stroke-width=".9"/>
+              <line x1="1" y1="29" x2="14" y2="9" stroke="rgba(255,255,255,.28)" stroke-width=".8"/>
+            </svg>
+            <span class="ship-btn-name">Galion</span>
+            <span class="ship-btn-sz">4 joueurs</span>
+          </button>
+        </div>
+        <div class="crew-fleet" id="crewFleet">
+          <span class="crew-empty-hint">Aucun bateau sélectionné</span>
+        </div>
+        <div class="crew-counter" id="crewCounter">
+          <div class="crew-counter-side">
+            <span class="crew-counter-num" id="crewPCount">0</span>
+            <span class="crew-counter-lbl">Joueurs</span>
           </div>
-          <div class="wheel-controls">
-            <button type="button" id="wheel-spin-btn" class="wheel-spin-btn">SPIN</button>
-            <button type="button" class="reset-btn" id="wheel-reset">Recommencer</button>
+          <span class="crew-counter-status" id="crewCounterStatus">—</span>
+          <div class="crew-counter-side">
+            <span class="crew-counter-num" id="crewSCount">0</span>
+            <span class="crew-counter-lbl">Places</span>
           </div>
         </div>
-        <div id="wheel-selected" class="wheel-selected-panel"></div>
       </div>
+
+      <!-- CTA -->
+      <button class="crew-btn" style="width:100%;padding:16px;font-size:.95rem;border-radius:16px;letter-spacing:.04em;" onclick="crewGenerate()">Générer les équipages</button>
+
+      <!-- Résultats -->
+      <div class="crew-results" id="crewResults"></div>
+
     </div>
   </div>
 </div>
@@ -725,250 +818,130 @@
   }
 })();
 
-// ===== WHEEL =====
+// ===== CREW GENERATOR =====
 (function(){
-  // iOS 26 liquid glass — translucent tinted slices
-  // iOS 26 liquid glass — tranches très translucides
-  var COLORS = [
-    'rgba(255,255,255,0.06)','rgba(255,255,255,0.03)','rgba(255,255,255,0.07)','rgba(255,255,255,0.03)',
-    'rgba(255,255,255,0.06)','rgba(255,255,255,0.02)','rgba(255,255,255,0.07)','rgba(255,255,255,0.03)'
-  ];
-  var players = [];
-  var selected = [];
-  var spinning = false;
-  var angle = 0;
+  var crewNames=[], crewFleet=[], crewUid=0;
+  var CREW_SIZE={sloop:2,brig:3,gal:4};
+  var CREW_LABELS={sloop:'Sloop',brig:'Brigantine',gal:'Galion'};
+  var CREW_SVGS={
+    sloop:'<svg viewBox="0 0 56 56" fill="none"><path d="M8 40 Q28 46 48 40 L44 50 Q28 54 12 50 Z" fill="currentColor" opacity=".8"/><rect x="32" y="32" width="10" height="8" rx="2" fill="currentColor" opacity=".5"/><line x1="22" y1="8" x2="22" y2="40" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"/><line x1="13" y1="39" x2="36" y2="39" stroke="rgba(255,255,255,.6)" stroke-width="1.2" stroke-linecap="round"/><path d="M22 10 L22 37 L43 37 Z" fill="rgba(255,255,255,.72)"/><path d="M22 12 L5 37 L22 37 Z" fill="rgba(255,255,255,.5)"/><line x1="22" y1="40" x2="3" y2="32" stroke="rgba(255,255,255,.55)" stroke-width="1.5" stroke-linecap="round"/></svg>',
+    brig:'<svg viewBox="0 0 56 56" fill="none"><path d="M4 37 Q28 44 52 37 L48 48 Q28 53 8 48 Z" fill="currentColor" opacity=".8"/><rect x="36" y="27" width="13" height="10" rx="2" fill="currentColor" opacity=".58"/><line x1="8" y1="37" x2="1" y2="29" stroke="rgba(255,255,255,.55)" stroke-width="1.5" stroke-linecap="round"/><line x1="16" y1="7" x2="16" y2="37" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"/><rect x="7" y="9" width="18" height="14" rx="1" fill="rgba(255,255,255,.72)"/><line x1="6" y1="9" x2="26" y2="9" stroke="rgba(255,255,255,.75)" stroke-width="1.2" stroke-linecap="round"/><line x1="35" y1="10" x2="35" y2="37" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"/><path d="M35 12 L35 35 L51 33 Z" fill="rgba(255,255,255,.65)"/><line x1="27" y1="36" x2="50" y2="36" stroke="rgba(255,255,255,.6)" stroke-width="1.2" stroke-linecap="round"/><line x1="16" y1="8" x2="35" y2="11" stroke="rgba(255,255,255,.35)" stroke-width="1"/></svg>',
+    gal:'<svg viewBox="0 0 56 56" fill="none"><path d="M2 35 Q28 43 54 35 L51 47 Q28 53 5 47 Z" fill="currentColor" opacity=".85"/><rect x="40" y="22" width="14" height="13" rx="2" fill="currentColor" opacity=".68"/><rect x="2" y="28" width="10" height="7" rx="1" fill="currentColor" opacity=".55"/><circle cx="17" cy="39" r="1.5" fill="rgba(0,0,0,.3)"/><circle cx="25" cy="40" r="1.5" fill="rgba(0,0,0,.3)"/><circle cx="33" cy="40" r="1.5" fill="rgba(0,0,0,.3)"/><line x1="8" y1="35" x2="1" y2="27" stroke="rgba(255,255,255,.6)" stroke-width="1.5" stroke-linecap="round"/><line x1="14" y1="8" x2="14" y2="35" stroke="rgba(255,255,255,.85)" stroke-width="1.8" stroke-linecap="round"/><rect x="5" y="10" width="18" height="12" rx="1" fill="rgba(255,255,255,.7)"/><line x1="4" y1="10" x2="24" y2="10" stroke="rgba(255,255,255,.78)" stroke-width="1.2" stroke-linecap="round"/><line x1="28" y1="3" x2="28" y2="35" stroke="rgba(255,255,255,.9)" stroke-width="2.2" stroke-linecap="round"/><rect x="17" y="5" width="22" height="16" rx="1" fill="rgba(255,255,255,.75)"/><line x1="16" y1="5" x2="40" y2="5" stroke="rgba(255,255,255,.82)" stroke-width="1.4" stroke-linecap="round"/><line x1="43" y1="12" x2="43" y2="35" stroke="rgba(255,255,255,.85)" stroke-width="1.8" stroke-linecap="round"/><path d="M43 14 L43 33 L54 31 Z" fill="rgba(255,255,255,.62)"/><line x1="14" y1="9" x2="28" y2="4" stroke="rgba(255,255,255,.35)" stroke-width=".9"/><line x1="28" y1="4" x2="43" y2="13" stroke="rgba(255,255,255,.35)" stroke-width=".9"/><line x1="1" y1="29" x2="14" y2="9" stroke="rgba(255,255,255,.28)" stroke-width=".8"/></svg>'
+  };
 
-  var canvas = document.getElementById('wheel-canvas');
-  var ctx = canvas ? canvas.getContext('2d') : null;
-  var DPR = Math.min(window.devicePixelRatio || 1, 2);
+  var inp = document.getElementById('crewNameInput');
+  if(inp) inp.addEventListener('keydown',function(e){
+    if(e.key==='Enter'){e.preventDefault();crewAddName();}
+  });
 
-  function resize(){
-    if (!canvas) return;
-    var size = Math.min(440, window.innerWidth - 48);
-    canvas.style.width = size + 'px';
-    canvas.style.height = size + 'px';
-    canvas.width = size * DPR;
-    canvas.height = size * DPR;
+  window.crewAddName = function(){
+    var v=(document.getElementById('crewNameInput')||{value:''}).value.trim();
+    if(!v||crewNames.indexOf(v)!==-1)return;
+    crewNames.push(v);
+    document.getElementById('crewNameInput').value='';
+    crewRenderNames();crewSync();
+  };
+  window.crewRemoveName = function(n){
+    crewNames=crewNames.filter(function(x){return x!==n;});
+    crewRenderNames();crewSync();
+  };
+  function crewRenderNames(){
+    var el=document.getElementById('crewNameChips');
+    if(!el)return;
+    if(!crewNames.length){el.innerHTML='<span class="crew-empty-hint">Aucun joueur ajouté</span>';return;}
+    el.innerHTML=crewNames.map(function(n,i){
+      return '<div class="crew-chip" style="animation-delay:'+(i*30)+'ms">'+
+        crewEsc(n)+
+        ' <button class="crew-chip-del" onclick="crewRemoveName('+crewEscQ(n)+')">✕</button>'+
+      '</div>';
+    }).join('');
   }
 
-  function drawWheel(rot, highlightIdx, hlIntensity){
-    if (!ctx || !players.length) return;
-    var w = canvas.width, h = canvas.height, cx = w/2, cy = h/2, R = Math.min(cx,cy) - 4*DPR;
-    ctx.clearRect(0,0,w,h);
-    var step = (Math.PI*2) / players.length;
+  window.crewAddShip = function(t){
+    crewUid++;crewFleet.push({type:t,id:crewUid});
+    crewRenderFleet();crewSync();
+  };
+  window.crewRemoveShip = function(id){
+    crewFleet=crewFleet.filter(function(s){return s.id!==id;});
+    crewRenderFleet();crewSync();
+  };
+  function crewRenderFleet(){
+    var el=document.getElementById('crewFleet');
+    if(!el)return;
+    if(!crewFleet.length){el.innerHTML='<span class="crew-empty-hint">Aucun bateau sélectionné</span>';return;}
+    var counts={sloop:0,brig:0,gal:0};
+    el.innerHTML=crewFleet.map(function(s,i){
+      counts[s.type]++;
+      return '<div class="crew-fleet-chip '+s.type+'" style="animation-delay:'+(i*30)+'ms">'+
+        '<span style="display:inline-block;width:16px;height:16px;vertical-align:middle;color:currentColor;">'+CREW_SVGS[s.type]+'</span>'+
+        ' '+CREW_LABELS[s.type]+' '+counts[s.type]+
+        ' <button class="cfc-del" onclick="crewRemoveShip('+s.id+')">✕</button>'+
+      '</div>';
+    }).join('');
+  }
 
-    players.forEach(function(name, i){
-      var a0 = rot + i * step, a1 = a0 + step, mid = a0 + step/2;
-      var isHL = (highlightIdx === i);
+  function crewSync(){
+    var p=crewNames.length;
+    var s=crewFleet.reduce(function(a,b){return a+CREW_SIZE[b.type];},0);
+    var pc=document.getElementById('crewPCount');
+    var sc=document.getElementById('crewSCount');
+    if(pc)pc.textContent=p;
+    if(sc)sc.textContent=s;
+    var st=document.getElementById('crewCounterStatus');
+    if(!st)return;
+    if(!p&&!s)          st.innerHTML='<span>—</span>';
+    else if(p===s)      st.innerHTML='<span style="color:var(--success)">✓ Parfait</span>';
+    else if(p>s)        st.innerHTML='<span style="color:var(--critical)">+'+(p-s)+' sans place</span>';
+    else                st.innerHTML='<span style="color:var(--accent-2)">'+(s-p)+' place'+(s-p>1?'s':'')+' vide</span>';
+  }
 
-      // --- Base slice fill (glass tint) ---
-      ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,R,a0,a1); ctx.closePath();
-      if (isHL && hlIntensity > 0){
-        var hi = hlIntensity;
-        var gHL = ctx.createRadialGradient(cx,cy,0,cx,cy,R);
-        gHL.addColorStop(0,'rgba(255,210,60,'+(.18*hi)+')');
-        gHL.addColorStop(0.6,'rgba(240,150,20,'+(.28*hi)+')');
-        gHL.addColorStop(1,'rgba(200,100,10,'+(.38*hi)+')');
-        ctx.fillStyle = gHL;
-      } else {
-        ctx.fillStyle = COLORS[i % COLORS.length];
-      }
-      ctx.fill();
-
-      // --- Specular arc : reflet lumineux iOS glass sur le bord externe ---
-      ctx.save();
-      ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,R,a0,a1); ctx.closePath();
-      ctx.clip();
-      // Gradient radial du centre vers le bord — bord plus lumineux
-      var specR = ctx.createRadialGradient(cx,cy,R*0.55,cx,cy,R);
-      specR.addColorStop(0,'rgba(255,255,255,0)');
-      specR.addColorStop(0.75,'rgba(255,255,255,0)');
-      specR.addColorStop(1, isHL && hlIntensity > 0
-        ? 'rgba(255,240,100,'+(0.45*hlIntensity)+')'
-        : 'rgba(255,255,255,0.13)');
-      ctx.fillStyle = specR;
-      ctx.fillRect(0,0,w,h);
-      // Reflet de la moitié supérieure (comme iOS) — arc blanc sur le dessus
-      var lx = cx + Math.cos(mid)*R*0.72, ly = cy + Math.sin(mid)*R*0.72;
-      var specL = ctx.createRadialGradient(lx,ly,0,lx,ly,R*0.38);
-      specL.addColorStop(0, isHL && hlIntensity > 0
-        ? 'rgba(255,240,100,'+(0.22*hlIntensity)+')'
-        : 'rgba(255,255,255,0.10)');
-      specL.addColorStop(1,'rgba(255,255,255,0)');
-      ctx.fillStyle = specL;
-      ctx.fillRect(0,0,w,h);
-      ctx.restore();
-
-      // --- Divider lines (blanc verre) ---
-      ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,R,a0,a1); ctx.closePath();
-      if (isHL && hlIntensity > 0){
-        ctx.strokeStyle = 'rgba(255,230,80,'+(0.8*hlIntensity)+')';
-        ctx.lineWidth = 2.5*DPR;
-      } else {
-        ctx.strokeStyle = 'rgba(255,255,255,0.20)';
-        ctx.lineWidth = 1*DPR;
-      }
-      ctx.stroke();
-
-      // --- Label ---
-      ctx.save();
-      ctx.translate(cx,cy);
-      ctx.rotate(mid);
-      ctx.textAlign = 'right';
-      var fontSize = Math.max(11, Math.min(14, 180/players.length)) * DPR;
-      ctx.font = (isHL && hlIntensity > 0 ? '800' : '700') + ' ' + fontSize + 'px -apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif';
-      ctx.shadowColor = 'rgba(0,0,0,0.7)';
-      ctx.shadowBlur = 6*DPR;
-      ctx.fillStyle = isHL && hlIntensity > 0
-        ? 'rgba(255,248,180,1)'
-        : 'rgba(255,255,255,0.92)';
-      ctx.fillText(name, R - 16*DPR, fontSize*0.38);
-      ctx.restore();
+  window.crewGenerate = function(){
+    if(!crewNames.length)return alert('Ajoute des joueurs d\'abord.');
+    if(!crewFleet.length)return alert('Choisis au moins un bateau.');
+    var slots=crewFleet.reduce(function(a,b){return a+CREW_SIZE[b.type];},0);
+    if(crewNames.length!==slots){
+      return alert('Il faut exactement '+slots+' joueur'+(slots>1?'s':'')+' pour cette flotte (tu en as '+crewNames.length+').');
+    }
+    var pool=crewNames.slice();
+    for(var i=pool.length-1;i>0;i--){
+      var j=Math.floor(Math.random()*(i+1));
+      var t=pool[i];pool[i]=pool[j];pool[j]=t;
+    }
+    var el=document.getElementById('crewResults');
+    if(!el)return;
+    el.innerHTML='';
+    var idx=0,counts={sloop:0,brig:0,gal:0};
+    crewFleet.forEach(function(s,fi){
+      counts[s.type]++;
+      var size=CREW_SIZE[s.type];
+      var crew=pool.slice(idx,idx+size);idx+=size;
+      var card=document.createElement('div');
+      card.className='crew-ship-card '+s.type;
+      card.style.animationDelay=(fi*70)+'ms';
+      card.innerHTML=
+        '<div class="crew-ship-head">'+
+          '<span class="crew-ship-ic" style="color:var(--'+s.type+')">'+CREW_SVGS[s.type]+'</span>'+
+          '<span class="crew-ship-ttl '+s.type+'">'+CREW_LABELS[s.type]+' '+counts[s.type]+'</span>'+
+          '<span class="crew-ship-sz">'+size+' joueurs</span>'+
+        '</div>'+
+        '<div class="crew-list-names">'+
+          crew.map(function(n){return '<div class="crew-name-pill">'+crewEsc(n)+'</div>';}).join('')+
+        '</div>';
+      el.appendChild(card);
     });
+    var row=document.createElement('div');
+    row.className='crew-regen-row';
+    row.style.animationDelay=(crewFleet.length*70+40)+'ms';
+    row.innerHTML=
+      '<button class="crew-btn" onclick="crewGenerate()">Remélanger</button>'+
+      '<button class="crew-btn crew-btn-ghost" onclick="document.getElementById(\'crewResults\').innerHTML=\'\'">Effacer</button>';
+    el.appendChild(row);
+    el.scrollIntoView({behavior:'smooth',block:'nearest'});
+  };
 
-    // --- Anneau extérieur glass ---
-    ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2);
-    ctx.strokeStyle = 'rgba(255,255,255,0.22)';
-    ctx.lineWidth = 1.5*DPR;
-    ctx.stroke();
-
-    // --- Centre disc glass ---
-    var cR = 20*DPR;
-    ctx.beginPath(); ctx.arc(cx,cy,cR,0,Math.PI*2);
-    var cg = ctx.createRadialGradient(cx-cR*0.3,cy-cR*0.3,0,cx,cy,cR);
-    cg.addColorStop(0,'rgba(80,20,20,0.9)');
-    cg.addColorStop(1,'rgba(20,5,5,0.95)');
-    ctx.fillStyle = cg;
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(255,255,255,0.25)';
-    ctx.lineWidth = 1.5*DPR;
-    ctx.stroke();
-    // Petit reflet sur le centre
-    ctx.beginPath(); ctx.arc(cx-cR*0.28,cy-cR*0.28,cR*0.32,0,Math.PI*2);
-    ctx.fillStyle = 'rgba(255,255,255,0.12)';
-    ctx.fill();
-  }
-
-  function pickWinner(finalAngle){
-    var TWO_PI = Math.PI * 2;
-    var step = TWO_PI / players.length;
-    // Pointer is at top = 3π/2 in canvas coords (Y goes down, 0=right, π/2=bottom, 3π/2=top)
-    // Loop over each slice and find the one whose arc contains 3π/2
-    var ptr = 3 * Math.PI / 2;
-    var fa = ((finalAngle % TWO_PI) + TWO_PI) % TWO_PI;
-    for (var i = 0; i < players.length; i++){
-      var a0 = ((fa + i * step) % TWO_PI + TWO_PI) % TWO_PI;
-      var a1 = ((fa + (i+1) * step) % TWO_PI + TWO_PI) % TWO_PI;
-      if (a0 < a1){
-        if (ptr >= a0 && ptr < a1) return i;
-      } else {
-        // slice wraps around 0/2π
-        if (ptr >= a0 || ptr < a1) return i;
-      }
-    }
-    return 0;
-  }
-
-  function spin(){
-    if (spinning || players.length < 1) return;
-    spinning = true;
-    document.getElementById('wheel-spin-btn').disabled = true;
-    document.getElementById('wheel-result').textContent = '';
-
-    var startAngle = angle;
-    var extraSpins = 5 + Math.floor(Math.random() * 3); // 5-7 tours complets
-    var extraAngle = Math.random() * Math.PI * 2;
-    var totalRotation = extraSpins * Math.PI * 2 + extraAngle;
-    var duration = 2500 + Math.random() * 500; // 2.5-3 secondes
-    var start = null;
-    // Quadratic ease-out : vitesse max au départ, décélération linéaire douce
-    // Comme une roue huilée qui prend du temps à s'arrêter
-    function ease(t){ return t * (2 - t); }
-
-    function frame(ts){
-      if (!start) start = ts;
-      var t = Math.min((ts - start) / duration, 1);
-      var cur = startAngle + totalRotation * ease(t);
-      angle = cur;
-      drawWheel(cur);
-      if (t < 1){ requestAnimationFrame(frame); return; }
-
-      // Roue arrêtée — flash doré rapide puis révélation
-      angle = ((startAngle + totalRotation) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
-      var idx = pickWinner(angle);
-      var name = players[idx];
-
-      var fStart = performance.now(), fDur = 350;
-      (function fFrame(now){
-        var ft = Math.min((now - fStart) / fDur, 1);
-        drawWheel(angle, idx, Math.sin(ft * Math.PI));
-        if (ft < 1){ requestAnimationFrame(fFrame); return; }
-
-        selected.push(name);
-        players.splice(idx, 1);
-        renderSelected();
-        spinning = false;
-        drawWheel(angle);
-
-        var resultEl = document.getElementById('wheel-result');
-        resultEl.textContent = '✅ ' + name;
-        resultEl.style.animation = 'none';
-        void resultEl.offsetWidth;
-        resultEl.style.animation = 'wheelReveal .3s cubic-bezier(.2,.8,.2,1) both';
-
-        if (players.length >= 1){
-          document.getElementById('wheel-spin-btn').disabled = false;
-        }
-      })(performance.now());
-    }
-    requestAnimationFrame(frame);
-  }
-
-  function renderSelected(){
-    var el = document.getElementById('wheel-selected');
-    if (!el) return;
-    if (!selected.length){ el.innerHTML = ''; return; }
-    el.innerHTML = '<div class="sel-title">Sélectionnés</div>' +
-      selected.map(function(n, i){
-        return '<div class="sel-chip"><span class="sel-num">'+(i+1)+'</span>'+n+'</div>';
-      }).join('');
-  }
-
-  function startWheel(){
-    var raw = document.getElementById('wheel-players').value.split('\n').map(function(s){return s.trim();}).filter(Boolean);
-    if (raw.length < 2){ alert('Il faut au moins 2 joueurs.'); return; }
-    players = raw.slice(0, 20);
-    selected = [];
-    angle = 0;
-    document.getElementById('wheel-setup').style.display = 'none';
-    document.getElementById('wheel-view').style.display = 'block';
-    resize();
-    drawWheel(angle);
-    renderSelected();
-    document.getElementById('wheel-result').textContent = '';
-    document.getElementById('wheel-spin-btn').disabled = false;
-  }
-
-  var startBtn = document.getElementById('wheel-start-btn');
-  if (startBtn) startBtn.addEventListener('click', startWheel);
-
-  var spinBtn = document.getElementById('wheel-spin-btn');
-  if (spinBtn) spinBtn.addEventListener('click', spin);
-
-  var resetBtn = document.getElementById('wheel-reset');
-  if (resetBtn) resetBtn.addEventListener('click', function(){
-    players = []; selected = []; angle = 0;
-    document.getElementById('wheel-view').style.display = 'none';
-    document.getElementById('wheel-setup').style.display = 'block';
-  });
-
-  window.addEventListener('resize', function(){
-    if (document.getElementById('wheel-view').style.display !== 'none'){
-      resize(); drawWheel(angle);
-    }
-  });
-})();
-</script>
+  function crewEsc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function crewEscQ(s){return "'" + s.replace(/\\/g,'\\\\').replace(/'/g,"\\'") + "'";}
+})();</script>
 
 <canvas id="viz" aria-hidden="true" style="position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
 <audio id="match-audio" src="assets/match.mp3" preload="auto"></audio>
