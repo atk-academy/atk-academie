@@ -61,6 +61,7 @@
     <div class="title"><h1>ATK</h1></div>
     <div class="over"><span class="dmd">◆</span>Sea of Thieves<span class="dmd">◆</span></div>
     <div class="nav">
+      <a href="crew.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.6 2.7-6 6-6s6 2.4 6 6"/><circle cx="17.5" cy="9" r="2.4"/><path d="M16.5 14.2c2.6.2 4.5 2.2 4.5 5.2"/></svg>Les ATK</a>
       <a href="recrutement.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="7" y1="14" x2="13" y2="14"/></svg>Candidature</a>
       <a href="atk-duel.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l12 16M18 4L6 20"/></svg>Match</a>
       <a href="https://discord.gg/YCsafwTajS" target="_blank" rel="noopener"><svg class="ic" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.24.5a13.6 13.6 0 0 1 4.35 1.42A16.6 16.6 0 0 0 3.9 4.9 13.6 13.6 0 0 1 8.25 3.5L8 3a19.8 19.8 0 0 0-4.9 1.4C.9 8.9.3 13.2.6 17.5a19.9 19.9 0 0 0 6.03 3.05l.72-1.02a12.9 12.9 0 0 1-2.03-.98l.5-.37a14.2 14.2 0 0 0 12.36 0l.5.37c-.64.38-1.32.71-2.03.98l.72 1.02a19.9 19.9 0 0 0 6.03-3.05c.4-5-.56-9.26-3.32-13.1ZM8.3 14.9c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.82.9 1.8 2c0 1.1-.8 2-1.8 2Zm7.4 0c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.82.9 1.8 2c0 1.1-.8 2-1.8 2Z"/></svg>Discord</a>
@@ -68,8 +69,8 @@
   </div>
 </div>
 
-<audio id="bg-music" src="assets/bg-music.mp3" preload="auto"></audio>
-<audio id="bg-music-b" src="assets/bg-music.mp3" preload="auto"></audio>
+<audio id="bg-music" src="assets/bg-music-bandz.mp3" preload="auto"></audio>
+<audio id="bg-music-b" src="assets/bg-music-bandz.mp3" preload="auto"></audio>
 <audio id="tag-sound" src="assets/tag.mp3" preload="auto"></audio>
 <button id="sound-toggle" class="sound-toggle" aria-label="Couper / activer le son" title="Son">🔊</button>
 
@@ -175,6 +176,7 @@
 
     var TARGET = 0.5;      // volume max de la musique
     var FADE   = 7;        // durée du fondu (entrée, sortie et croisement)
+    var START  = 0;        // le fichier est déjà découpé : il commence à la seconde 10 du morceau d'origine
     var CUT    = 45;       // longueur d'une boucle : 45 s
     var TAG_DELAY = 2000;  // le tag démarre 2 s après le lancement
 
@@ -187,6 +189,7 @@
 
     // Enveloppe d'une boucle : fondu d'entrée 0→7s, plein 7→38s, fondu de sortie 38→45s
     function env(t){
+      t = t - START;
       if (t < FADE)       return TARGET * (t / FADE);
       if (t < CUT - FADE) return TARGET;
       if (t < CUT)        return TARGET * (1 - (t - (CUT - FADE)) / FADE);
@@ -199,16 +202,16 @@
         players.forEach(function(p){
           if (p.paused) return;
           var t = p.currentTime;
-          if (t >= CUT){ p.pause(); return; }      // sa boucle est finie → on l'arrête
+          if (t >= START + CUT){ p.pause(); return; }      // sa boucle est finie → on l'arrête
           p.volume = muted ? 0 : Math.max(0, Math.min(TARGET, env(t)));
         });
         // Croisement : quand la piste active atteint 38s, on lance l'autre depuis 0
         // pendant qu'elle finit son fondu de sortie → aucun trou.
         var a = players[active];
-        if (!a.paused && !a._xf && a.currentTime >= CUT - FADE){
+        if (!a.paused && !a._xf && a.currentTime >= START + CUT - FADE){
           a._xf = true;
           var n = 1 - active, np = players[n];
-          np._xf = false; np.currentTime = 0; np.volume = 0;
+          np._xf = false; np.currentTime = START; np.volume = 0;
           np.play().catch(function(){});
           active = n;
         }
@@ -225,7 +228,7 @@
       if (started) return;
       started = true;                 // synchrone : empêche tout double démarrage
       var p = players[active];
-      p._xf = false; p.currentTime = 0; p.volume = 0;
+      p._xf = false; p.currentTime = START; p.volume = 0;
       var pr = p.play();
       if (pr && pr.then){
         pr.then(function(){ startEngine(); scheduleTag(); })
