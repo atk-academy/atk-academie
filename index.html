@@ -283,11 +283,14 @@
       document.body.appendChild(f); crewFrame = f;
       requestAnimationFrame(function(){ requestAnimationFrame(function(){ f.style.opacity = 1; }); });
       masterRate = .035; masterTarget = 0;                  // l'accueil s'efface (~1,5 s) pendant que l'écho entre
+      // une fois effacé, on met l'accueil réellement en pause : plus aucun son direct sous la réverbération
+      setTimeout(function(){ if (crewFrame === f){ players.forEach(function(p){ p.pause(); }); try{ tag.pause(); }catch(e){} } }, 2300);
     }
     function closeCrew(){
       if (!crewFrame) return;
       var f = crewFrame; crewFrame = null;
       f.style.opacity = 0; masterRate = .035; masterTarget = 1;
+      if (started && !muted){ var pa = players[active]; if (pa.paused){ pa.volume = 0; pa.play().catch(function(){}); } }   // la musique reprend là où elle était
       setTimeout(function(){ f.remove(); }, 350);
     }
     window.addEventListener('message', function(e){ if (e.data === 'atk-close-crew') closeCrew(); });

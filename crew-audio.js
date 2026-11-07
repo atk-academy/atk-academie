@@ -1,6 +1,8 @@
 /* ATK — « Les ATK » : la musique de l'accueil continue, mais passée dans une pièce (réverbération + son un peu étouffé). */
 (function () {
   'use strict';
+  if (window.__crewAudio) return;          // une seule instance : jamais de réverbération empilée
+  window.__crewAudio = true;
   var SRC = 'assets/bg-music-bandz.mp3';
   var LEVEL = .42;                     // volume global
   var saved = null;
@@ -43,9 +45,9 @@
   function enter() {                     // la musique « entre dans la pièce » : le direct s'estompe, l'écho prend la place
     var t = ctx.currentTime;
     master.gain.cancelScheduledValues(t); master.gain.setTargetAtTime(muted ? 0 : LEVEL, t, .9);
-    dry.gain.setTargetAtTime(.34, t, 1.6);
+    dry.gain.setTargetAtTime(.05, t, 1.1);
     dryLP.frequency.setTargetAtTime(3200, t, 1.8);
-    wet.gain.setTargetAtTime(1.15, t, 1.4);
+    wet.gain.setTargetAtTime(1.5, t, 1.2);
   }
 
   function start() {
