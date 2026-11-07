@@ -69,6 +69,13 @@
   .reveal.in{ opacity:1; transform:none; }
   @media (max-width:720px){ .vs{ grid-template-columns:1fr; } .hero{ padding:44px 0 34px; } }
   @media (prefers-reduced-motion:reduce){ .reveal{ opacity:1; transform:none; transition:none; } }
+.one{ min-height:calc(100vh - 90px); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px 0 40px; }
+  .one h1{ margin:12px 0 6px; }
+  .one .lead{ margin:10px auto 38px; max-width:640px; }
+  .one .grid{ width:100%; margin-bottom:40px; grid-template-columns:repeat(4,1fr); }
+  @media (max-width:860px){ .one .grid{ grid-template-columns:repeat(2,1fr); } }
+  .one .card{ text-align:left; padding:22px 20px 20px; }
+  .one .card p{ font-size:15.5px; }
 </style>
 </head>
 <body>
@@ -76,58 +83,20 @@
 <div class="wrap">
   <a class="back" id="back" href="index.html">← Accueil</a>
 
-  <header class="hero">
-    <div class="eyebrow">Sea of Thieves · PvP</div>
+  <main class="one">
+    <div class="eyebrow">Sea of Thieves · 100 % PvP</div>
     <h1>Académie</h1>
-    <p class="lead">L'Académie ATK, c'est <b>le programme qui forme les joueurs qui débutent</b> et les amène bien plus vite à un vrai niveau PvP, avec l'appui d'un groupe qui joue au plus haut niveau.</p>
-    <div class="tags"><span class="hot">100 % PvP</span><span>Suivi naval</span><span>Suivi TDM</span><span>Progression accélérée</span></div>
-  </header>
+    <p class="lead">On forme les nouveaux joueurs au PvP et on les fait <b>progresser bien plus vite</b> que s'ils jouaient seuls.</p>
 
-  <section class="sec reveal">
-    <h2>C'est quoi l'Académie ?</h2><div class="line"></div>
-    <p class="sub">Nous jouons à un très haut niveau. Plutôt que de laisser les nouveaux se débrouiller seuls, on les prend en main, on les entraîne et on les intègre à notre fonctionnement.</p>
     <div class="grid">
-      <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l2-7h14l2 7"/><path d="M12 3v7M12 3l6 4h-6"/><path d="M2 20c2 1.5 4 1.5 6 0s4-1.5 6 0 4 1.5 6 0"/></svg></div>
-        <h3>Suivi naval</h3><p>Un vrai accompagnement sur le combat de navires : gestion du bateau, rôles à bord, positionnement et prises de décision.</p></div>
-      <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l12 16M18 4L6 20"/></svg></div>
-        <h3>Suivi TDM</h3><p>Le même suivi sur le team deathmatch : duels, coordination d'équipe et réflexes de combat, travaillés avec des joueurs expérimentés.</p></div>
-      <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></div>
-        <h3>Progression accélérée</h3><p>Les joueurs suivis avancent beaucoup plus vite que s'ils jouaient seuls : les avantages arrivent plus tôt, les erreurs sont corrigées tout de suite.</p></div>
-      <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.6 2.7-6 6-6s6 2.4 6 6"/><circle cx="17.5" cy="9" r="2.4"/><path d="M16.5 14.2c2.6.2 4.5 2.2 4.5 5.2"/></svg></div>
-        <h3>Intégration</h3><p>On ne s'arrête pas à l'entraînement : les joueurs sont intégrés dans plusieurs de nos systèmes et dans la vie du groupe.</p></div>
+      <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l2-7h14l2 7"/><path d="M12 3v7M12 3l6 4h-6"/><path d="M2 20c2 1.5 4 1.5 6 0s4-1.5 6 0 4 1.5 6 0"/></svg></div><h3>Suivi naval</h3><p>Un vrai suivi, joueur par joueur.</p></div>
+      <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l12 16M18 4L6 20"/></svg></div><h3>Suivi TDM</h3><p>Pareil en team deathmatch.</p></div>
+      <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></div><h3>Boost rapide</h3><p>Des avantages bien plus tôt.</p></div>
+      <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.6 2.7-6 6-6s6 2.4 6 6"/><circle cx="17.5" cy="9" r="2.4"/><path d="M16.5 14.2c2.6.2 4.5 2.2 4.5 5.2"/></svg></div><h3>Intégration</h3><p>Dans plusieurs de nos systèmes.</p></div>
     </div>
-  </section>
 
-  <section class="sec reveal">
-    <h2>Pourquoi l'Académie ?</h2><div class="line"></div>
-    <div class="vs">
-      <div class="col"><h3>Jouer seul</h3><ul>
-        <li>On apprend surtout par ses propres erreurs</li>
-        <li>Une progression lente et irrégulière</li>
-        <li>Pas de retour sur sa façon de jouer</li>
-        <li>Peu de repères sur ce qu'il faut travailler</li></ul></div>
-      <div class="col us"><h3>Avec l'Académie ATK</h3><ul>
-        <li>Un suivi réel, côté naval comme côté TDM</li>
-        <li>Une progression beaucoup plus rapide</li>
-        <li>Des joueurs de haut niveau qui vous encadrent</li>
-        <li>Une intégration dans plusieurs systèmes du groupe</li></ul></div>
-    </div>
-  </section>
-
-  <section class="sec reveal">
-    <h2>Comment ça se passe</h2><div class="line"></div>
-    <div class="steps">
-      <div class="step"><h3>Tu postules</h3><p>Tu remplis ta candidature pour rejoindre l'Académie.</p></div>
-      <div class="step"><h3>On te suit</h3><p>Un suivi PvP, en naval et en TDM, pour te faire progresser vite.</p></div>
-      <div class="step"><h3>On t'intègre</h3><p>Tu entres dans nos systèmes et tu joues avec le groupe.</p></div>
-    </div>
-  </section>
-
-  <section class="cta reveal">
-    <h2>Prêt à passer un cap ?</h2>
-    <p>Que tu débutes ou que tu veuilles juste progresser plus vite, envoie ta candidature.</p>
     <a class="btn" id="cta" href="recrutement.html">Candidater</a>
-  </section>
+  </main>
 </div>
 <script>
   // ouvert par-dessus l'accueil : « Accueil » referme le panneau ; la candidature quitte le panneau
@@ -138,12 +107,6 @@
   document.getElementById('cta').addEventListener('click', function (e) {
     if (embed) { e.preventDefault(); try { top.location.href = 'recrutement.html'; } catch (x) { location.href = 'recrutement.html'; } }
   });
-  // apparition douce au scroll
-  var els = document.querySelectorAll('.reveal');
-  if ('IntersectionObserver' in window) {
-    var io = new IntersectionObserver(function (en) { en.forEach(function (x) { if (x.isIntersecting) { x.target.classList.add('in'); io.unobserve(x.target); } }); }, { threshold: .12 });
-    els.forEach(function (el) { io.observe(el); });
-  } else els.forEach(function (el) { el.classList.add('in'); });
 </script>
 </body>
 </html>
