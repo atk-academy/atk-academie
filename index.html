@@ -183,6 +183,7 @@
     var active = 0;        // piste en cours
     var started = false;   // mis à true de façon SYNCHRONE (corrige le bug du double-clic)
     var muted = false, tagDone = false, engine = null;
+    var master = 1, masterTarget = 1, masterRate = .07;   // fondu global : la musique ne se coupe jamais d'un coup (onglet masqué, changement de page)
 
     tag.volume = 0.5;      // discret : doit se fondre dans la musique
     players.forEach(function(p){ p.volume = 0; });
@@ -199,11 +200,12 @@
     function startEngine(){
       if (engine) return;
       engine = setInterval(function(){
+        master += (masterTarget - master) * masterRate;
         players.forEach(function(p){
           if (p.paused) return;
           var t = p.currentTime;
           if (t >= START + CUT){ p.pause(); return; }      // sa boucle est finie → on l'arrête
-          p.volume = muted ? 0 : Math.max(0, Math.min(TARGET, env(t)));
+          p.volume = muted ? 0 : Math.max(0, Math.min(TARGET, env(t))) * master;
         });
         // Croisement : quand la piste active atteint 38s, on lance l'autre depuis 0
         // pendant qu'elle finit son fondu de sortie → aucun trou.
@@ -254,6 +256,46 @@
     }
     ['pointerdown','touchstart','keydown'].forEach(function(ev){
       document.addEventListener(ev, onGesture, { passive:true });
+    });
+
+    // Changement d'onglet du navigateur : fondu vers le silence, puis retour en fondu
+    document.addEventListener('visibilitychange', function(){
+      masterRate = .07; masterTarget = document.hidden ? 0 : 1;
+    });
+
+    // Passage dans « Les ATK » : on mémorise l'instant de la musique (elle continue là-bas, avec de la réverbération)
+    function remember(){
+      try {
+        var a = players[active];
+        sessionStorage.setItem('atkMusic', JSON.stringify({ t: a.currentTime, muted: muted, ts: Date.now() }));
+      } catch(e){}
+    }
+    window.addEventListener('pagehide', remember);
+    // « Les ATK » s'ouvre PAR-DESSUS l'accueil (iframe) : la musique de l'accueil ne s'arrête jamais,
+    // elle s'efface pendant que la version « pièce » (réverbération) apparaît → un vrai fondu enchaîné.
+    var crewFrame = null;
+    function openCrew(href){
+      if (crewFrame) return;
+      remember();
+      var f = document.createElement('iframe');
+      f.src = href + '?embed=1&cb=' + Date.now(); f.allow = 'autoplay';
+      f.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;border:0;z-index:99999;background:#0a0403;opacity:0;transition:opacity .3s ease';
+      document.body.appendChild(f); crewFrame = f;
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){ f.style.opacity = 1; }); });
+      masterRate = .035; masterTarget = 0;                  // l'accueil s'efface (~1,5 s) pendant que l'écho entre
+    }
+    function closeCrew(){
+      if (!crewFrame) return;
+      var f = crewFrame; crewFrame = null;
+      f.style.opacity = 0; masterRate = .035; masterTarget = 1;
+      setTimeout(function(){ f.remove(); }, 350);
+    }
+    window.addEventListener('message', function(e){ if (e.data === 'atk-close-crew') closeCrew(); });
+    document.querySelectorAll('.nav a[href="crew.html"]').forEach(function(a){
+      a.addEventListener('click', function(ev){
+        if (ev.ctrlKey || ev.metaKey || ev.shiftKey || ev.button) return;
+        ev.preventDefault(); openCrew(a.getAttribute('href'));
+      });
     });
 
     // Bouton : 1er clic = démarre ; ensuite = coupe / réactive le son

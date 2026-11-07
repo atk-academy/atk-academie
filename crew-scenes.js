@@ -10,12 +10,12 @@
     Ezekiel:    { avatar: 'assets/crew-ezekiel.png',  pose: 'lounge', band: '#8a3cff' },
     Youzeo:     { avatar: 'assets/crew-youzeo.png',   pose: 'sit_game' },
     Enclume:    { avatar: 'assets/crew-enclume.png',  pose: 'cross_legs' },
-    Greg:       { pose: 'wall_lean' },
-    Lunatic:    { pose: 'lean_forward' },
-    Doffrite:   { pose: 'slouch' },
-    Vibromax:   { pose: 'watch_l' },
-    Asko:       { pose: 'point' },
-    MarkArthur: { pose: 'bar_sit' }
+    Greg:       { avatar: 'assets/crew-greg.png', pose: 'wall_lean' },
+    Lunatic:    { avatar: 'assets/crew-lunatic.png', pose: 'lean_forward' },
+    Doffrite:   { avatar: 'assets/crew-doffrite.png', pose: 'slouch' },
+    Vibromax:   { avatar: 'assets/crew-vibromax.png', pose: 'watch_l' },
+    Asko:       { avatar: 'assets/crew-asko.png', pose: 'point' },
+    MarkArthur: { avatar: 'assets/crew-markarthur.png', pose: 'bar_sit' }
   };
   var ORDER = ['Kairo', 'Ezekiel', 'Youzeo', 'Enclume', 'Greg', 'Lunatic', 'Doffrite', 'Vibromax', 'Asko', 'MarkArthur'];
 
