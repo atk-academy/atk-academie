@@ -70,6 +70,12 @@
     lounge_l: { S: [-5, -28], H: [-9, -53, -12], armsFirst: true,
       legs: [[[-3, 3], [15, 12], [34, 20]], [[7, 1], [24, 9], [43, 16]]],
       arms: [[[-14, -26], [-30, -22], [-45, -13]], [[14, -26], [20, -12], [12, -4]]] },
+    lying_l: { lying: true, S: [30, -11], H: [47, -13, 8], armsFirst: true,
+      legs: [[[-6, 2], [-26, 12], [-46, 20]], [[-4, -1], [-22, 5], [-42, 11]]],
+      arms: [[[22, -8], [6, -3], [-10, -1]], [[26, -9], [38, -18], [30, -27]]] },
+    armchair: { S: [2, -29], H: [3, -55, 3],
+      legs: [[[-5, 2], [-11, 14], [-10, 33]], [[5, 2], [11, 14], [10, 33]]],
+      arms: [[[-12, -26], [-19, -18], [-17, -9]], [[12, -26], [19, -18], [17, -9]]] },
     sit_game: { S: [3, -30], H: [5, -56, 4], props: 'pad',
       legs: [[[-6, 1], [-18, 14], [-15, 34]], [[6, 1], [18, 12], [17, 34]]],
       arms: [[[-14, -28], [-20, -15], [-5, -9]], [[14, -28], [20, -15], [5, -9]]] },
@@ -215,6 +221,7 @@
 
   // proportions adultes : on allonge le corps (debout : tout ×1.36 ; assis : buste/bras ×1.26, jambes inchangées)
   function scalePose(p) {
+    if (p.lying) return p;                       // allongé : coordonnées absolues, pas d'étirement
     var ku = p.stand ? 1.36 : 1.26, kl = p.stand ? 1.36 : 1.0;
     function sc(q, k) { return [q[0], q[1] * k]; }
     var Sy = p.S[1] * ku, Hy = Sy - 18;
