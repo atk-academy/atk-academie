@@ -279,7 +279,7 @@
     F.chair(S, 11.2, 8.2); F.desk(S, 10.8, 9.3, 2.6, 1.1, { col: '#2a1311', top: '#3a2220' }); F.laptopBack(S, 11.8, 9.55);
     F.speaker(S, .5, 10.0, 1.3); F.speaker(S, 4.9, 10.0, 1.3); F.dj(S, 1.6, 10.2, 3.0, 1.0);
     F.plant(S, 14.2, 12.6, 1.5);
-    put(S, 'Ezekiel', .72, 6.1, .52, 'lounge_l'); S.person(who('Lunatic', { pose: 'armchair', scale: 1.0, fp: .75 }), 12.65, 2.12, .5);
+    put(S, 'Ezekiel', .72, 6.1, .52, 'lounge_l'); S.person(who('Lunatic', { pose: 'armchair', scale: .95, fp: .75 }), 12.6, 2.02, .5);
     put(S, 'MarkArthur', 3.25, 3.35, .88); put(S, 'Doffrite', 9.65, 3.35, .88, 'bar_sit');
     put(S, 'Kairo', 14.2, 5.6, 0); put(S, 'Greg', .6, 12.2, 0);
     put(S, 'Vibromax', 11.6, 8.6, .5, 'sit_game'); put(S, 'Asko', 4.8, 7.8, .1, 'cross_legs');
