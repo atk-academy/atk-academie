@@ -436,7 +436,8 @@
       '<rect x="-34" y="-118" width="68" height="170" fill="rgba(0,0,0,0)" pointer-events="all"/></g></g>';
     // ombre au sol sous la personne
     var gz = cfg.groundZ == null ? 0 : cfg.groundZ;
-    this.items.push({ x0: x - .22, x1: x + .22, y0: y - .22, y1: y + .22, z0: z, z1: z + 1.8, svg: s, extra: '', person: true, gx: x, gy: y, gz: gz });
+    var fp = cfg.fp || .22;                    // empreinte au sol : plus large = la personne passe devant le meuble où elle est installée
+    this.items.push({ x0: x - fp, x1: x + fp, y0: y - fp, y1: y + fp, z0: z, z1: z + 1.8, svg: s, extra: '', person: true, gx: x, gy: y, gz: gz });
   };
 
   // tri topologique (peintre) : renvoie les items dans l'ordre d'affichage
